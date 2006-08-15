@@ -26,6 +26,7 @@ To-do: A more user friendly GUI, User manual, integrate with other programs.
 #include <stdlib.h>
 //Class stringstream
 #include <sstream>
+#include <string.h>
 
 //OpenCv Stuff
 #include <opencv/cv.h>
@@ -46,14 +47,14 @@ char tbarname[] = "threshold";
 int edge_thresh = 1;
 
 
-void threshold() {
+void threshold(int thresh = 140) {
   cout << "doing threshold" << endl;
   cvZero(image);
   //cvAdaptiveThreshold(gray, image, max, method, type, param);
   
   //cvThreshold( IplImage* src, IplImage* dst, float thresh, float maxvalue,
 	//CvThreshType type);
-  cvThreshold(gray, thres, 10, 200, CV_THRESH_BINARY_INV);		
+  cvThreshold(gray, thres, thresh, 200, CV_THRESH_BINARY_INV);		
 }
 
 void contour_follow() {
@@ -130,7 +131,7 @@ void sci_prog(int n_contour, string img_file_name) {
   string filename, buffer;
   typedef enum { IMG_NAME, STR_CLOS, LST_NXT, LST_END, CONTOUR_LIST, PRG_BULK } prog_step;
   const char* prog[] = {"img_name ='", "'", ",", ");", "contour_name= list(", 
-                        "Img = imread(img_name); \n \
+                        "stacksize(13000000); Img = imread(img_name); \n \
                          n = size(contour_name); \n \
                          for i = 1:n, \n \
                            A = read(contour_name(i), -1, 2); \n \
@@ -213,7 +214,7 @@ void on_trackbar(int h)
 
 int main(int argc, char* argv[]) {
 
-  char *filename = (argc == 2 ? argv[1] : (char*)"escamas.bmp");
+  char *filename = (argc >= 2 ? argv[1] : (char*)"escamas.bmp");
 
   if( (image = cvLoadImage( filename, 1)) == 0 ) {
     cout << "Can't find image \"escamas.bmp\". Please supply the image." << endl;
@@ -236,7 +237,10 @@ int main(int argc, char* argv[]) {
   cvCreateTrackbar(tbarname, wndname, &edge_thresh, 100, on_trackbar);
 
   //Do the threshold
-  threshold();	
+  if(argc == 3)
+    threshold(atoi(argv[2]));
+  else
+    threshold();	
 
   //Show the image
   on_trackbar(0);
