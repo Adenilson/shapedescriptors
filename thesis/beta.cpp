@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 
 #include <opencv/cv.h>
@@ -110,15 +111,15 @@ void print_contour(void) {
   
   for (; contourPtr != NULL; contourPtr = contourPtr->h_next)
   {
-  	cvStartReadSeq(contourPtr, &reader);
-  	cout << "\nContorno" << endl;
-  	//for (i = 0; i < N; ++point)
-  	for (i = 0; i < N; ++i)
-  	{
-  		CV_READ_SEQ_ELEM(p, reader);
-  		//printf("%d %d \n", p.x, p.y);
-  		cout << "\tx= " << p.x << "  y= " << p.y << endl;
-  	}
+    cvStartReadSeq(contourPtr, &reader);
+    cout << "\nContorno" << endl;
+    //for (i = 0; i < N; ++point)
+    for (i = 0; i < N; ++i) {
+      CV_READ_SEQ_ELEM(p, reader);
+      //printf("%d %d \n", p.x, p.y);
+      cout << "\tx= " << p.x << "  y= " << p.y << endl;
+    }
+    
   }
 
 }
@@ -126,31 +127,56 @@ void print_contour(void) {
 
 
 void print_contour2(void) {
-	CvSeq* contourPtr = contours;
+  CvSeq* contourPtr = contours;
   CvSeqReader reader;
   int N = contourPtr->total;
   int i;
   CvPoint p;
   
-  for (; contourPtr != NULL; contourPtr = contourPtr->h_next)
-  {
-  	cvStartReadSeq(contourPtr, &reader);
-  	cout << "\nContorno" << endl;
-  	//for (i = 0; i < N; ++point)
-  	
-  	cout << "\nPROXIMO X" << endl;
-  	for (i = 0; i < N; ++i) 
-  	{
-  		CV_READ_SEQ_ELEM(p, reader);  	
-  		cout << p.x << " ";  		
-  	}
-  	cout << "\nPROXIMO Y" << endl;
-  	for (i = 0; i < N; ++i) 
-  	{
-  		CV_READ_SEQ_ELEM(p, reader);  	
-  		cout << p.y << " ";  		
-  	}
+  for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
+    cvStartReadSeq(contourPtr, &reader);
+    cout << "\nContorno" << endl;
+    //for (i = 0; i < N; ++point)
+    cout << "\nPROXIMO X" << endl;
+    for (i = 0; i < N; ++i) {
+      CV_READ_SEQ_ELEM(p, reader);  	
+      cout << p.x << " ";  		
+    }
+    cout << "\nPROXIMO Y" << endl;
+    for (i = 0; i < N; ++i) {
+      CV_READ_SEQ_ELEM(p, reader);  	
+      cout << p.y << " ";  		
+    }
 
+  }
+
+}
+
+void print_contour3(void) {
+  CvSeq* contourPtr = contours;
+  CvSeqReader reader;
+  int N = 0;
+  int i;
+  CvPoint p;
+  
+  ofstream foutx, fouty;
+  foutx.open("x.txt"); fouty.open("y.txt");
+  
+  for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
+    cvStartReadSeq(contourPtr, &reader);
+    N = contourPtr->total;
+    cout << N << endl;
+    //foutx << "CONTORNO X" << endl;
+
+    for (i = 0; i < N; ++i) {
+      CV_READ_SEQ_ELEM(p, reader);  	
+      foutx << p.x << endl;  		
+    }
+
+    for (i = 0; i < N; ++i) {
+      CV_READ_SEQ_ELEM(p, reader);  	
+      fouty << p.y << endl;  		
+    }
   	
   }
 
@@ -205,8 +231,9 @@ int main(int argc, char* argv[]) {
   cvReleaseImage(&thres);
   cvDestroyWindow(wndname);
 
-	print_contour2();
-	//print_contour();
-	return 0;
+  print_contour3();
+  //print_contour2();
+  //print_contour();
+  return 0;
 
 }
