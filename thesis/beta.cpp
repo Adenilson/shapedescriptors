@@ -26,7 +26,12 @@ History: vs 0.01 20-05-2005 Donne threshold
 	                            
 	 vs 0.08 22-07-2005 Clean up the code (unified window name 			            management/creation/deallocation)
 	 		    Exports contour found image to external file
-
+	 		    
+	 vs 0.09 02-08-2005 Calculate and mark the centroid.
+	 
+	 vs 0.10 03-08-2005 Calculate area, and write to std:io centroid
+	 
+	 
 To-do: User manual, integrate with other programs, maybe Laplace edge detection?
 
 *********************************************************************************/
@@ -54,8 +59,32 @@ IplImage *image = 0, *gray = 0, *thres = 0, *cnt_img = 0;
 char tbarname[] = "threshold";
 int edge_thresh = 250;
 const int n_windows = 3, levels = 1, thickness = 1;
-char *win_names[] = { "original", "threshold", "contour" };
+char *win_names[] = { "original", "threshold", "contour+centroid" };
 typedef enum { ORIGINAL, THRESH, CONTOUR } wnames;
+
+
+//My point type (if we are using OpenCV, defaults to CvPoint)
+#undef M2DPOINT
+//#define M2DPOINT
+//Aux struct to support a coordinate point (yes, I know that I could use
+//CvPoint2D32f but I need some more general struct)
+#ifdef M2DPOINT
+struct t_point{
+  float x;
+  float y;
+};
+typedef t_point m_point;
+#else
+typedef CvPoint2D32f m_point;
+#endif
+
+//Calculates centroid, must receive:
+//a) pointer to sequence that holds contours
+//b) pointer to a variable that will hold the allocated size of answer vector
+//
+//Returns a vector with coordinates of centroid of each contour
+m_point* calc_centroid(CvSeq *contour, int *size);
+
 
 //Do threshold in original image
 void threshold(int thresh) {
@@ -110,6 +139,25 @@ int contour_follow() {
   
 }
 
+//Calculate each contour area
+void calc_area(CvSeq *contour) {
+  CvSeqReader reader;
+  double area;
+  int counter = 0;
+   
+  for(; contour != NULL; contour = contour->h_next) {
+    counter++;
+    area = cvContourArea(contour);
+    if(area < 0)
+      area = -area;
+      
+    cout << "Contour " << counter << " area= " << area << endl;
+   
+  }  
+   
+}
+
+
 //This one marks the centroid of each found contour
 void mark_centroid(CvSeq *contour, IplImage *img) {
   CvPoint p;
@@ -129,6 +177,8 @@ void mark_centroid(CvSeq *contour, IplImage *img) {
     
     meanx /= contour->total;
     meany /= contour->total;
+    
+    //cout << "Centroid contour " << " x= " << meanx << "\t y= " << meany << endl;
     
     cvRectangle(img, cvPoint(meanx-1, meany-1), cvPoint(meanx+1, meany+1), 
 			CV_RGB(0, 0, 255), 1);
@@ -333,8 +383,62 @@ int main(int argc, char* argv[]) {
   cvReleaseImage(&cnt_img);   
   //Prints files with contour coordinates
   print_contour4(filename);
+  
+  //Calculate each contour area and centroid 
+  calc_area(contours);
+  
+  m_point *dumbo = NULL;
+  int thasize = 0;
+  dumbo = calc_centroid(contours, &thasize);
+  ofstream fout("centroid.txt");
+  for(int k = 0; k < thasize-1; ++k)
+    //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;
+    fout << dumbo[k].x << "     " << dumbo[k].y << endl;
+    
+  delete [] dumbo;
 
   return 0;
 }
 
+//Calculate centroid
+//void calc_centroid(CvSeq *contour, m_point *answer, int *size) {
+m_point* calc_centroid(CvSeq *contour, int *size) {
+
+  m_point *answer = NULL;
+  CvPoint p;
+  CvSeqReader reader;
+  CvSeq *temp = NULL;
+  float meanx, meany;
+  int counter = 0;
+    
+  //Discover how many contours we do have and allocate memory  
+  for(temp = contour; temp != NULL; temp = temp->h_next)
+    counter++;
+  
+  *size = counter;
+  answer = new m_point[counter];
+  
+  //Calculate each centroid
+  for (counter = 0; counter < *size; ++counter) {
+
+    cvStartReadSeq(contour, &reader);    
+    meanx = meany = 0;
+    
+    for(int i = 0; i < contour->total; i++) {
+      CV_READ_SEQ_ELEM(p, reader);
+      meanx += p.x;
+      meany += p.y;      
+    }         
+    
+    meanx /= contour->total;
+    meany /= contour->total;
+    answer[counter].x = meanx;
+    answer[counter].y = meany;    
+    //*(answer + counter)    
+    contour = contour->h_next;
+  }
+  
+  return answer;
+  
+}
 
