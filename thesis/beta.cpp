@@ -68,7 +68,7 @@ void threshold(int thresh) {
 }
 
 //Try to found the contour in thresholded image
-void contour_follow() {
+int contour_follow() {
   cout << "doing contourfollow" << endl;
   /*The function returns total number of retrieved contours
      int cvFindContours(IplImage *img, CvMemStorage *storage, CvSeq **firstcontour, int headersize, CvContourRetrivalMode mode,CvChainApproxMethod method)	        
@@ -106,6 +106,35 @@ void contour_follow() {
 
   cout << "Number of contours found: " << ncontours << endl;
   
+  return ncontours;
+  
+}
+
+//This one marks the centroid of each found contour
+void mark_centroid(CvSeq *contour, IplImage *img) {
+  CvPoint p;
+  CvSeqReader reader;
+  float meanx, meany;
+  
+  for (; contour != NULL; contour = contour->h_next) {
+    cvStartReadSeq(contour, &reader);
+    
+    meanx = meany = 0;
+    
+    for(int i = 0; i < contour->total; i++) {
+      CV_READ_SEQ_ELEM(p, reader);
+      meanx += p.x;
+      meany += p.y;      
+    }         
+    
+    meanx /= contour->total;
+    meany /= contour->total;
+    
+    cvRectangle(img, cvPoint(meanx-1, meany-1), cvPoint(meanx+1, meany+1), 
+			CV_RGB(0, 0, 255), 1);
+   
+  }
+      
 }
 
 //Show the contour stored in a sequence
@@ -115,6 +144,7 @@ void show_contour(void) {
   cvDrawContours(cnt_img, _contours, CV_RGB(255, 0, 0), CV_RGB(0, 255, 0),
 		 levels, thickness, CV_AA);
 
+  mark_centroid(_contours, cnt_img);
   cvShowImage(win_names[CONTOUR], cnt_img);	  
     
 }
@@ -198,7 +228,8 @@ void print_contour4(string img_file_name) {
     f_contour.open(filename.c_str());
 
     for (int i = 0; i < n_point; ++i) {
-      CV_READ_SEQ_ELEM(p, reader);  	
+      //CV_READ_SEQ_ELEM(p, reader);  	
+      CV_REV_READ_SEQ_ELEM(p, reader);
       f_contour << p.x << " " << p.y << endl;  		
     }
 
@@ -290,9 +321,6 @@ int main(int argc, char* argv[]) {
   temp = filename;
   pos = temp.size();
   pos -= 4;
-  //Why don't work?
-  //temp = temp(1, pos);
-  //temp = assign(temp, 1, pos);
   temp = temp.substr(0, pos);  
   temp += "contour";
   temp += ".png";
