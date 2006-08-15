@@ -104,94 +104,6 @@ void show_contour(void) {
     
 }
 
-
-void print_contour(void) {
-	CvSeq* contourPtr = contours;
-  CvSeqReader reader;
-  int N = contourPtr->total;
-  int i;
-  CvPoint p;
-  
-  for (; contourPtr != NULL; contourPtr = contourPtr->h_next)
-  {
-    cvStartReadSeq(contourPtr, &reader);
-    cout << "\nContorno" << endl;
-    //for (i = 0; i < N; ++point)
-    for (i = 0; i < N; ++i) {
-      CV_READ_SEQ_ELEM(p, reader);
-      //printf("%d %d \n", p.x, p.y);
-      cout << "\tx= " << p.x << "  y= " << p.y << endl;
-    }
-    
-  }
-
-}
-
-
-
-void print_contour2(void) {
-  CvSeq* contourPtr = contours;
-  CvSeqReader reader;
-  int N = contourPtr->total;
-  int i;
-  CvPoint p;
-  
-  for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
-    cvStartReadSeq(contourPtr, &reader);
-    cout << "\nContorno" << endl;
-    //for (i = 0; i < N; ++point)
-    cout << "\nPROXIMO X" << endl;
-    for (i = 0; i < N; ++i) {
-      CV_READ_SEQ_ELEM(p, reader);  	
-      cout << p.x << " ";  		
-    }
-    cout << "\nPROXIMO Y" << endl;
-    for (i = 0; i < N; ++i) {
-      CV_READ_SEQ_ELEM(p, reader);  	
-      cout << p.y << " ";  		
-    }
-
-  }
-
-}
-
-void sci_prog(int, string);
-
-void print_contour4(string img_file_name) {
-  CvSeq* contourPtr = contours;
-  CvSeqReader reader;
-  int n_point = 0;
-  int c_contour = 0;
-  CvPoint p;  
-  ofstream f_contour;
-  //stringstream i2s;
-  string filename; 
-
-  for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
-    cvStartReadSeq(contourPtr, &reader);
-    n_point = contourPtr->total;
-
-    cout << n_point << endl;
-    ++c_contour;
-    
-    stringstream i2s;
-    i2s << "_contour_" << c_contour << ".txt";
-    filename = img_file_name; filename += i2s.str();    
-    cout << filename << endl;
-    f_contour.open(filename.c_str());
-
-    for (int i = 0; i < n_point; ++i) {
-      CV_READ_SEQ_ELEM(p, reader);  	
-      f_contour << p.x << " " << p.y << endl;  		
-    }
-
-    f_contour.close();
-
-  }
-
-  sci_prog(c_contour, img_file_name);
-}
-
 void sci_prog(int n_contour, string img_file_name) {
 
   string filename, buffer;
@@ -232,7 +144,42 @@ void sci_prog(int n_contour, string img_file_name) {
   fout << prog[CONTOUR_LIST] << buffer << endl;
   fout << prog[PRG_BULK] << endl;
 
+}
 
+
+void print_contour4(string img_file_name) {
+  CvSeq* contourPtr = contours;
+  CvSeqReader reader;
+  int n_point = 0;
+  int c_contour = 0;
+  CvPoint p;  
+  ofstream f_contour;
+  //stringstream i2s;
+  string filename; 
+
+  for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
+    cvStartReadSeq(contourPtr, &reader);
+    n_point = contourPtr->total;
+
+    cout << n_point << endl;
+    ++c_contour;
+    
+    stringstream i2s;
+    i2s << "_contour_" << c_contour << ".txt";
+    filename = img_file_name; filename += i2s.str();    
+    cout << filename << endl;
+    f_contour.open(filename.c_str());
+
+    for (int i = 0; i < n_point; ++i) {
+      CV_READ_SEQ_ELEM(p, reader);  	
+      f_contour << p.x << " " << p.y << endl;  		
+    }
+
+    f_contour.close();
+
+  }
+
+  sci_prog(c_contour, img_file_name);
 }
 
 // define a trackbar callback
@@ -284,9 +231,7 @@ int main(int argc, char* argv[]) {
   cvDestroyWindow(wndname);
 
   print_contour4(filename);
-  //print_contour2();
-  //print_contour();
-  //sci_prog(5, "24esc.bmp");
+
   return 0;
 
 }
