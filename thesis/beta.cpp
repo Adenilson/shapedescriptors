@@ -21,8 +21,13 @@ History: vs 0.01 20-05-2005 Donne threshold
                            (e.g. prog.out figure.bmp 160)
                             Changed the scilab code, the display of contour images
                            are optional.
+                           
+	 vs 0.07 19-07-2005 Threshold controled by bar in threholded image window
+	                            
+	 vs 0.08 22-07-2005 Clean up the code (unified window name 			            management/creation/deallocation)
+	 		    Exports contour found image to external file
 
-To-do: Non interactive mode, a more user friendly GUI, User manual, integrate with other programs.
+To-do: User manual, integrate with other programs, maybe Laplace edge detection?
 
 *********************************************************************************/
 //Standard libraries
@@ -32,44 +37,41 @@ To-do: Non interactive mode, a more user friendly GUI, User manual, integrate wi
 //Class stringstream
 #include <sstream>
 #include <string.h>
+using namespace std;
 
 //OpenCv Stuff
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-using namespace std;
-
+//Stores the found contour
 CvSeq* contours = 0;
 CvMemStorage* storage = cvCreateMemStorage(0);
-
 //Our images
-IplImage *image = 0, *gray = 0, *thres = 0; 
-
+IplImage *image = 0, *gray = 0, *thres = 0, *cnt_img = 0; 
+//image = gray = thres = cnt_img = NULL;
 
 //Interface widgets names
-char wndname[] = "edge";  
 char tbarname[] = "threshold";
 int edge_thresh = 250;
+const int n_windows = 3, levels = 1, thickness = 1;
+char *win_names[] = { "original", "threshold", "contour" };
+typedef enum { ORIGINAL, THRESH, CONTOUR } wnames;
 
-
+//Do threshold in original image
 void threshold(int thresh) {
-  //cout << "doing threshold" << endl;
+
   cvZero(image);
-  //cvAdaptiveThreshold(gray, image, max, method, type, param);
-  
+  //cvAdaptiveThreshold(gray, image, max, method, type, param);  
   //cvThreshold( IplImage* src, IplImage* dst, float thresh, float maxvalue,
 	//CvThreshType type);
   cvThreshold(gray, thres, thresh, 256, CV_THRESH_BINARY_INV);		
 }
 
+//Try to found the contour in thresholded image
 void contour_follow() {
-	
   cout << "doing contourfollow" << endl;
   /*The function returns total number of retrieved contours
-     int cvFindContours(IplImage *img, CvMemStorage *storage, CvSeq **firstcontour, int headersize, 
-     	CvContourRetrivalMode mode,CvChainApproxMethod method)
-	    
-    
+     int cvFindContours(IplImage *img, CvMemStorage *storage, CvSeq **firstcontour, int headersize, CvContourRetrivalMode mode,CvChainApproxMethod method)	        
     Function parameters:
     img = single channel image IPL_DEPTH_8U
 
@@ -97,52 +99,37 @@ void contour_follow() {
 					   their ending points)
 		 d) CV_CHAIN_APPROX_TC89_L1 and _TC89_KCOS: are two versions of
 		                           Teh-Chin approximation algorithm.
-
-
-
   */
   int ncontours = cvFindContours(thres, storage, &contours, sizeof(CvContour),
 				 CV_RETR_LIST/*CV_RETR_TREE*/, CV_CHAIN_APPROX_NONE,
 				 cvPoint(0,0));
 
   cout << "Number of contours found: " << ncontours << endl;
-
-  // comment this out if you do not want approximation
-  //contours = cvApproxPoly(contours, sizeof(CvContour), storage, 
-  //		  CV_POLY_APPROX_DP, 3, 1 );
+  
 }
 
+//Show the contour stored in a sequence
 void show_contour(void) {
   CvSeq *_contours = contours;  
-  IplImage *cnt_img = cvCreateImage(cvSize(thres->width, thres->height), IPL_DEPTH_8U, 3);
-  cvZero(cnt_img);
-  
-  int levels = 1;
-  int thickness = 1;
+  cvZero(cnt_img);    
   cvDrawContours(cnt_img, _contours, CV_RGB(255, 0, 0), CV_RGB(0, 255, 0),
 		 levels, thickness, CV_AA);
 
-  //Create a window
-  cvNamedWindow("contour", 1);
-  cvShowImage("contour", cnt_img);	  
-  
-  //Clean memory
-  cvReleaseImage(&cnt_img);  
+  cvShowImage(win_names[CONTOUR], cnt_img);	  
     
 }
 
 // define a trackbar callback
 void on_trackbar(int h)
 {
-  //Espera...
-  //cout << "Starting on_track: " << h << "actual edge_thresh: " << edge_thresh << endl;
   threshold(h);
-  cvShowImage(wndname, thres);
+  cvShowImage(win_names[THRESH], thres);
   contour_follow();            
   show_contour();  
 }
 
-
+//Create a scilab program to handle exported text files with coordinates of
+//contours
 void sci_prog(int n_contour, string img_file_name) {
 
   string filename, buffer;
@@ -160,13 +147,13 @@ void sci_prog(int n_contour, string img_file_name) {
                            xset(\"window\", i); \n \
                            imshow(unfollow(x, y, size(Img))) \n \
                          end; \n \
+                         D = 1 \n \
                          endfunction;" };
 
   ofstream fout;
   fout.open("plotter.sci");
 
   fout << prog[IMG_NAME] << img_file_name << prog[STR_CLOS] << endl;
-  //buffer = prog[CONTOUR_LIST];
 
   for(int i = 1; i <= n_contour; ++i) {
        
@@ -185,10 +172,9 @@ void sci_prog(int n_contour, string img_file_name) {
   }
   fout << prog[CONTOUR_LIST] << buffer << endl;
   fout << prog[PRG_BULK] << endl;
-
 }
 
-
+//Write the scilab code into a text file
 void print_contour4(string img_file_name) {
   CvSeq* contourPtr = contours;
   CvSeqReader reader;
@@ -196,7 +182,6 @@ void print_contour4(string img_file_name) {
   int c_contour = 0;
   CvPoint p;  
   ofstream f_contour;
-  //stringstream i2s;
   string filename; 
 
   for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
@@ -224,6 +209,19 @@ void print_contour4(string img_file_name) {
   sci_prog(c_contour, img_file_name);
 }
 
+//Create window resources to display images
+void win_alloc(int num_win, char** names) {
+  for(int i = 0; i < num_win; ++i)
+    cvNamedWindow(names[i], 0);
+}
+
+//Deallocate window resources
+void win_free(int num_win, char** names) {
+  for(int i = 0; i < num_win; ++i)
+    cvDestroyWindow(names[i]);
+}
+
+//Main function (duh!)
 int main(int argc, char* argv[]) {
 
   char *filename = (argc >= 2 ? argv[1] : (char*)"escamas.bmp");
@@ -233,7 +231,6 @@ int main(int argc, char* argv[]) {
   }
   
   bool interactive = true;
-  //bool do_thres = false;
   int thres_value = 140;
   string temp;
   int pos = 0;
@@ -248,28 +245,35 @@ int main(int argc, char* argv[]) {
      }  
   }
   
-  //Convert to grayscale
+  //Allocate image structure resource
   gray = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
   thres = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
+  cnt_img = cvCreateImage(cvSize(thres->width, thres->height), IPL_DEPTH_8U, 3);
+  
+  //Convert to grayscale,
   cvCvtColor(image, gray, CV_BGR2GRAY);
   
+  //Non interactive mode
   if(!interactive) {
-  //Do the threshold
-  threshold(thres_value);
-  //Try to do contour following
-  contour_follow();        
+    //Do the threshold
+    threshold(thres_value);
+    //Try to do contour following
+    contour_follow();        
+    //Plots contours in a IplImage
+    cvDrawContours(cnt_img, contours, CV_RGB(255, 0, 0), CV_RGB(0, 255, 0),
+		 levels, thickness, CV_AA);
   }  
   else {
+    //Alocates window resources and reloads original image
+    win_alloc(n_windows, win_names);
+    image = cvLoadImage(filename, 1);    
     //Show original image
-    image = cvLoadImage(filename, 1);
-    cvNamedWindow("original", 1);
-    cvShowImage("original", image);	  
+    cvShowImage(win_names[ORIGINAL], image);	  
     
-    //Create a window
-    cvNamedWindow(wndname, 1);
-    //Create a toolbar 
-    cvCreateTrackbar(tbarname, wndname, &thres_value, edge_thresh, on_trackbar);
-    //Show the image
+    //Create a window and toolbar
+    cvNamedWindow(win_names[THRESH], 1);
+    cvCreateTrackbar(tbarname, win_names[THRESH], &thres_value, edge_thresh, on_trackbar);
+    //Activates callback (which shows the image)
     on_trackbar(thres_value);
      
     //Now show the contour
@@ -278,19 +282,31 @@ int main(int argc, char* argv[]) {
     // Wait for a key stroke; the same function arranges events processing
     cvWaitKey(0);              
     
+    //Frees allocated resources
+    win_free(n_windows, win_names);        
   }
+
+  //Save the image
+  temp = filename;
+  pos = temp.size();
+  pos -= 4;
+  //Why don't work?
+  //temp = temp(1, pos);
+  //temp = assign(temp, 1, pos);
+  temp = temp.substr(0, pos);  
+  temp += "contour";
+  temp += ".png";
+  cvSaveImage(temp.c_str(), cnt_img);
 
   //Free allocated resources
   cvReleaseImage(&image);
   cvReleaseImage(&gray);
   cvReleaseImage(&thres);
-  cvDestroyWindow(wndname);
-   
+  cvReleaseImage(&cnt_img);   
   //Prints files with contour coordinates
   print_contour4(filename);
 
   return 0;
-
 }
 
 
