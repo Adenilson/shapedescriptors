@@ -2,7 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
+//Class stringstream
+#include <sstream>
 
+//OpenCv Stuff
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
@@ -152,32 +155,36 @@ void print_contour2(void) {
 
 }
 
-void print_contour3(void) {
+void print_contour4(string img_file_name) {
   CvSeq* contourPtr = contours;
   CvSeqReader reader;
-  int N = 0;
-  int i;
-  CvPoint p;
-  
-  ofstream foutx, fouty;
-  foutx.open("x.txt"); fouty.open("y.txt");
-  
+  int n_point = 0;
+  int c_contour = 0;
+  CvPoint p;  
+  ofstream f_contour;
+  //stringstream i2s;
+  string filename; 
+
   for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
     cvStartReadSeq(contourPtr, &reader);
-    N = contourPtr->total;
-    cout << N << endl;
-    //foutx << "CONTORNO X" << endl;
+    n_point = contourPtr->total;
 
-    for (i = 0; i < N; ++i) {
+    cout << n_point << endl;
+    ++c_contour;
+    
+    stringstream i2s;
+    i2s << "_contour_" << c_contour << ".txt";
+    filename = img_file_name; filename += i2s.str();    
+    cout << filename << endl;
+    f_contour.open(filename.c_str());
+
+    for (int i = 0; i < n_point; ++i) {
       CV_READ_SEQ_ELEM(p, reader);  	
-      foutx << p.x << endl;  		
+      f_contour << p.x << " " << p.y << endl;  		
     }
 
-    for (i = 0; i < N; ++i) {
-      CV_READ_SEQ_ELEM(p, reader);  	
-      fouty << p.y << endl;  		
-    }
-  	
+    f_contour.close();
+
   }
 
 }
@@ -231,7 +238,7 @@ int main(int argc, char* argv[]) {
   cvReleaseImage(&thres);
   cvDestroyWindow(wndname);
 
-  print_contour3();
+  print_contour4(filename);
   //print_contour2();
   //print_contour();
   return 0;
