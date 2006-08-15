@@ -5,7 +5,7 @@
 /*
 Author: Adenilson Cavalcanti da Silva savagobr@yahoo.com
 License: GPL for non comercial use (contact author for other licensing contracts)
-History: 
+History:
     vs 0.01 09-08-2005 Wrote basic stuff: 2d point struct, 'norm' and 'distance' functions
 
     vs 0.02 18-10-2005 Added 3d point struct (mainly to support 'ratio_dist')
@@ -46,16 +46,16 @@ struct d3point {
 /* Example of use
   int x = 1, y = 2;
   float x1 = 10.1, y1 = 22.24;
-  
+
   t_point t1(x, y);
   t_point t2(x1, y1);
   t_point t3 = t1 + t2;
-  
+
   cout << t3.x << "\t" << t3.y << endl;
   t2 = t3;
-  t3 = (t3 - t1);  
+  t3 = (t3 - t1);
   cout << t3.x << "\t" << t3.y << endl;
-  t2 = t2 * t1;  
+  t2 = t2 * t1;
   cout << t2.x << "\t" << t2.y << endl;
   cout << t2[0] << "\t" << t2[1] << endl;
 */
@@ -65,23 +65,23 @@ struct t_point{
   NUM &x;
   NUM &y;
 
-  //ANSI C 99 complex type compatibility layer 
+  //ANSI C 99 complex type compatibility layer
   NUM &operator[](int i) {
-    return data[i];  
+    return data[i];
   }
-  
+
   //Simple math operators
   t_point &operator=(t_point &a) {
     x = a.x;
     y = a.y;
-    return *this;    
+    return *this;
   }
-  
+
   template<class TYPE>
   t_point &operator=(TYPE &a) {
     x = a.x;
     y = a.y;
-    return *this;    
+    return *this;
   }
 
 
@@ -89,51 +89,51 @@ struct t_point{
     t_point temp;
     temp.x = x - a.x;
     temp.y = y - a.y;
-    return temp;    
+    return temp;
   }
 
   t_point &operator+(t_point &a) {
     t_point temp;
     temp.x = x + a.x;
     temp.y = y + a.y;
-    return temp;    
+    return temp;
   }
 
   t_point &operator*(t_point &a) {
     t_point temp;
     temp.x = x * a.x;
     temp.y = y * a.y;
-    return temp;    
+    return temp;
   }
 
   t_point &operator/(t_point &a) {
     t_point temp;
     temp.x = x / a.x;
     temp.y = y / a.y;
-    return temp;    
+    return temp;
   }
-  
-  //Constructors (we should initialize the field x, y references 
+
+  //Constructors (we should initialize the field x, y references
   //to array of data)
   template <class TYPE>
   t_point(TYPE &xi, TYPE &yi): x(data[0]), y(data[1])  {
     x = xi;
-    y = yi;  
+    y = yi;
   }
-  
+
   t_point(t_point &p): x(data[0]), y(data[1]) {
-    x = p.x;  
+    x = p.x;
     y = p.y;
-  } 
-  
+  }
+
   t_point(int xi, int yi): x(data[0]), y(data[1]) {
     x = xi;
-    y = yi;  
+    y = yi;
   }
-  
+
   t_point(void): x(data[0]), y(data[1])
   {}
-    
+
 };
 #ifdef M2DPOINT
 typedef t_point m_point;
@@ -150,7 +150,7 @@ inline float norm(T1 x, T2 y) {
 //Distance of points
 template <class T1, class T2>
 inline float distance(T1 &a, T2 &b) {
-  return norm(float(a.x - b.x), float(a.y - b.y));  
+  return norm(float(a.x - b.x), float(a.y - b.y));
 }
 
 

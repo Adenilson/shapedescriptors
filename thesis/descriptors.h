@@ -21,7 +21,7 @@ m_point *points(CvSeq *obj, int *size);
 
 //Calculates centroid, parameters:
 //a) contour: pointer to sequence that holds contours
-//b) size: pointer to a variable that will hold the allocated size of 
+//b) size: pointer to a variable that will hold the allocated size of
 //answer vector
 //Returns a vector with coordinates of centroid of each contour (it does the
 // memory allocation!)
@@ -47,7 +47,7 @@ float *calc_area(CvSeq *contour, int *size);
 //21-08-2005
 float* calc_diam(CvSeq *contour, int *size);
 
-//Write a file with max_dist, min_dist and max/min distances from centroid, 
+//Write a file with max_dist, min_dist and max/min distances from centroid,
 //parameters:
 //a) contour: pointer to sequence that holds contours
 //b) centroid: vector with centroid coordinates of contours (use 'calc_centroid')

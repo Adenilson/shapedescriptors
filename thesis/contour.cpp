@@ -5,7 +5,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 void plot_contour(IplImage *target, CvSeq *contours, int thickness, int levels) {
 
-  //cvZero(target);    
+
   cvDrawContours(target, contours, CV_RGB(255, 0, 0), CV_RGB(0, 255, 0),
 		 levels, thickness, CV_AA);
 }
@@ -13,12 +13,13 @@ void plot_contour(IplImage *target, CvSeq *contours, int thickness, int levels) 
 
 //Try to found the contour in thresholded image
 //int contour_follow(IplImage *thres, CvMemStorage* storage, CvSeq **contours)
- 
+
 CvSeq *contour_follow(IplImage *thres, CvMemStorage* storage, int *ncontour) {
   cout << "doing contourfollow" << endl;
-  CvSeq *contours = NULL; 
+  CvSeq *contours = NULL;
   /*The function returns total number of retrieved contours
-     int cvFindContours(IplImage *img, CvMemStorage *storage, CvSeq **firstcontour, int headersize, CvContourRetrivalMode mode,CvChainApproxMethod method)	        
+     int cvFindContours(IplImage *img, CvMemStorage *storage, CvSeq **firstcontour, int headersize, CvContourRetrivalMode mode,CvChainApproxMethod method)
+
     Function parameters:
     img = single channel image IPL_DEPTH_8U
 
@@ -28,7 +29,7 @@ CvSeq *contour_follow(IplImage *thres, CvMemStorage* storage, int *ncontour) {
 
     headersize = size of sequence header. When used:
                  a) CV_CHAIN_CODE: >= sizeof(CvChain)
-		 b) otherwise    : >= sizeof(CvContour) 
+		 b) otherwise    : >= sizeof(CvContour)
 
     mode = Retrieval mode, can be:
                  a) CV_RETR_EXTERNAL : only the extreme outer contours (list)
@@ -52,9 +53,9 @@ CvSeq *contour_follow(IplImage *thres, CvMemStorage* storage, int *ncontour) {
 				 cvPoint(0,0));
 
   cout << "Number of contours found: " << *ncontour << endl;
-  
+
   return contours;
-  
+
 }
 //------------------------------------------------------------------------------
 
@@ -63,28 +64,28 @@ void mark_centroid(CvSeq *contour, IplImage *img) {
   CvPoint p;
   CvSeqReader reader;
   float meanx, meany;
-  
+
   for (; contour != NULL; contour = contour->h_next) {
     cvStartReadSeq(contour, &reader);
-    
+
     meanx = meany = 0;
-    
+
     for(int i = 0; i < contour->total; i++) {
       CV_READ_SEQ_ELEM(p, reader);
       meanx += p.x;
-      meany += p.y;      
-    }         
-    
+      meany += p.y;
+    }
+
     meanx /= contour->total;
     meany /= contour->total;
-    
+
     //cout << "Centroid contour " << " x= " << meanx << "\t y= " << meany << endl;
-    
-    cvRectangle(img, cvPoint(meanx-1, meany-1), cvPoint(meanx+1, meany+1), 
+
+    cvRectangle(img, cvPoint(meanx-1, meany-1), cvPoint(meanx+1, meany+1),
 			CV_RGB(0, 0, 255), 1);
-   
+
   }
-      
+
 }
 
 //------------------------------------------------------------------------------
