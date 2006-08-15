@@ -17,8 +17,10 @@ History:
     
     vs 0.03 04-06-2005 Succesfully access to CvSeq* points (thanks 
                       Sentillay, you guy rock!)
+                      
     vs 0.04 06-06-2005 Donne text file coordinates export, dinamically 
                       creation of Scilab script.
+                      
     vs 0.05 16-06-2005 Cleaned source code, commented it too.
 
     vs 0.06 05-07-2005 Added support to receive threshold at calling in CLI 
@@ -40,9 +42,11 @@ History:
     
     vs 0.11 09-08-2005 Finished 'breaking code' transition (all seems to work)
                        Wrote a makefile (neat!)
+                       
+    vs 0.12 21-08-2005 Added diameter calculus
     
     
-To-do: User manual, integrate with other programs, maybe Laplace edge detection?
+To-do: Voronoi tesselation, User manual, integrate with other programs, maybe Laplace edge detection?
 
 *********************************************************************************/
 //Standard libraries
@@ -62,6 +66,7 @@ To-do: User manual, integrate with other programs, maybe Laplace edge detection?
 #include "window.h"
 #include "vision.h"
 #include "output.h"
+#include "descriptors.h"
 
 
 using namespace std;
@@ -69,6 +74,9 @@ using namespace std;
 //Param threshold and external filename of contours centroid
 int edge_thresh = 250;
 char file_centroid[] = "centroid.txt";
+char file_area[] = "area.txt";
+char file_ratio[] = "ratio_centroid.txt";
+char file_diam[] = "diameter.txt";
 
 //Stores the found contour
 CvSeq* contours = 0;
@@ -85,6 +93,14 @@ typedef enum { ORIGINAL, THRESH, CONTOUR } wnames;
 //Write centroid of each contour in external file
 //ps: the last one is the external contour
 bool write_centroid(CvSeq* contours, char *filename);
+
+//Write area of each contour in external file
+//ps: idem
+bool write_area(CvSeq* contours, char *filename);
+
+//Write diameter of each contour in external file
+//ps: idem
+bool write_diam(CvSeq* contours, char *filename);
 
 //Show the contour stored in a sequence
 void show_contour(void);
@@ -159,7 +175,7 @@ int main(int argc, char* argv[]) {
     win_free(n_windows, win_names);        
   }
 
-  //Save the image  
+  //Save the image with contours
   temp = filename;
   pos = temp.size();
   pos -= 4;
@@ -173,15 +189,19 @@ int main(int argc, char* argv[]) {
   cvReleaseImage(&gray);
   cvReleaseImage(&thres);
   cvReleaseImage(&cnt_img);   
+  
   //Prints files with contour coordinates
   print_contour(filename, contours);
   
-  //Calculate each contour area and centroid 
-  calc_area(contours);
-  
   //Write external file with each contour centroid
   write_centroid(contours, file_centroid);  
+  
+  //Write external file with each contour area
+  write_area(contours, file_area);  
 
+  //Write external file with each contour diameter
+  write_diam(contours, file_diam);
+   
   return 0;
 }
 
@@ -206,17 +226,57 @@ void on_trackbar(int h)
   show_contour();  
 }
 
-
 bool write_centroid(CvSeq* contours, char *filename) {
   m_point *dumbo = NULL;
   bool result = true;
   int thasize = 0;
-  dumbo = calc_centroid(contours, &thasize);
-      
+  dumbo = calc_centroid(contours, &thasize);  
+  ratio_dist(contours, dumbo, thasize, file_ratio);      
+  
   try {
     ofstream fout(filename);
     for(int k = 0; k < thasize; ++k)
       fout << dumbo[k].x << "     " << dumbo[k].y << endl;  
+    //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
+  }
+  catch(...) {
+    delete [] dumbo;
+    return false;       
+  }
+  delete [] dumbo;
+  return result;  
+}
+
+bool write_area(CvSeq* contours, char *filename) {
+  float *dumbo = NULL;
+  bool result = true;
+  int thasize = 0;
+  dumbo = calc_area(contours, &thasize);
+      
+  try {
+    ofstream fout(filename);
+    for(int k = 0; k < thasize; ++k)
+      fout << dumbo[k] << endl;  
+    //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
+  }
+  catch(...) {
+    delete [] dumbo;
+    return false;       
+  }
+  delete [] dumbo;
+  return result;  
+}
+
+bool write_diam(CvSeq* contours, char *filename) {
+  float *dumbo = NULL;
+  bool result = true;
+  int thasize = 0;
+  dumbo = calc_diam(contours, &thasize);
+      
+  try {
+    ofstream fout(filename);
+    for(int k = 0; k < thasize; ++k)
+      fout << dumbo[k] << endl;  
     //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
   }
   catch(...) {

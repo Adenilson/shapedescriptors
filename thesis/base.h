@@ -13,8 +13,8 @@
 typedef enum { DEBUG, VERBOSE, QUIET } OPMODE;
 
 //My point type (if we are using OpenCV, defaults to CvPoint)
-#undef M2DPOINT
-//#define M2DPOINT
+#define M2DPOINT
+//#undef M2DPOINT
 
 //Aux struct to support a coordinate point (yes, I know that I could use
 //CvPoint2D32f or ANSI C 99 "complex" but I need some more general struct).
@@ -34,28 +34,34 @@ typedef enum { DEBUG, VERBOSE, QUIET } OPMODE;
   cout << t3.x << "\t" << t3.y << endl;
   t2 = t2 * t1;  
   cout << t2.x << "\t" << t2.y << endl;
+  cout << t2[0] << "\t" << t2[1] << endl;
 */
 struct t_point{
-  //typedef double NUM;
-  typedef float NUM;
-  /*
+  typedef double NUM;
+  //typedef float NUM;
   NUM data[2];
-  NUM &x = data[0];
-  NUM &y = data[1];
-  */
-  NUM x, y;
-  
-  /*
-  t_point &operator[](int i) {
+  NUM &x;
+  NUM &y;
+
+  //ANSI C 99 complex type compatibility layer 
+  NUM &operator[](int i) {
     return data[i];  
   }
-  */
   
+  //Simple math operators
   t_point &operator=(t_point &a) {
     x = a.x;
     y = a.y;
     return *this;    
   }
+  
+  template<class TYPE>
+  t_point &operator=(TYPE &a) {
+    x = a.x;
+    y = a.y;
+    return *this;    
+  }
+
 
   t_point &operator-(t_point &a) {
     t_point temp;
@@ -85,16 +91,25 @@ struct t_point{
     return temp;    
   }
   
+  //Constructors (we should initialize the field x, y references 
+  //to array of data)
   template <class TYPE>
-  t_point(TYPE &xi, TYPE &yi): x(xi), y(yi)
-  {}
+  t_point(TYPE &xi, TYPE &yi): x(data[0]), y(data[1])  {
+    x = xi;
+    y = yi;  
+  }
   
-  t_point(t_point &p) {
+  t_point(t_point &p): x(data[0]), y(data[1]) {
     x = p.x;  
     y = p.y;
   } 
   
-  t_point(void): x(0), y(0)
+  t_point(int xi, int yi): x(data[0]), y(data[1]) {
+    x = xi;
+    y = yi;  
+  }
+  
+  t_point(void): x(data[0]), y(data[1])
   {}
     
 };
@@ -105,24 +120,16 @@ typedef CvPoint2D32f m_point;
 #endif
 
 //Norm or magnitude of a vector
-inline float norm(float x, float y) {
-  return sqrt( (x * x) + (y * y) );
-}
-
-inline float norm(m_point a) {
-  //float result = 0;
-  //result = sqrt( (a.x * a.x) + (a.y * a.y) );
-  //return result;
-  return sqrt( (a.x * a.x) + (a.y * a.y) );
+template <class T1, class T2>
+inline float norm(T1 x, T2 y) {
+  return float(sqrt( (x * x) + (y * y) ));
 }
 
 //Distance of points
-inline float distance(m_point a, m_point b) {
-  //float result = 0;
-  //result = norm((a.x - b.y), (a.y - b.y));
-  return norm((a.x - b.y), (a.y - b.y));
+template <class T1, class T2>
+inline float distance(T1 &a, T2 &b) {
+  return norm(float(a.x - b.x), float(a.y - b.y));  
 }
-
 
 
 //------------------------------------------------------------------------------

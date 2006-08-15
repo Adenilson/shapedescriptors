@@ -9,7 +9,8 @@
 //void sci_prog(int n_contour, string img_file_name);
 
 //Write the scilab code into a text file
-void print_contour(char *img_file_name, CvSeq *contours);
+//vs 0.02: 21-08-2005
+void print_contour(char *img_file_name, CvSeq *contours, float diam_thres = 8);
 
 //------------------------------------------------------------------------------
 #endif

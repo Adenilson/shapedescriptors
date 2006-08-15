@@ -2,7 +2,7 @@
 
 //------------------------------------------------------------------------------
 #include "output.h"
-
+#include "descriptors.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -62,7 +62,7 @@ void sci_prog(int n_contour, string img_file_name) {
 //------------------------------------------------------------------------------
 //Write the scilab code into a text file
 //void print_contour4(string img_file_name, CvSeq *contours) {
-void print_contour(char *img_file_name, CvSeq *contours) {
+void print_contour(char *img_file_name, CvSeq *contours, float diam_thres) {
 
   CvSeq* contourPtr = contours;
   CvSeqReader reader;
@@ -71,6 +71,12 @@ void print_contour(char *img_file_name, CvSeq *contours) {
   CvPoint p;  
   ofstream f_contour;
   string filename; 
+  float *diameters = NULL;
+  int d_size = 0;
+  
+  diameters = calc_diam(contours, &d_size);
+  
+  
 
   for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
     cvStartReadSeq(contourPtr, &reader);
