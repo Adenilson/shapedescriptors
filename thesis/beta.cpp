@@ -17,7 +17,12 @@ History: vs 0.01 20-05-2005 Donne threshold
 	                   creation of Scilab script.
 	 vs 0.05 16-06-2005 Cleaned source code, commented it too.
 
-To-do: A more user friendly GUI, User manual, integrate with other programs.
+         vs 0.06 05-07-2005 Added support to receive threshold at calling in CLI 
+                           (e.g. prog.out figure.bmp 160)
+                            Changed the scilab code, the display of contour images
+                           are optional.
+
+To-do: Non interactive mode, a more user friendly GUI, User manual, integrate with other programs.
 
 *********************************************************************************/
 //Standard libraries
@@ -131,7 +136,9 @@ void sci_prog(int n_contour, string img_file_name) {
   string filename, buffer;
   typedef enum { IMG_NAME, STR_CLOS, LST_NXT, LST_END, CONTOUR_LIST, PRG_BULK } prog_step;
   const char* prog[] = {"img_name ='", "'", ",", ");", "contour_name= list(", 
-                        "stacksize(13000000); Img = imread(img_name); \n \
+                        "stacksize(13000000); \n \
+                         function D = showcontour() \n \
+                         Img = imread(img_name); \n \
                          n = size(contour_name); \n \
                          for i = 1:n, \n \
                            A = read(contour_name(i), -1, 2); \n \
@@ -140,7 +147,8 @@ void sci_prog(int n_contour, string img_file_name) {
                            y = A(1:row, 2:2); \n \
                            xset(\"window\", i); \n \
                            imshow(unfollow(x, y, size(Img))) \n \
-                         end" };
+                         end; \n \
+                         endfunction;" };
 
   ofstream fout;
   fout.open("plotter.sci");
