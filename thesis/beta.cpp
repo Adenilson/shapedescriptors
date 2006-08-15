@@ -155,6 +155,8 @@ void print_contour2(void) {
 
 }
 
+void sci_prog(int, string);
+
 void print_contour4(string img_file_name) {
   CvSeq* contourPtr = contours;
   CvSeqReader reader;
@@ -187,8 +189,51 @@ void print_contour4(string img_file_name) {
 
   }
 
+  sci_prog(c_contour, img_file_name);
 }
 
+void sci_prog(int n_contour, string img_file_name) {
+
+  string filename, buffer;
+  typedef enum { IMG_NAME, STR_CLOS, LST_NXT, LST_END, CONTOUR_LIST, PRG_BULK } prog_step;
+  const char* prog[] = {"img_name ='", "'", ",", ");", "contour_name= list(", 
+                        "Img = imread(img_name); \n \
+                         n = size(contour_name); \n \
+                         for i = 1:n, \n \
+                           A = read(contour_name(i), -1, 2); \n \
+                           [row, col] = size(A); \n \
+                           x = A(1:row, 1:1); \n \
+                           y = A(1:row, 2:2); \n \
+                           xset(\"window\", i); \n \
+                           imshow(unfollow(x, y, size(Img))) \n \
+                         end" };
+
+  ofstream fout;
+  fout.open("plotter.sci");
+
+  fout << prog[IMG_NAME] << img_file_name << prog[STR_CLOS] << endl;
+  //buffer = prog[CONTOUR_LIST];
+
+  for(int i = 1; i <= n_contour; ++i) {
+       
+    stringstream i2s;
+    i2s << "_contour_" << i << ".txt";
+    filename = img_file_name; filename += i2s.str(); 
+    buffer += prog[STR_CLOS];
+    buffer += filename;
+    buffer += prog[STR_CLOS];
+    
+    if(i < n_contour)
+      buffer += prog[LST_NXT];
+    else
+      buffer += prog[LST_END];
+    
+  }
+  fout << prog[CONTOUR_LIST] << buffer << endl;
+  fout << prog[PRG_BULK] << endl;
+
+
+}
 
 // define a trackbar callback
 void on_trackbar(int h)
@@ -241,6 +286,9 @@ int main(int argc, char* argv[]) {
   print_contour4(filename);
   //print_contour2();
   //print_contour();
+  //sci_prog(5, "24esc.bmp");
   return 0;
 
 }
+
+
