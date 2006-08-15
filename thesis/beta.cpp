@@ -49,17 +49,17 @@ IplImage *image = 0, *gray = 0, *thres = 0;
 //Interface widgets names
 char wndname[] = "edge";  
 char tbarname[] = "threshold";
-int edge_thresh = 1;
+int edge_thresh = 250;
 
 
-void threshold(int thresh = 140) {
-  cout << "doing threshold" << endl;
+void threshold(int thresh) {
+  //cout << "doing threshold" << endl;
   cvZero(image);
   //cvAdaptiveThreshold(gray, image, max, method, type, param);
   
   //cvThreshold( IplImage* src, IplImage* dst, float thresh, float maxvalue,
 	//CvThreshType type);
-  cvThreshold(gray, thres, thresh, 200, CV_THRESH_BINARY_INV);		
+  cvThreshold(gray, thres, thresh, 256, CV_THRESH_BINARY_INV);		
 }
 
 void contour_follow() {
@@ -130,6 +130,18 @@ void show_contour(void) {
   cvReleaseImage(&cnt_img);  
     
 }
+
+// define a trackbar callback
+void on_trackbar(int h)
+{
+  //Espera...
+  //cout << "Starting on_track: " << h << "actual edge_thresh: " << edge_thresh << endl;
+  threshold(h);
+  cvShowImage(wndname, thres);
+  contour_follow();            
+  show_contour();  
+}
+
 
 void sci_prog(int n_contour, string img_file_name) {
 
@@ -212,60 +224,69 @@ void print_contour4(string img_file_name) {
   sci_prog(c_contour, img_file_name);
 }
 
-// define a trackbar callback
-void on_trackbar(int h)
-{
-  //Espera...
-  cout << "Starting on_track" << endl;
-  cvShowImage(wndname, thres);
-}
-
 int main(int argc, char* argv[]) {
 
   char *filename = (argc >= 2 ? argv[1] : (char*)"escamas.bmp");
-
   if( (image = cvLoadImage( filename, 1)) == 0 ) {
     cout << "Can't find image \"escamas.bmp\". Please supply the image." << endl;
     return -1;
   }
-	
-  //Show original image
-  cvNamedWindow("original", 1);
-  cvShowImage("original", image);	  
+  
+  bool interactive = true;
+  //bool do_thres = false;
+  int thres_value = 140;
+  string temp;
+  int pos = 0;
+  
+  for(int i = 2; i < argc; ++i) {
+     temp = argv[i];
+     if(temp == "batch")
+        interactive = false;
+     else if(i == 2) {
+        thres_value = atoi(argv[2]);
+        //do_thres = true;        
+     }  
+  }
   
   //Convert to grayscale
   gray = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
   thres = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
   cvCvtColor(image, gray, CV_BGR2GRAY);
-
-  //Create a window
-  cvNamedWindow(wndname, 1);
-
-  //Create a toolbar 
-  cvCreateTrackbar(tbarname, wndname, &edge_thresh, 100, on_trackbar);
-
-  //Do the threshold
-  if(argc == 3)
-    threshold(atoi(argv[2]));
-  else
-    threshold();	
-
-  //Show the image
-  on_trackbar(0);
-
-  //Try to do contour following
-  contour_follow();
-  //Now show the contour
-  show_contour();
   
+  if(!interactive) {
+  //Do the threshold
+  threshold(thres_value);
+  //Try to do contour following
+  contour_follow();        
+  }  
+  else {
+    //Show original image
+    image = cvLoadImage(filename, 1);
+    cvNamedWindow("original", 1);
+    cvShowImage("original", image);	  
+    
+    //Create a window
+    cvNamedWindow(wndname, 1);
+    //Create a toolbar 
+    cvCreateTrackbar(tbarname, wndname, &thres_value, edge_thresh, on_trackbar);
+    //Show the image
+    on_trackbar(thres_value);
+     
+    //Now show the contour
+    show_contour();
+    
+    // Wait for a key stroke; the same function arranges events processing
+    cvWaitKey(0);              
+    
+  }
 
-  // Wait for a key stroke; the same function arranges events processing
-  cvWaitKey(0);
+  //Free allocated resources
   cvReleaseImage(&image);
   cvReleaseImage(&gray);
   cvReleaseImage(&thres);
   cvDestroyWindow(wndname);
-
+   
+  //Prints files with contour coordinates
   print_contour4(filename);
 
   return 0;
