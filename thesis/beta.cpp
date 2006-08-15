@@ -1,4 +1,26 @@
+/*******************************************************************************
+Purpose: 
+Contour extractor, this program retrieves a contour from a threholdable
+image. Algorithm steps:
+a) Threhold the image
+b) Contour following
+c) Wrote text files with coordinates of contours (x, y)
+d) Create a Scilab script to display each retrieved contour
 
+Author: Adenilson Cavalcanti da Silva savagobr@yahoo.com
+License: GPL for non comercial use (contact author for other licensing contracts)
+History: vs 0.01 20-05-2005 Donne threshold
+         vs 0.02 29-05-2005 Donne contour following
+	 vs 0.03 04-06-2005 Succesfully access to CvSeq* points (thanks 
+	                   Sentillay, you guy rock!)
+	 vs 0.04 06-06-2005 Donne text file coordinates export, dinamically 
+	                   creation of Scilab script.
+	 vs 0.05 16-06-2005 Cleaned source code, commented it too.
+
+To-do: A more user friendly GUI, User manual, integrate with other programs.
+
+*********************************************************************************/
+//Standard libraries
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -11,10 +33,6 @@
 
 using namespace std;
 
-
-//Contour following requirements?
-#define w 500
-int levels = 3;
 CvSeq* contours = 0;
 CvMemStorage* storage = cvCreateMemStorage(0);
 
@@ -23,8 +41,8 @@ IplImage *image = 0, *gray = 0, *thres = 0;
 
 
 //Interface widgets names
-char wndname[] = "Edge";  
-char tbarname[] = "Threshold";
+char wndname[] = "edge";  
+char tbarname[] = "threshold";
 int edge_thresh = 1;
 
 
@@ -32,6 +50,9 @@ void threshold() {
   cout << "doing threshold" << endl;
   cvZero(image);
   //cvAdaptiveThreshold(gray, image, max, method, type, param);
+  
+  //cvThreshold( IplImage* src, IplImage* dst, float thresh, float maxvalue,
+	//CvThreshType type);
   cvThreshold(gray, thres, 10, 200, CV_THRESH_BINARY_INV);		
 }
 
@@ -199,7 +220,10 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 	
-
+  //Show original image
+  cvNamedWindow("original", 1);
+  cvShowImage("original", image);	  
+  
   //Convert to grayscale
   gray = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
   thres = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
