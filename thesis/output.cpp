@@ -62,7 +62,7 @@ void sci_prog(int n_contour, string img_file_name) {
 //------------------------------------------------------------------------------
 //Write the scilab code into a text file
 //void print_contour4(string img_file_name, CvSeq *contours) {
-void print_contour(char *img_file_name, CvSeq *contours, float diam_thres) {
+void print_contour(char *img_file_name, CvSeq *contours, bool mthreshold, float diam_thres) {
 
   CvSeq* contourPtr = contours;
   CvSeqReader reader;
@@ -74,11 +74,40 @@ void print_contour(char *img_file_name, CvSeq *contours, float diam_thres) {
   float *diameters = NULL;
   int d_size = 0;
   
-  diameters = calc_diam(contours, &d_size);  
+  if(mthreshold) {
+    diameters = calc_diam(contours, &d_size);  
 
-  for (int i = 0; i < d_size; ++i)
-    if(diameters[i] > diam_thres) {
+    for (int i = 0; i < d_size; ++i)    
+      if(diameters[i] >= diam_thres) {
+    //if(true) {
   
+        cvStartReadSeq(contourPtr, &reader);
+        n_point = contourPtr->total;
+  
+        cout << n_point << endl;
+        ++c_contour;
+    
+        stringstream i2s;
+        i2s << "_contour_" << c_contour << ".txt";
+        filename = img_file_name; filename += i2s.str();    
+        cout << filename << endl;
+        f_contour.open(filename.c_str());
+ 
+        for (int i = 0; i < n_point; ++i) {
+          CV_READ_SEQ_ELEM(p, reader);  	
+          //CV_REV_READ_SEQ_ELEM(p, reader);
+          f_contour << p.x << " " << p.y << endl;  		
+        }
+
+        f_contour.close();
+        contourPtr = contourPtr->h_next;
+      
+      }
+      delete [] diameters;
+  }
+  else {
+    
+    for(; contourPtr != NULL; contourPtr = contourPtr->h_next) {
       cvStartReadSeq(contourPtr, &reader);
       n_point = contourPtr->total;
 
@@ -90,7 +119,7 @@ void print_contour(char *img_file_name, CvSeq *contours, float diam_thres) {
       filename = img_file_name; filename += i2s.str();    
       cout << filename << endl;
       f_contour.open(filename.c_str());
- 
+
       for (int i = 0; i < n_point; ++i) {
         CV_READ_SEQ_ELEM(p, reader);  	
         //CV_REV_READ_SEQ_ELEM(p, reader);
@@ -98,12 +127,14 @@ void print_contour(char *img_file_name, CvSeq *contours, float diam_thres) {
       }
 
       f_contour.close();
-      contourPtr = contourPtr->h_next;
-      
-    }
-    
+
+    }  
+  
+  
+  }    
   
   sci_prog(c_contour, img_file_name);
+  
 }
 //------------------------------------------------------------------------------
 

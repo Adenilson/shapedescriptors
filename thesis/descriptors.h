@@ -55,6 +55,13 @@ float* calc_diam(CvSeq *contour, int *size);
 //d) filename: of file that will hold the descriptors
 bool ratio_dist(CvSeq *contour, m_point* centroid, int size, char *filename);
 
+//Calculate max/min, max and min distances of centroids ('centroid') in each scale of
+//'contour' sequence. Parameters:
+//a) contour: pointer to sequence that holds contours
+//b) centroid: vector with centroid coordinates of contours (use 'calc_centroid')
+//c) size: the size of vector
+//d) distances: pre-allocated vector of structure with 3 fields (x, y, z)
+void ratio_dist(CvSeq *contour, m_point* centroid, int size, d3point *distances);
 
 
 

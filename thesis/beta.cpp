@@ -44,6 +44,9 @@ History:
                        Wrote a makefile (neat!)
                        
     vs 0.12 21-08-2005 Added diameter calculus
+    	    22-08-2005 Added dilation/erosion for closing of contours
+    
+   
     
     
 To-do: Voronoi tesselation, User manual, integrate with other programs, maybe Laplace edge detection?
@@ -139,6 +142,7 @@ int main(int argc, char* argv[]) {
   
   //Convert to grayscale,
   cvCvtColor(image, gray, CV_BGR2GRAY);
+
   /*
   cvNamedWindow("gray", 1);
   cvShowImage("gray", gray);
@@ -147,6 +151,9 @@ int main(int argc, char* argv[]) {
   if(!interactive) {
     //Do the threshold    
     threshold(thres_value, gray, thres);
+    //Morphology operations to ensure closing of contour
+    dilation(thres, thres);
+    erosion(thres, thres);
     //Try to do contour following    
     contours = contour_follow(thres, storage, &num_cell);              
     //Plots contours in a IplImage
@@ -190,8 +197,9 @@ int main(int argc, char* argv[]) {
   cvReleaseImage(&thres);
   cvReleaseImage(&cnt_img);   
   
-  //Prints files with contour coordinates
-  print_contour(filename, contours);
+  //Prints files with contour coordinates, we want diameter threshold
+  //(only contours with diameter greater than 7 pixels)
+  print_contour(filename, contours, true, 7);
   
   //Write external file with each contour centroid
   write_centroid(contours, file_centroid);  
@@ -220,6 +228,8 @@ void show_contour(void) {
 void on_trackbar(int h)
 {
   threshold(h, gray, thres);
+  dilation(thres, thres);//, 1, 2);
+  erosion(thres, thres);//, 1, 2);
   cvShowImage(win_names[THRESH], thres);
   //Try to found the contour in thresholded image and display it    
   contours = contour_follow(thres, storage, &num_cell);              

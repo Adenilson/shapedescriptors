@@ -10,6 +10,56 @@
 using namespace std;
 //------------------------------------------------------------------------------
 
+void ratio_dist(CvSeq *contour, m_point* centroid, int size, d3point *distances) {
+    
+  bool result;
+  float max, min, idist;  
+  int n_point, n_contours;
+  m_point jcoord;
+  CvSeqReader reader;
+  CvPoint p;  
+
+  
+  //Test if the size of vector with centroids is the same as the number of
+  //contours inside the sequence
+  CvSeq *temp = contour;
+  n_contours = 0;
+  for(; temp != NULL; temp = temp->h_next)
+    ++n_contours;
+  if(n_contours != size)
+    return;    
+    
+  //Calculate each distance in n-ith contour
+  
+    for(int i = 0; i < size; ++i) {
+      cvStartReadSeq(contour, &reader);      
+      n_point = contour->total;      
+      
+      //Initializes the distances with first coordinate
+      CV_READ_SEQ_ELEM(p, reader)
+      max = min = distance(p, centroid[i]);     
+      
+      //Run over all contour and calculate distance to centroid
+      for (int j = 0; j < n_point; ++j) {
+        CV_READ_SEQ_ELEM(p, reader);  	
+        jcoord = centroid[i];
+        idist = distance(p, jcoord);
+        //idist = norm(p.x - jcoord.x, p.y - jcoord.y);
+        if(max < idist)
+          max = idist;
+          
+        if(min > idist)
+          min = idist;         
+        
+      }      
+    
+      distances[i].x = max/min;
+      distances[i].y = max;
+      distances[i].z = min;
+      contour = contour->h_next;    
+    }
+  
+}
 //------------------------------------------------------------------------------
 
 //Write a file with max_dist, min_dist and max/min distances from centroid

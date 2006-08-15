@@ -6,9 +6,34 @@
 
 //------------------------------------------------------------------------------
 
+const int element_shape = CV_SHAPE_RECT;
+//Implements erosion 
+//22-08-2005
+inline void erosion(IplImage *src, IplImage *dest, int times = 1, int pos = 1) {
+  IplConvKernel* element = NULL;
+  element = cvCreateStructuringElementEx(pos*2+1, pos*2+1, pos, pos, 
+  	element_shape, 0);
+  cvErode(src, dest, element, times);
+  cvReleaseStructuringElement(&element);
+  
+}
+
+//Implements dilation
+//22-08-2005
+inline void dilation(IplImage *src, IplImage *dest, int times = 1, int pos = 1) {
+
+  IplConvKernel* element = NULL;
+  element = cvCreateStructuringElementEx(pos*2+1, pos*2+1, pos, pos, 
+  	element_shape, 0 );  	
+  cvDilate(src, dest, element, times);
+  cvReleaseStructuringElement(&element);
+
+}
+
+
 //------------------------------------------------------------------------------
 //Do threshold in original image
-void threshold(int threshold, IplImage *gray, IplImage *thres) {
+inline void threshold(int threshold, IplImage *gray, IplImage *thres) {
 
   //cvZero(gray);
   //cvAdaptiveThreshold(gray, image, max, method, type, param);  

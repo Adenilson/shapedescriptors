@@ -2,6 +2,15 @@
 #ifndef _BASE_H_
 #define _BASE_H_
 //------------------------------------------------------------------------------
+/*
+Author: Adenilson Cavalcanti da Silva savagobr@yahoo.com
+License: GPL for non comercial use (contact author for other licensing contracts)
+History: 
+    vs 0.01 09-08-2005 Wrote basic stuff: 2d point struct, 'norm' and 'distance' functions
+
+    vs 0.02 18-10-2005 Added 3d point struct (mainly to support 'ratio_dist')
+
+*/
 //math stuff
 #include <math.h>
 
@@ -15,6 +24,20 @@ typedef enum { DEBUG, VERBOSE, QUIET } OPMODE;
 //My point type (if we are using OpenCV, defaults to CvPoint)
 #define M2DPOINT
 //#undef M2DPOINT
+
+//typedef float NUM;
+typedef double NUM;
+
+
+//Simple struct to support a record with 3 fields
+struct d3point {
+  NUM x, y, z;
+
+  d3point(void): x(0), y(0), z(0)
+  {}
+
+};
+
 
 //Aux struct to support a coordinate point (yes, I know that I could use
 //CvPoint2D32f or ANSI C 99 "complex" but I need some more general struct).
@@ -37,8 +60,7 @@ typedef enum { DEBUG, VERBOSE, QUIET } OPMODE;
   cout << t2[0] << "\t" << t2[1] << endl;
 */
 struct t_point{
-  typedef double NUM;
-  //typedef float NUM;
+
   NUM data[2];
   NUM &x;
   NUM &y;
