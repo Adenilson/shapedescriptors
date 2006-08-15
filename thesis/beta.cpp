@@ -46,7 +46,7 @@ History:
     vs 0.12 21-08-2005 Added diameter calculus
     	    22-08-2005 Added dilation/erosion for closing of contours
     
-   
+    vs 0.13 18-10-2005 Only prints descriptors of scales which diameter is bigger than a give threshold
     
     
 To-do: Voronoi tesselation, User manual, integrate with other programs, maybe Laplace edge detection?
@@ -81,6 +81,9 @@ char file_area[] = "area.txt";
 char file_ratio[] = "ratio_centroid.txt";
 char file_diam[] = "diameter.txt";
 
+//Minimum diameter
+float diam_thres = 7;
+
 //Stores the found contour
 CvSeq* contours = 0;
 CvMemStorage* storage = cvCreateMemStorage(0);
@@ -95,15 +98,17 @@ typedef enum { ORIGINAL, THRESH, CONTOUR } wnames;
 
 //Write centroid of each contour in external file
 //ps: the last one is the external contour
-bool write_centroid(CvSeq* contours, char *filename);
+bool write_centroid(CvSeq* contours, char *filename, float diam, float *diameters);
+
 
 //Write area of each contour in external file
 //ps: idem
-bool write_area(CvSeq* contours, char *filename);
+bool write_area(CvSeq* contours, char *filename, float diam, float *diameters);
 
 //Write diameter of each contour in external file
 //ps: idem
-bool write_diam(CvSeq* contours, char *filename);
+//bool write_diam(CvSeq* contours, char *filename, float diam);
+bool write_diam(CvSeq* contours, char *filename, float diam, float *diameters, int thasize);
 
 //Show the contour stored in a sequence
 void show_contour(void);
@@ -124,6 +129,8 @@ int main(int argc, char* argv[]) {
   int thres_value = 160;
   string temp;
   int pos = 0;
+  float *diameters = NULL;
+  int d_size = 0;
   
   for(int i = 2; i < argc; ++i) {
     temp = argv[i];
@@ -199,16 +206,18 @@ int main(int argc, char* argv[]) {
   
   //Prints files with contour coordinates, we want diameter threshold
   //(only contours with diameter greater than 7 pixels)
-  print_contour(filename, contours, true, 7);
+  print_contour(filename, contours, true, diam_thres);
   
-  //Write external file with each contour centroid
-  write_centroid(contours, file_centroid);  
-  
-  //Write external file with each contour area
-  write_area(contours, file_area);  
 
+  //Calculates all diameters. Its the threshold descriptor for others!
+  diameters = calc_diam(contours, &d_size); 
+
+  //Write external file with each contour centroid
+  write_centroid(contours, file_centroid, diam_thres, diameters);    
+  //Write external file with each contour area
+  write_area(contours, file_area, diam_thres, diameters);  
   //Write external file with each contour diameter
-  write_diam(contours, file_diam);
+  write_diam(contours, file_diam, diam_thres, diameters, d_size);
    
   return 0;
 }
@@ -236,17 +245,24 @@ void on_trackbar(int h)
   show_contour();  
 }
 
-bool write_centroid(CvSeq* contours, char *filename) {
+//Write max/min, max & min distances from centroid of each contour in external file
+//ps: the last one is the external contour
+bool write_dist(CvSeq* contours, char *filename, float diam, float *diameters, m_point *centroid, int size);
+bool write_centroid(CvSeq* contours, char *filename, float diam, float *diameters) {
   m_point *dumbo = NULL;
   bool result = true;
   int thasize = 0;
+
   dumbo = calc_centroid(contours, &thasize);  
-  ratio_dist(contours, dumbo, thasize, file_ratio);      
+  write_dist(contours, file_ratio, diam, diameters, dumbo, thasize);
+  //ratio_dist(contours, dumbo, thasize, file_ratio);      
+  
   
   try {
     ofstream fout(filename);
     for(int k = 0; k < thasize; ++k)
-      fout << dumbo[k].x << "     " << dumbo[k].y << endl;  
+      if(diameters[k] >= diam)
+	fout << dumbo[k].x << "     " << dumbo[k].y << endl;  
     //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
   }
   catch(...) {
@@ -257,7 +273,7 @@ bool write_centroid(CvSeq* contours, char *filename) {
   return result;  
 }
 
-bool write_area(CvSeq* contours, char *filename) {
+bool write_area(CvSeq* contours, char *filename, float diam, float *diameters) {
   float *dumbo = NULL;
   bool result = true;
   int thasize = 0;
@@ -266,7 +282,8 @@ bool write_area(CvSeq* contours, char *filename) {
   try {
     ofstream fout(filename);
     for(int k = 0; k < thasize; ++k)
-      fout << dumbo[k] << endl;  
+      if(diameters[k] >= diam)
+	fout << dumbo[k] << endl;  
     //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
   }
   catch(...) {
@@ -277,16 +294,17 @@ bool write_area(CvSeq* contours, char *filename) {
   return result;  
 }
 
-bool write_diam(CvSeq* contours, char *filename) {
+bool write_diam(CvSeq* contours, char *filename, float diam, float *diameters, int thasize) {
   float *dumbo = NULL;
   bool result = true;
-  int thasize = 0;
-  dumbo = calc_diam(contours, &thasize);
+  //int thasize = 0;
+  //dumbo = calc_diam(contours, &thasize);
       
   try {
     ofstream fout(filename);
     for(int k = 0; k < thasize; ++k)
-      fout << dumbo[k] << endl;  
+      if(diameters[k] >= diam)
+	fout << diameters[k] << endl;  
     //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
   }
   catch(...) {
@@ -297,3 +315,31 @@ bool write_diam(CvSeq* contours, char *filename) {
   return result;  
 }
 
+
+//Write centroid of each contour in external file
+//ps: the last one is the external contour
+bool write_dist(CvSeq* contours, char *filename, float diam, float *diameters, m_point *centroid, int size) {
+
+  d3point *distances = NULL;
+  bool result = true;
+
+  distances = new d3point[size];
+  ratio_dist(contours, centroid, size, distances);
+  //calc_centroid(contours, &thasize);  
+  //ratio_dist(contours, dumbo, thasize, file_ratio);      
+  
+  try {
+    ofstream fout(filename);
+    for(int k = 0; k < size; ++k)
+      if(diameters[k] >= diam)
+	fout << distances[k].x << "     " << distances[k].y << "     " << distances[k].z << endl;  
+    //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
+  }
+  catch(...) {
+    delete [] distances;
+    return false;       
+  }
+  delete [] distances;
+  return result;  
+
+}
