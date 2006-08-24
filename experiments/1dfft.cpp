@@ -70,13 +70,12 @@ void fourier_complex(float *data, int count) {
 int main (void){
 
 	//Some vector samples
-  int count = 4;
-  float v[] = { 1, 1, 1, 1 };
-  //float v[] = { 1, 2, 3, 4, 5};
-  //float v[] = { 11, 222, 3333, 4444, 5555, 6666};
+	int count = 4;
+	float v[] = { 1, 1, 1, 1 };
+	//float v[] = { 1, 2, 3, 4, 5};
+	//float v[] = { 11, 222, 3333, 4444, 5555, 6666};
 
-  //inverse_mffm(v, count);
-  fourier_complex(v, count);
+	fourier_complex(v, count);
 
-  return 0;
+	return 0;
 }
