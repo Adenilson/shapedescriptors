@@ -2,16 +2,16 @@
 #include <iostream>
 #include <complex>
 #include <valarray>
-
-using namespace std;
-
+#include <complex.h>
 void check4math(void);
+void test4ccomplex(void);
 
 int main(int argc, char* argv[])
 {
-	complex<double> c1(4.0, 3.0);
-	complex<float> c2(polar(5.0, 0.75));
-	complex<float> c3(0, 1);
+	std::complex<double> c1(4.0, 3.0);
+	std::complex<float> c2(std::polar(5.0, 0.75));
+	std::complex<float> c3(0, 1);
+
 
 
 	//Field access??
@@ -20,34 +20,47 @@ int main(int argc, char* argv[])
 	c3.complex(1);
 */
 	//Utility functions
-	cout << "c1: " << c1 << endl;
-	cout << "c2: " << c2 << endl;
-	cout << "c3: " << c3 << endl;
+	std::cout << "c1: " << c1 << std::endl;
+	std::cout << "c2: " << c2 << std::endl;
+	std::cout << "c3: " << c3 << std::endl;
 
 	//ps: magnitude = sqrt(a^2 + b^2)
 	//    norma = a^2 + b^2
-	cout << "c1 magnitude: " << abs(c1) << "\n" <<
+	std::cout << "c1 magnitude: " << abs(c1) << "\n" <<
 		"squared magnitude: " << norm(c1) << "\n" <<
-		"phase angle: " << arg(c1) << endl;
+		"phase angle: " << arg(c1) << std::endl;
 
-	cout << "c1 conjugated: " << conj(c1) << endl;
+	std::cout << "c1 conjugated: " << conj(c1) << std::endl;
 
 	//Operations
-	cout << "4.4 + c1 * 1.8: " << 4.4 + c1 * 1.8 << endl;
-	cout << "c1^2: " << c3 * c3 << endl;
-	cout << "sqrt(c1^2): " << sqrt(c3 * c3) << endl;
+	std::cout << "4.4 + c1 * 1.8: " << 4.4 + c1 * 1.8 << std::endl;
+	std::cout << "c3^2: " << c3 * c3 << std::endl;
+	std::cout << "sqrt(c3^2): " << sqrt(c3 * c3) << std::endl;
 	if (c3 == sqrt(c3 * c3))
-		cout << "Fine.\n";
+		std::cout << "Fine.\n";
 	else
-		cout << "damned!\n";
+		std::cout << "damned!\n";
 
 	check4math();
-
+	test4ccomplex();
 	return 0;
 }
 
 void check4math(void)
 {
 	float i = sqrt(25.333);
-	cout << i << endl;
+	std::cout << i << std::endl;
+}
+
+void test4ccomplex(void)
+{
+	std::cout << "gcc 3.3 && 4.0 support for complex is broken!\n";
+
+	_Complex double c_complex;
+/*
+	c_complex = cexp(I * 1);
+
+	std::cout << "real: " << creal(c_complex)
+		  << "imaginary: " << cimag(c_complex) << std::endl;
+*/
 }
