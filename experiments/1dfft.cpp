@@ -19,6 +19,9 @@
 #include <iostream>
 #include <fftw3.h>
 
+/* Use it to define memory allocation */
+#define CPP_MALLOC
+
 using namespace std;
 
 template <class type>
@@ -35,15 +38,16 @@ void fourier_complex(float *data, int count) {
 	fftw_complex *in, *out, *inver;
 	fftw_plan fwdPlan, invPlan;
 
+#ifdef CPP_MALLOC
 	in = new fftw_complex[count];
 	out = new fftw_complex[count];
 	inver = new fftw_complex[count];
-
-	/* Doesnt compile at all!
+#else
+	/* Doesnt compile at all! */
 	in = (*fftw_complex) fftw_malloc(sizeof(fftw_complex) * count);
 	out = (*fftw_complex) fftw_malloc(sizeof(fftw_complex) * count);
 	inver = (*fftw_complex) fftw_malloc(sizeof(fftw_complex) * count);
-	*/
+#endif
 
 	//Copies original real data, set to zero imaginary part
 	for(int i = 0; i < count; ++i) {
@@ -63,8 +67,12 @@ void fourier_complex(float *data, int count) {
 	//See fftw manual "4.7 What FFTW Really Computes" p.44
 	printc(inver, count, "\nInverse fourier transf. (not normalized!)");
 
-	//fftw_free(in); fftw_free(out); fftw_free(inver);
+#ifdef CPP_MALLOC
 	delete [] in; delete [] out; delete [] inver;
+#else
+	fftw_free(in); fftw_free(out); fftw_free(inver);
+#endif
+
 	fftw_destroy_plan(fwdPlan); fftw_destroy_plan(invPlan);
 }
 int main (void){
