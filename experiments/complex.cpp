@@ -56,9 +56,10 @@ void test4ccomplex(void)
 {
 	std::cout << "gcc 3.3 && 4.0 support for complex is broken!\n";
 
-	_Complex double c_complex;
+	_Complex float c_complex;
 /*
-	c_complex = cexp(I * 1);
+	c_complex = cexp(_Complex_I * 1);
+
 
 	std::cout << "real: " << creal(c_complex)
 		  << "imaginary: " << cimag(c_complex) << std::endl;
