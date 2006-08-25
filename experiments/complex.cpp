@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 	std::cout << "a: " << a << std::endl;
 	a = c1;
 	std::cout << "a: " << a << std::endl;
-	ptr = (std::complex<double> *) &a;
+	ptr = &a;
 	if (c1 == *ptr)
 		std::cout << "Nice\n";
 	if (c1 == a)
