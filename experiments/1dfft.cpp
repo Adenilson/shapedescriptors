@@ -85,5 +85,7 @@ int main (void){
 
 	fourier_complex(v, count);
 
+	cout << "fftw_complex size is: " << sizeof(fftw_complex)
+	     << endl;
 	return 0;
 }

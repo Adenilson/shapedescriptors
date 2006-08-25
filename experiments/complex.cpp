@@ -75,6 +75,9 @@ int main(int argc, char* argv[])
 	if ((a * a).real() == -1)
 		std::cout << "We are done!\n";
 
+	std::cout << "std::complex size is: "
+		  << sizeof(mcomplex<double>) << std::endl;
+
 	//Utility functions
 	std::cout << "c1: " << c1 << std::endl;
 	std::cout << "c2: " << c2 << std::endl;
