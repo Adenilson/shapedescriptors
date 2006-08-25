@@ -6,7 +6,7 @@
 void check4math(void);
 void test4ccomplex(void);
 
-/* There must exist a way to directly access private fields...
+/** There must exist a way to directly access private fields...
  *  complex<double>::_M_value = _real;
  *  complex<double>::_M_value = _img;
  *
@@ -32,8 +32,7 @@ public:
 		complex<NUMBER>::imag() = _img;
 	}
 
-	/** Overloaded operator, to do implicit convertion
-	 *
+	/** Overloaded operator, to do implicit convertion.
 	 *
 	 * @param c A complex number, should have methods
 	 *          c.real() and c.imag()
