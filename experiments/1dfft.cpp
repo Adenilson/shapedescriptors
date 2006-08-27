@@ -90,6 +90,10 @@ void test_compat(void)
 
 	(*ptr)[0] = 13.333;
 	(*ptr)[1] = 15.152313;
+	/* Valid alternate syntax */
+	ptr[0][0] = 13.333;
+	ptr[0][1] = 15.152313;
+
 	cout << "real: " << *ptr[0] << "\tcomplex: " << (*ptr)[1] << endl;
 	cout << "class output: " << obj << endl;
 }
