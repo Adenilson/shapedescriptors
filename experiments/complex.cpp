@@ -6,12 +6,12 @@
 void check4math(void);
 void test4ccomplex(void);
 
-/** There must exist a way to directly access private fields...
- *  complex<double>::_M_value = _real;
- *  complex<double>::_M_value = _img;
- *
- * At least complex<T>::real() is inline.
- *
+/** Complex type, we derive it from C++ STL type complex, added
+ * 2 more operators to access number parts: set with 'number(real, imag)'
+ * and get with 'number[0] || number[1]'.
+ * At present, we use complex<T>::real() to access number parts (at least
+ * it is inline...).
+ * Dependes on STL header <complex>.
  */
 template <class NUMBER>
 class mcomplex: public complex<NUMBER> {
@@ -26,11 +26,28 @@ public:
 	 *
 	 */
 	template <class TYPE>
-	void operator()(TYPE _real, TYPE _img)
+	mcomplex<NUMBER> &operator()(TYPE _real, TYPE _img)
 	{
 		complex<NUMBER>::real() = _real;
 		complex<NUMBER>::imag() = _img;
+		return *this;
 	}
+
+	/** Defines a simple structure based complex type compatibility layer.
+	 *
+	 * @param i Access to number index (0 == real, 1 == imaginary).
+	 *
+	 * @return number or NULL on invalid index.
+	 */
+	NUMBER operator[](int i) {
+		if (i == 0)
+			return complex<NUMBER>::real();
+		else if (i == 1)
+			return complex<NUMBER>::imag();
+
+		return NULL;
+	}
+
 
 	/** Overloaded operator, to do implicit convertion.
 	 *
@@ -61,10 +78,13 @@ int main(int argc, char* argv[])
 	mcomplex<double> a;
 	a = c3;
 	std::cout << "a: " << a << std::endl;
+	std::cout << "'a' real: " << a[0] << "\timag: " << a[1] << std::endl;
+
 	a(10, 300);
 	std::cout << "a: " << a << std::endl;
 	a = c1;
 	std::cout << "a: " << a << std::endl;
+
 	ptr = &a;
 	if (c1 == *ptr)
 		std::cout << "Nice\n";
@@ -77,6 +97,7 @@ int main(int argc, char* argv[])
 
 	std::cout << "std::complex size is: "
 		  << sizeof(mcomplex<double>) << std::endl;
+
 
 	//Utility functions
 	std::cout << "c1: " << c1 << std::endl;
