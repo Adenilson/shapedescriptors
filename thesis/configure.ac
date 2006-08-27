@@ -12,7 +12,7 @@
 
 AC_PREREQ(2.58)
 AC_INIT(, 0.01, [],)
-AC_CONFIG_SRCDIR(.)
+AC_CONFIG_SRCDIR([src/beta.cpp])
 
 AM_INIT_AUTOMAKE([foreign])
 
@@ -26,6 +26,7 @@ export PKG_CONFIG_PATH=/usr/lib/pkgconfig
 PKG_CHECK_MODULES(OCV, opencv)
 AC_SUBST(OCV_CFLAGS)
 AC_SUBST(OCV_LIBS)
+AC_SUBST(csourcedir, $srcdir/src)
 
 AC_HEADER_STDC
 

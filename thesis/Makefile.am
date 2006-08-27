@@ -14,8 +14,11 @@ AM_CPPFLAGS = $(OCV_CFLAGS) -Wall
 
 bin_PROGRAMS = contour_extractor
 
-contour_extractor_SOURCES = base.h beta.cpp contour.cpp contour.h \
- descriptors.cpp descriptors.h output.cpp output.h seq.h vision.h \
- window.h
+contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
+	$(csourcedir)/contour.cpp $(csourcedir)/contour.h \
+	$(csourcedir)/descriptors.cpp $(csourcedir)/descriptors.h \
+	$(csourcedir)/output.cpp $(csourcedir)/output.h \
+	$(csourcedir)/seq.h $(csourcedir)/vision.h \
+	$(csourcedir)/ window.h
 contour_extractor_LDADD = $(OCV_LIBS)
 contour_extractor_CPPFLAGS = $(AM_CPPFLAGS)
