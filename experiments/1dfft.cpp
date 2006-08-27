@@ -96,7 +96,41 @@ void test_compat(void)
 
 	cout << "real: " << *ptr[0] << "\tcomplex: " << (*ptr)[1] << endl;
 	cout << "class output: " << obj << endl;
+
+
 }
+
+void test_compat2(float *v, int count)
+{
+	fftw_plan fwd_plan, inv_plan;
+	fftw_complex *in, *out, *inver;
+	mcomplex<double> *vobj;
+
+	vobj = new mcomplex<double> [count];
+	out = new fftw_complex[count];
+
+	for (int i = 0; i < count; ++i) {
+		vobj[i](v[i], 0);
+		cout << "vobj[" << i << "]=" << vobj[i] << endl;
+	}
+
+	in = reinterpret_cast<fftw_complex *>(vobj);
+	fwd_plan = fftw_plan_dft_1d(count, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_execute(fwd_plan);
+	printc(out, count, "\nComplex fourier transf.");
+
+
+	inver = reinterpret_cast<fftw_complex *>(vobj);
+	inv_plan = fftw_plan_dft_1d(count, out, inver, FFTW_BACKWARD, FFTW_ESTIMATE);
+	fftw_execute(inv_plan);
+	printc(inver, count, "\nInverse fourier transf. (not normalized!)");
+
+	delete [] out;
+	delete [] vobj;
+
+}
+
+
 
 int main (void){
 
@@ -106,10 +140,13 @@ int main (void){
 	//float v[] = { 1, 2, 3, 4, 5};
 	//float v[] = { 11, 222, 3333, 4444, 5555, 6666};
 
+	cout << "normal way..." << endl;
 	fourier_complex(v, count);
 
 	cout << "fftw_complex size is: " << sizeof(fftw_complex)
 	     << endl;
 	test_compat();
+	cout << "casting way!" << endl;
+	test_compat2(v, count);
 	return 0;
 }
