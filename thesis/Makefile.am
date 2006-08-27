@@ -6,11 +6,12 @@
 #Author: Adenilson Cavalcanti savagobr@yahoo.com
 #
 #TODO:
-# source files in a directory (curse you autoreconf2.5!)
+# debug build target
 # support linking with efence
 # support 'check' unit tests
 
-AM_CPPFLAGS = $(OCV_CFLAGS) -Wall
+
+AM_CPPFLAGS = $(OCV_CFLAGS) -Wall -O2
 
 bin_PROGRAMS = contour_extractor
 
@@ -22,3 +23,4 @@ contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
 	$(csourcedir)/ window.h
 contour_extractor_LDADD = $(OCV_LIBS)
 contour_extractor_CPPFLAGS = $(AM_CPPFLAGS)
+
