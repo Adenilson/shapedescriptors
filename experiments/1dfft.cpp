@@ -37,7 +37,7 @@ void printc(type* v, int size, const char* label = "") {
 
 void fourier_complex(float *data, int count) {
 	fftw_complex *in, *out, *inver;
-	fftw_plan fwdPlan, invPlan;
+	fftw_plan fwd_plan, inv_plan;
 
 #ifdef CPP_MALLOC
 	in = new fftw_complex[count];
@@ -59,22 +59,27 @@ void fourier_complex(float *data, int count) {
 
 	}
 
-	fwdPlan = fftw_plan_dft_1d(count, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
-	fftw_execute(fwdPlan);
+	fwd_plan = fftw_plan_dft_1d(count, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+	fftw_execute(fwd_plan);
 	printc(out, count, "\nComplex fourier transf.");
 
-	invPlan = fftw_plan_dft_1d(count, out, inver, FFTW_BACKWARD, FFTW_ESTIMATE);
-	fftw_execute(invPlan);
+	inv_plan = fftw_plan_dft_1d(count, out, inver, FFTW_BACKWARD, FFTW_ESTIMATE);
+	fftw_execute(inv_plan);
 	//See fftw manual "4.7 What FFTW Really Computes" p.44
 	printc(inver, count, "\nInverse fourier transf. (not normalized!)");
 
 #ifdef CPP_MALLOC
-	delete [] in; delete [] out; delete [] inver;
+	delete [] in;
+	delete [] out;
+	delete [] inver;
 #else
-	fftw_free(in); fftw_free(out); fftw_free(inver);
+	fftw_free(in);
+	fftw_free(out);
+	fftw_free(inver);
 #endif
 
-	fftw_destroy_plan(fwdPlan); fftw_destroy_plan(invPlan);
+	fftw_destroy_plan(fwd_plan);
+	fftw_destroy_plan(inv_plan);
 }
 
 void test_compat(void)
@@ -127,7 +132,8 @@ void test_compat2(float *v, int count)
 
 	delete [] out;
 	delete [] vobj;
-
+	fftw_destroy_plan(fwd_plan);
+	fftw_destroy_plan(inv_plan);
 }
 
 
