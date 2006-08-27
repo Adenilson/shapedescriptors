@@ -3,68 +3,10 @@
 #include <complex>
 #include <valarray>
 #include <complex.h>
+#include "ccomplex.h"
+
 void check4math(void);
 void test4ccomplex(void);
-
-/** Complex type, we derive it from C++ STL type complex, added
- * 2 more operators to access number parts: set with 'number(real, imag)'
- * and get with 'number[0] || number[1]'.
- * At present, we use complex<T>::real() to access number parts (at least
- * it is inline...).
- * Dependes on STL header <complex>.
- */
-template <class NUMBER>
-class mcomplex: public complex<NUMBER> {
-public:
-
-	/** Extra operator, make it easier to set values
-	 * into a complex number.
-	 *
-	 * @param real A real/integer number
-	 * @param img  A real/integer number for imaginary part
-	 *             of complex number
-	 *
-	 */
-	template <class TYPE>
-	mcomplex<NUMBER> &operator()(TYPE _real, TYPE _img)
-	{
-		complex<NUMBER>::real() = _real;
-		complex<NUMBER>::imag() = _img;
-		return *this;
-	}
-
-	/** Defines a simple structure based complex type compatibility layer.
-	 *
-	 * @param i Access to number index (0 == real, 1 == imaginary).
-	 *
-	 * @return number or NULL on invalid index.
-	 */
-	NUMBER operator[](int i) {
-		if (i == 0)
-			return complex<NUMBER>::real();
-		else if (i == 1)
-			return complex<NUMBER>::imag();
-
-		return NULL;
-	}
-
-
-	/** Overloaded operator, to do implicit convertion.
-	 *
-	 * @param c A complex number, should have methods
-	 *          c.real() and c.imag()
-	 *
-	 * @return A reference for this object
-	 */
-	template <class TYPE>
-	mcomplex<NUMBER> &operator=(std::complex<TYPE> &c) {
-		complex<NUMBER>::real() = c.real();
-		complex<NUMBER>::imag() = c.imag();
-		return *this;
-	}
-
-};
-
 
 int main(int argc, char* argv[])
 {

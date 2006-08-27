@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <fftw3.h>
+#include "ccomplex.h"
 
 /* Use it to define memory allocation */
 #define CPP_MALLOC
@@ -75,6 +76,30 @@ void fourier_complex(float *data, int count) {
 
 	fftw_destroy_plan(fwdPlan); fftw_destroy_plan(invPlan);
 }
+
+void test_compat(void)
+{
+	mcomplex<double> obj;
+	fftw_complex in, *ptr;
+
+	obj(10, 0.333);
+
+	/* TODO:Discover how to cast to array */
+	//ptr = &obj;
+	//in = (fftw_complex)obj;
+	//in = static_cast<fftw_complex>(obj);
+	memcpy(in, &obj, sizeof(in));
+
+	cout << "real: " << in[0] << "\tcomplex: " << in[1] << endl;
+	//cout << "real: " << in[0][0] << "\tcomplex: " << in[0][1] << endl;
+	cout << "class output: " << obj << endl;
+
+	in[0] = 13.333;
+	in[1] = 15.152313;
+	cout << "real: " << in[0] << "\tcomplex: " << in[1] << endl;
+	cout << "class output: " << obj << endl;
+}
+
 int main (void){
 
 	//Some vector samples
@@ -87,5 +112,6 @@ int main (void){
 
 	cout << "fftw_complex size is: " << sizeof(fftw_complex)
 	     << endl;
+	test_compat();
 	return 0;
 }
