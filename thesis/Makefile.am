@@ -8,12 +8,9 @@
 #TODO:
 # debug build target
 # support linking with efence
-# support 'check' unit tests
 
-
-AM_CPPFLAGS = $(OCV_CFLAGS) -Wall -O2
-
-bin_PROGRAMS = contour_extractor
+AM_CPPFLAGS = -Wall -O2
+bin_PROGRAMS = contour_extractor utester
 
 contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
 	$(csourcedir)/contour.cpp $(csourcedir)/contour.h \
@@ -22,5 +19,9 @@ contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
 	$(csourcedir)/seq.h $(csourcedir)/vision.h \
 	$(csourcedir)/ window.h
 contour_extractor_LDADD = $(OCV_LIBS)
-contour_extractor_CPPFLAGS = $(AM_CPPFLAGS)
+contour_extractor_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)
 
+
+utester_SOURCES = $(csourcedir)/fourier.h $(utestdir)/fft_test.cpp
+utester_LDADD = $(FFTW_FLAGS) -lcheck
+utester_CPPFLAGS = $(AM_CPPFLAGS)
