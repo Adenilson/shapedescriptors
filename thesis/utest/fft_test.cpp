@@ -1,3 +1,13 @@
+/** @file
+ *
+ * Fourier unit test module
+ *
+ *
+ * Copyright 2006
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com>
+ *
+ * @version
+ */
 #include "src/fourier.h"
 #include "src/ccomplex.h"
 using namespace std;
@@ -7,16 +17,23 @@ using namespace std;
 START_TEST (transf)
 {
 	int res = 0;
+
+	//Original data
 	int size = 4;
 	float v[] = { 1, 1, 1, 1 };
 	float V[] = { 4, 0, 0, 0 };
 
-	mcomplex<double> *vobj;
-	vobj = new mcomplex<double> [size];
-
-	transform(v, size, vobj);
+	//Complex number to hold results
+	mcomplex<double> *t_obj, *T_obj;
+	t_obj = new mcomplex<double> [size];
+	T_obj = new mcomplex<double> [size];
 	for (int i = 0; i < size; ++i)
-		if (V[i] != vobj[i].real())
+		t_obj[i](v[i], 0);
+
+	//Transform and check for expected results
+	transform(t_obj, size, T_obj);
+	for (int i = 0; i < size; ++i)
+		if (V[i] != T_obj[i].real())
 		    res = 1;
 
 	fail_unless(res == 0, "failed transform");
