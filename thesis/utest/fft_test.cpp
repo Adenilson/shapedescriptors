@@ -34,7 +34,7 @@ void *thread_transform(void *param)
 void *thread_inverse(void *param)
 {
 	function_param *obj = (function_param *) param;
-	invert(obj->signal, obj->size, obj->transf, obj->mutex);
+	inverse(obj->signal, obj->size, obj->transf, obj->mutex);
 	return NULL;
 
 }
@@ -140,12 +140,12 @@ START_TEST (invert)
 		T_obj[i](V[i], 0);
 
 	//Transform and check for expected results
-	invert(T_obj, size, t_obj);
+	inverse(T_obj, size, t_obj);
 	for (int i = 0; i < size; ++i)
 		if (v[i] != (t_obj[i].real()/size))
 			res = 1;
 
-	fail_unless(res == 0, "failed invert transform");
+	fail_unless(res == 0, "failed inverse transform");
 
 }
 END_TEST

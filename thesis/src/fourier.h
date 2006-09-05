@@ -88,10 +88,9 @@ void transform(TYPE1 g, int length, TYPE2 G, TYPE3 *mutex)
  * @param g A vector with inverted transformed signal, we receive
  *          a pre-allocated vector (not normalized).
  *
- * TODO: do a mutex lock when calling fftw_plan and make it thread safe.
  */
 template <class TYPE>
-void invert(TYPE G, int length, TYPE g)
+void inverse(TYPE G, int length, TYPE g)
 {
 	fftw_plan inv_plan;
 	fftw_complex *in, *out;
@@ -117,10 +116,9 @@ void invert(TYPE G, int length, TYPE g)
  *          a pre-allocated vector (not normalized).
  *
  * @param mutex A mutex pointer variable for locking fftw_plan creation.
- * TODO: change function name ('inverse' is a better one).
  */
 template <class TYPE1, class TYPE2>
-void invert(TYPE1 G, int length, TYPE1 g, TYPE2 *mutex)
+void inverse(TYPE1 G, int length, TYPE1 g, TYPE2 *mutex)
 {
 	fftw_plan inv_plan;
 	fftw_complex *in, *out;
