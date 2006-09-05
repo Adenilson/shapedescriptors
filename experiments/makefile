@@ -1,9 +1,12 @@
 CC=g++ -g
 
-all: complexer 1dfft
+all: complexer 1dfft function
 	echo "Compiling everything..."
 
 debug: 1debug
+
+function: function.o
+	g++ -o function function.o
 
 complexer: complex.o
 	g++ -o complexer complex.o
@@ -17,4 +20,4 @@ complexer: complex.o
 1debug.o: 1dfft.cpp
 	$(CC) -o 1dfft.o -c 1dfft.cpp
 clean:
-	rm -fr *~ *.o complexer 1dfft debugdfft
+	rm -fr *~ *.o complexer 1dfft debugdfft function
