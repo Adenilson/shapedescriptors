@@ -89,8 +89,8 @@ void transform(TYPE1 g, int length, TYPE2 G, TYPE3 *mutex)
  *          a pre-allocated vector (not normalized).
  *
  */
-template <class TYPE>
-void inverse(TYPE G, int length, TYPE g)
+template <class TYPE1, class TYPE2>
+void inverse(TYPE1 G, int length, TYPE2 g)
 {
 	fftw_plan inv_plan;
 	fftw_complex *in, *out;
@@ -117,8 +117,8 @@ void inverse(TYPE G, int length, TYPE g)
  *
  * @param mutex A mutex pointer variable for locking fftw_plan creation.
  */
-template <class TYPE1, class TYPE2>
-void inverse(TYPE1 G, int length, TYPE1 g, TYPE2 *mutex)
+template <class TYPE1, class TYPE2, class TYPE3>
+void inverse(TYPE1 G, int length, TYPE2 g, TYPE3 *mutex)
 {
 	fftw_plan inv_plan;
 	fftw_complex *in, *out;
