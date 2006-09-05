@@ -10,11 +10,17 @@
  */
 #include "src/fourier.h"
 #include "src/ccomplex.h"
-#include <iostream>
 using namespace std;
 
 #include <check.h>
 
+
+//Original data
+int size = 4;
+float v[] = { 1, 1, 1, 1 };
+float V[] = { 4, 0, 0, 0 };
+
+//Aux struct to hold parameters to thread functions
 struct function_param
 {
 	mcomplex<double> *signal;
@@ -23,6 +29,7 @@ struct function_param
 	pthread_mutex_t *mutex;
 };
 
+//Do fft transform
 void *thread_transform(void *param)
 {
 	function_param *obj = (function_param *) param;
@@ -31,6 +38,7 @@ void *thread_transform(void *param)
 
 }
 
+//Do inverse fft transform
 void *thread_inverse(void *param)
 {
 	function_param *obj = (function_param *) param;
@@ -39,17 +47,13 @@ void *thread_inverse(void *param)
 
 }
 
+//Tests for thread safe transform.
 START_TEST (thread_transf)
 {
 	int res = 0, tid;
 	pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 	pthread_t thread1;
 	function_param parameters;
-
-	//Original data
-	int size = 4;
-	float v[] = { 1, 1, 1, 1 };
-	float V[] = { 4, 0, 0, 0 };
 
 	//Complex number to hold results
 	mcomplex<double> *t_obj, *T_obj;
@@ -80,18 +84,13 @@ START_TEST (thread_transf)
 }
 END_TEST
 
-
+//Tests for thread safe backward transform.
 START_TEST (thread_inver)
 {
 	int res = 0, tid;
 	pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 	pthread_t thread1;
 	function_param parameters;
-
-	//Original data
-	int size = 4;
-	float v[] = { 1, 1, 1, 1 };
-	float V[] = { 4, 0, 0, 0 };
 
 	//Complex number to hold results
 	mcomplex<double> *t_obj, *T_obj;
@@ -122,7 +121,7 @@ START_TEST (thread_inver)
 }
 END_TEST
 
-
+//Test for backward transform
 START_TEST (invert)
 {
 	int res = 0;
@@ -150,15 +149,10 @@ START_TEST (invert)
 }
 END_TEST
 
-
+//Test for transform
 START_TEST (transf)
 {
 	int res = 0;
-
-	//Original data
-	int size = 4;
-	float v[] = { 1, 1, 1, 1 };
-	float V[] = { 4, 0, 0, 0 };
 
 	//Complex number to hold results
 	mcomplex<double> *t_obj, *T_obj;
