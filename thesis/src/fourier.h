@@ -15,7 +15,8 @@
 
 #include <fftw3.h>
 
-/** It does fourier transform in a given vector.
+/** It does fourier transform in a given vector. Pay attention that its not
+ *  thread safe since fftw_plan_dft functions does share some global data.
  *
  * @param g A vector with signal to be transformed, we
  *          wait for a object/vector where sinal is accessable
@@ -27,6 +28,7 @@
  * @param G Transformed signal, we expect a pre-allocated
  *          vector compatible with type 'double o[2]'.
  *
+ * TODO: do a mutex lock when calling fftw_plan and make it thread safe.
  */
 template <class TYPE1, class TYPE2>
 void transform(TYPE1 g, int length, TYPE2 G)
@@ -44,7 +46,8 @@ void transform(TYPE1 g, int length, TYPE2 G)
 	fftw_destroy_plan(fwd_plan);
 }
 
-/** It does fourier transform in a given vector.
+/** It does fourier transform in a given vector. Pay attention that its not
+ *  thread safe since fftw_plan_dft functions does share some global data.
  *
  * @param G Transformed signal, we expect a pre-allocated
  *          vector compatible with type 'double o[2]'.
@@ -54,6 +57,7 @@ void transform(TYPE1 g, int length, TYPE2 G)
  * @param g A vector with inverted transformed signal, we receive
  *          a pre-allocated vector (not normalized).
  *
+ * TODO: do a mutex lock when calling fftw_plan and make it thread safe.
  */
 template <class TYPE>
 void invert(TYPE G, int length, TYPE g)
