@@ -105,4 +105,25 @@ void invert(TYPE G, int length, TYPE g)
 	fftw_destroy_plan(inv_plan);
 }
 
+/** It does fourier transform in a given vector. Pay attention that its not
+ *  thread safe since fftw_plan_dft functions does share some global data.
+ *
+ * @param G Transformed signal, we expect a pre-allocated
+ *          vector compatible with type 'double o[2]'.
+ *
+ * @param length Signal length.
+ *
+ * @param g A vector with inverted transformed signal, we receive
+ *          a pre-allocated vector (not normalized).
+ *
+ * @param mutex A mutex pointer variable for locking fftw_plan creation.
+ * TODO: add function code
+ */
+template <class TYPE1, class TYPE2>
+void invert(TYPE1 G, int length, TYPE1 g, TYPE2 *mutex)
+{
+
+}
+
+
 #endif
