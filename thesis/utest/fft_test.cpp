@@ -10,6 +10,7 @@
  */
 #include "src/fourier.h"
 #include "src/ccomplex.h"
+#include <iostream>
 using namespace std;
 
 #include <check.h>
@@ -46,6 +47,48 @@ void *thread_inverse(void *param)
 	return NULL;
 
 }
+
+//Tests diferentiate calculus with fourier
+START_TEST (diff)
+{
+
+	complex<double> *time;
+	mcomplex<double> *g_sin, *g_cos, *g_transf;
+	int length = 256;
+	int diff_level = 1;
+	double tolerance = 0.05;
+	double step = 2 * PI /(length - 1);
+	double pos = 0;
+	int res = 1;
+
+	time = new complex<double> [length];
+	g_sin = new mcomplex<double> [length];
+	g_cos = new mcomplex<double> [length];
+	g_transf = new mcomplex<double> [length];
+
+	for (int i = 0; i < length; ++i) {
+		time[i].real() = pos;
+		//mcomplex operators at rescue!
+		g_sin[i][0] = sin(pos);
+		g_cos[i][0] = cos(pos);
+		pos += step;
+	}
+
+	differentiate(g_sin, length, g_transf, diff_level);
+	for (int i = 0; i < length; ++i)
+		if (((tolerance * g_cos[i][0]) < g_transf[i][0]) &&
+		    (((tolerance + 1) * g_cos[i][0]) > g_transf[i][0]))
+			res = 0;
+
+	fail_unless(res == 0, "differentiate out of acceptable values");
+
+	delete [] time;
+	delete [] g_sin;
+	delete [] g_cos;
+	delete [] g_transf;
+
+}
+END_TEST
 
 //Tests for thread safe transform.
 START_TEST (thread_transf)
@@ -184,6 +227,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, invert);
 	tcase_add_test(test_case, thread_transf);
 	tcase_add_test(test_case, thread_inver);
+	tcase_add_test(test_case, diff);
 	return s;
 }
 

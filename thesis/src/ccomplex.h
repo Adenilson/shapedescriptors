@@ -53,15 +53,15 @@ public:
 	 *
 	 * @param i Access to number index (0 == real, 1 == imaginary).
 	 *
-	 * @return number or NULL on invalid index.
+	 * @return number or real part on invalid index.
 	 */
-	NUMBER operator[](int i) {
+	NUMBER &operator[](int i) {
 		if (i == 0)
 			return std::complex<NUMBER>::real();
 		else if (i == 1)
 			return std::complex<NUMBER>::imag();
 
-		return NULL;
+		return std::complex<NUMBER>::real();
 	}
 
 
@@ -73,7 +73,7 @@ public:
 	 * @return A reference for this object
 	 */
 	template <class TYPE>
-	mcomplex<NUMBER> &operator=(std::complex<TYPE> &c) {
+	mcomplex<NUMBER> &operator=(const std::complex<TYPE> &c) {
 		std::complex<NUMBER>::real() = c.real();
 		std::complex<NUMBER>::imag() = c.imag();
 		return *this;

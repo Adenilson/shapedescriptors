@@ -16,6 +16,9 @@
 #include <fftw3.h>
 #include <pthread.h>
 
+/** PI value */
+#define PI 3.14159265359
+
 /** It does fourier transform in a given vector. Pay attention that its not
  *  thread safe since fftw_plan_dft functions does share some global data.
  *
@@ -134,5 +137,29 @@ void inverse(TYPE1 G, int length, TYPE2 g, TYPE3 *mutex)
 	fftw_destroy_plan(inv_plan);
 }
 
+/** Calculate derivate using Fourier derivative property.
+ *
+ * @param signal A given real or complex signal vector.
+ *
+ * @param length Signal vector length.
+ *
+ * @param transf Preallocated complex object vector, will hold filtered
+ *               signal.
+ * @param diff_level Which derivate we want i.e. use 'diff_level = 1' for
+ *                   first derivate of signal function.
+ *
+ * TODO: implement the code!
+ *       add gaussian filter to derivative
+ *       add sigmoid filter to derivative
+ */
+template <class TYPE1, class TYPE2>
+void differentiate(TYPE1 signal, int length, TYPE2 transf, double diff_level)
+{
+
+
+
+
+
+}
 
 #endif
