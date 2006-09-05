@@ -117,12 +117,23 @@ void invert(TYPE G, int length, TYPE g)
  *          a pre-allocated vector (not normalized).
  *
  * @param mutex A mutex pointer variable for locking fftw_plan creation.
- * TODO: add function code
+ * TODO: change function name ('inverse' is a better one).
  */
 template <class TYPE1, class TYPE2>
 void invert(TYPE1 G, int length, TYPE1 g, TYPE2 *mutex)
 {
+	fftw_plan inv_plan;
+	fftw_complex *in, *out;
 
+	in = reinterpret_cast<fftw_complex *>(G);
+	out = reinterpret_cast<fftw_complex *>(g);
+
+	pthread_mutex_lock(mutex);
+	inv_plan = fftw_plan_dft_1d(length, in, out, FFTW_BACKWARD, FFTW_ESTIMATE);
+	pthread_mutex_unlock(mutex);
+
+	fftw_execute(inv_plan);
+	fftw_destroy_plan(inv_plan);
 }
 
 

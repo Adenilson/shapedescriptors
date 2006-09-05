@@ -10,6 +10,7 @@
  */
 #include "src/fourier.h"
 #include "src/ccomplex.h"
+#include <iostream>
 using namespace std;
 
 #include <check.h>
@@ -80,7 +81,7 @@ START_TEST (thread_transf)
 END_TEST
 
 
-START_TEST (thread_inverse)
+START_TEST (thread_inver)
 {
 	int res = 0, tid;
 	pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
@@ -112,7 +113,7 @@ START_TEST (thread_inverse)
 		//Wait for thread and check for expected results
 		pthread_join(thread1, NULL);
 		for (int i = 0; i < size; ++i)
-			if (v[i] != t_obj[i].real())
+			if (v[i] != t_obj[i].real()/size)
 				res = 1;
 
 		fail_unless(res == 0, "failed transform");
@@ -188,7 +189,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, transf);
 	tcase_add_test(test_case, invert);
 	tcase_add_test(test_case, thread_transf);
-	tcase_add_test(test_case, thread_inverse);
+	tcase_add_test(test_case, thread_inver);
 	return s;
 }
 
