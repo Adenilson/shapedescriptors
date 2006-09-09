@@ -137,6 +137,23 @@ void inverse(TYPE1 G, int length, TYPE2 g, TYPE3 *mutex)
 	fftw_destroy_plan(inv_plan);
 }
 
+
+/** Do shift operation. It allocates and returns a new vector
+ * with shifted signal.
+ *
+ * @param signal Vector pointer to signal to be shifted.
+ *
+ * @param length Length of signal vector
+ *
+ * @return A new vector with shifted signal or NULL on error.
+ */
+template <class TYPE>
+TYPE *shift(TYPE *signal, int length)
+{
+
+	return NULL;
+}
+
 /** Calculate derivate using Fourier derivative property.
  *
  * @param signal A given real or complex signal vector.

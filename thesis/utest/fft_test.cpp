@@ -48,6 +48,41 @@ void *thread_inverse(void *param)
 
 }
 
+//Tests for shift operation
+START_TEST (tshift)
+{
+
+	double v1[] = { 0, 1, 2, 3 };
+	double sv1[] = { 2, 3, 0, 1 };
+	double v2[] = { 0, 1, 2, 3, 4 };
+	double sv2[] = { 3, 4, 0, 1, 2 };
+	double *tmp;
+	int length;
+	int res = 0;
+
+	length = sizeof(v1);
+	tmp = shift(v1, length);
+	fail_unless(tmp != NULL, "failed function call");
+	for (int i = 0; i < length; ++i)
+		if (tmp[i] != sv1[i])
+			res = 1;
+	fail_unless(res == 0, "failed shift tmp != sv1");
+
+	delete [] tmp;
+
+	length = sizeof(v2);
+	tmp = shift(v2, length);
+	fail_unless(tmp != NULL, "failed function call");
+	for (int i = 0; i < length; ++i)
+		if (tmp[i] != sv2[i])
+			res = 1;
+	fail_unless(res == 0, "failed shift tmp != sv2");
+
+	delete [] tmp;
+}
+END_TEST
+
+
 //Tests diferentiate calculus with fourier
 START_TEST (diff)
 {
@@ -228,6 +263,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, thread_transf);
 	tcase_add_test(test_case, thread_inver);
 	tcase_add_test(test_case, diff);
+	tcase_add_test(test_case, tshift);
 	return s;
 }
 
