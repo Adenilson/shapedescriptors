@@ -48,24 +48,42 @@ void *thread_inverse(void *param)
 
 }
 
+
+//Test for vector equality.
+int compare_vectors(double *v1, int length, double *v2)
+{
+	int res = 0;
+	for (int i = 0; i < length; ++i)
+		if (v1[i] != v2[i])
+			res = 1;
+
+	return res;
+}
+
 //Tests for shift operation
 START_TEST (tshift)
 {
 
 	double v1[] = { 0, 1, 2, 3 };
 	double sv1[] = { 2, 3, 0, 1 };
+
 	double v2[] = { 0, 1, 2, 3, 4 };
 	double sv2[] = { 3, 4, 0, 1, 2 };
+
+	double v3[] = { 0, 1, 2 };
+	double sv3[] = { 2, 0, 1 };
+
+	double v4[] = { 0, 1 };
+	double sv4[] = { 1, 0 };
+
 	double *tmp;
 	int length;
-	int res = 0;
+	int res;
 
 	length = sizeof(v1)/sizeof(double);
 	tmp = shift(v1, length);
 	fail_unless(tmp != NULL, "failed function call");
-	for (int i = 0; i < length; ++i)
-		if (tmp[i] != sv1[i])
-			res = 1;
+	res = compare_vectors(tmp, length, sv1);
 	fail_unless(res == 0, "failed shift tmp != sv1");
 	delete [] tmp;
 
@@ -73,11 +91,24 @@ START_TEST (tshift)
 	length = sizeof(v2)/sizeof(double);
 	tmp = shift(v2, length);
 	fail_unless(tmp != NULL, "failed function call");
-	for (int i = 0; i < length; ++i)
-		if (tmp[i] != sv2[i])
-			res = 1;
+	res = compare_vectors(tmp, length, sv2);
 	fail_unless(res == 0, "failed shift tmp != sv2");
 	delete [] tmp;
+
+	length = sizeof(v3)/sizeof(double);
+	tmp = shift(v3, length);
+	fail_unless(tmp != NULL, "failed function call");
+	res = compare_vectors(tmp, length, sv3);
+	fail_unless(res == 0, "failed shift tmp != sv3");
+	delete [] tmp;
+
+	length = sizeof(v4)/sizeof(double);
+	tmp = shift(v4, length);
+	fail_unless(tmp != NULL, "failed function call");
+	res = compare_vectors(tmp, length, sv4);
+	fail_unless(res == 0, "failed shift tmp != sv4");
+	delete [] tmp;
+
 
 }
 END_TEST

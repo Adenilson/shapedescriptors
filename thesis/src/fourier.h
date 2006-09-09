@@ -146,6 +146,7 @@ void inverse(TYPE1 G, int length, TYPE2 g, TYPE3 *mutex)
  * @param length Length of signal vector
  *
  * @return A new vector with shifted signal or NULL on error.
+ * TODO: make it work with vector's length = 3.
  */
 template <class TYPE>
 TYPE *shift(TYPE *signal, int length)
