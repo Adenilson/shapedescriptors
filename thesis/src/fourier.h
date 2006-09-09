@@ -150,8 +150,47 @@ void inverse(TYPE1 G, int length, TYPE2 g, TYPE3 *mutex)
 template <class TYPE>
 TYPE *shift(TYPE *signal, int length)
 {
+	TYPE *transf = NULL;
+	int is_odd = 0;
+	int cutoff, counter;
+	int i;
 
-	return NULL;
+	if (!signal)
+		goto exit;
+
+	transf = new TYPE[length];
+	if (!transf)
+		goto exit;
+
+	is_odd = length % 2;
+	if (is_odd) {
+		cutoff = length/2 + is_odd;
+
+		counter = 0;
+		for (i = 0; i < cutoff - 1; ++i, ++counter)
+			transf[i] = signal[cutoff + i];
+
+		/* XXX: do we need this arithmetic? */
+		for (i = cutoff - 1; i < length; ++i, ++counter)
+			transf[i] = signal[i - cutoff - 2];
+
+	} else {
+
+		cutoff = length/2;
+		counter = 0;
+		for (i = 0; i < cutoff; ++i, ++counter)
+			transf[i] = signal[cutoff + i];
+
+		for (i = cutoff; i < length; ++i, ++counter)
+			transf[i] = signal[i - cutoff];
+
+	}
+	/* FIXME: should I throw an exception? */
+	if (counter > length)
+		printf("\nbuffer overflow!\n");
+
+ exit:
+	return transf;
 }
 
 /** Calculate derivate using Fourier derivative property.

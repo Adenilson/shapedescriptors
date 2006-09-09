@@ -60,25 +60,25 @@ START_TEST (tshift)
 	int length;
 	int res = 0;
 
-	length = sizeof(v1);
+	length = sizeof(v1)/sizeof(double);
 	tmp = shift(v1, length);
 	fail_unless(tmp != NULL, "failed function call");
 	for (int i = 0; i < length; ++i)
 		if (tmp[i] != sv1[i])
 			res = 1;
 	fail_unless(res == 0, "failed shift tmp != sv1");
-
 	delete [] tmp;
 
-	length = sizeof(v2);
+
+	length = sizeof(v2)/sizeof(double);
 	tmp = shift(v2, length);
 	fail_unless(tmp != NULL, "failed function call");
 	for (int i = 0; i < length; ++i)
 		if (tmp[i] != sv2[i])
 			res = 1;
 	fail_unless(res == 0, "failed shift tmp != sv2");
-
 	delete [] tmp;
+
 }
 END_TEST
 
