@@ -50,20 +50,60 @@ void *thread_inverse(void *param)
 
 
 //Test for vector equality.
-int compare_vectors(double *v1, int length, double *v2)
+int compare_vectors(double *vector1, int length, double *vector2)
 {
 	int res = 0;
+/*
+	for (int i = 0; i < length; printf("v1[%i] = %f\tv2[%i] = %f\n",
+					   i, vector1[i], i, vector2[i]), ++i)
+*/
 	for (int i = 0; i < length; ++i)
-		if (v1[i] != v2[i])
+		if (vector1[i] != vector2[i])
 			res = 1;
 
 	return res;
 }
 
+//Tests for unshift operation
+//Tests for shift operation
+START_TEST (tunshift)
+{
+	//Shift/unshift data
+	double v1[] = { 0, 1, 2, 3 };
+	double sv1[] = { 2, 3, 0, 1 };
+
+	double v2[] = { 0, 1, 2, 3, 4 };
+	double sv2[] = { 3, 4, 0, 1, 2 };
+
+	double *tmp;
+	int length;
+	int res;
+
+	length = sizeof(sv1)/sizeof(double);
+	tmp = unshift(sv1, length);
+	fail_unless(tmp != NULL, "failed function call");
+	res = compare_vectors(tmp, length, v1);
+	fail_unless(res == 0, "failed unshift tmp != v1");
+	delete [] tmp;
+
+
+	length = sizeof(sv2)/sizeof(double);
+	tmp = unshift(sv2, length);
+	fail_unless(tmp != NULL, "failed function call");
+	res = compare_vectors(tmp, length, v2);
+	fail_unless(res == 0, "failed unshift tmp != v2");
+	delete [] tmp;
+}
+END_TEST
+
 //Tests for shift operation
 START_TEST (tshift)
 {
+	double *tmp;
+	int length;
+	int res;
 
+	//Shift/unshift data
 	double v1[] = { 0, 1, 2, 3 };
 	double sv1[] = { 2, 3, 0, 1 };
 
@@ -75,10 +115,6 @@ START_TEST (tshift)
 
 	double v4[] = { 0, 1 };
 	double sv4[] = { 1, 0 };
-
-	double *tmp;
-	int length;
-	int res;
 
 	length = sizeof(v1)/sizeof(double);
 	tmp = shift(v1, length);
@@ -95,6 +131,14 @@ START_TEST (tshift)
 	fail_unless(res == 0, "failed shift tmp != sv2");
 	delete [] tmp;
 
+	length = sizeof(v4)/sizeof(double);
+	tmp = shift(v4, length);
+	fail_unless(tmp != NULL, "failed function call");
+	res = compare_vectors(tmp, length, sv4);
+	fail_unless(res == 0, "failed shift tmp != sv4");
+	delete [] tmp;
+
+	//This one fails
 	length = sizeof(v3)/sizeof(double);
 	tmp = shift(v3, length);
 	fail_unless(tmp != NULL, "failed function call");
@@ -102,12 +146,6 @@ START_TEST (tshift)
 	fail_unless(res == 0, "failed shift tmp != sv3");
 	delete [] tmp;
 
-	length = sizeof(v4)/sizeof(double);
-	tmp = shift(v4, length);
-	fail_unless(tmp != NULL, "failed function call");
-	res = compare_vectors(tmp, length, sv4);
-	fail_unless(res == 0, "failed shift tmp != sv4");
-	delete [] tmp;
 
 
 }
@@ -295,6 +333,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, thread_inver);
 	tcase_add_test(test_case, diff);
 	tcase_add_test(test_case, tshift);
+	tcase_add_test(test_case, tunshift);
 	return s;
 }
 

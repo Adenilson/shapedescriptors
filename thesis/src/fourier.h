@@ -194,6 +194,61 @@ TYPE *shift(TYPE *signal, int length)
 	return transf;
 }
 
+/** Do unshift operation. It allocates and returns a new vector
+ * with original signal.
+ *
+ * @param signal Vector pointer to signal to be unshifted.
+ *
+ * @param length Length of signal vector
+ *
+ * @return A new vector with original signal or NULL on error.
+ */
+template <class TYPE>
+TYPE *unshift(TYPE *signal, int length)
+{
+	TYPE *transf = NULL;
+	int is_odd = 0;
+	int cutoff, counter = 0;
+	int i;
+
+	if (!signal)
+		goto exit;
+
+	transf = new TYPE[length];
+	if (!transf)
+		goto exit;
+
+	is_odd = length % 2;
+	if (is_odd) {
+/*
+		cutoff = length/2 + is_odd;
+
+		counter = 0;
+		for (i = 0; i < cutoff - 1; ++i, ++counter)
+			transf[i] = signal[cutoff + i];
+
+		for (i = cutoff - 1; i < length; ++i, ++counter)
+			transf[i] = signal[i - cutoff - 2];
+*/
+	} else {
+
+		cutoff = length/2;
+
+		for (i = 0; i < cutoff; ++i, ++counter)
+			transf[i] = signal[cutoff + i];
+
+		for (i = cutoff; i < length; ++i, ++counter)
+			transf[i] = signal[i - cutoff];
+
+	}
+	/* FIXME: should I throw an exception? */
+	if (counter > length)
+		printf("\nbuffer overflow!\n");
+
+ exit:
+	return transf;
+}
+
 /** Calculate derivate using Fourier derivative property.
  *
  * @param signal A given real or complex signal vector.
