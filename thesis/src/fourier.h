@@ -167,7 +167,6 @@ TYPE *shift(TYPE *signal, int length)
 	if (is_odd) {
 		cutoff = length/2 + is_odd;
 
-		counter = 0;
 		for (i = 0; i < cutoff - 1; ++i, ++counter)
 			transf[i] = signal[cutoff + i];
 
