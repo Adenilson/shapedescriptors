@@ -15,6 +15,7 @@ using namespace std;
 
 #include <check.h>
 
+//#define DEBUGGER
 
 //Original data
 int size = 4;
@@ -53,11 +54,15 @@ void *thread_inverse(void *param)
 int compare_vectors(double *vector1, int length, double *vector2)
 {
 	int res = 0;
-/*
+
+#ifdef DEBUGGER
+	printf("\n");
 	for (int i = 0; i < length; printf("v1[%i] = %f\tv2[%i] = %f\n",
 					   i, vector1[i], i, vector2[i]), ++i)
-*/
+
+#else
 	for (int i = 0; i < length; ++i)
+#endif
 		if (vector1[i] != vector2[i])
 			res = 1;
 

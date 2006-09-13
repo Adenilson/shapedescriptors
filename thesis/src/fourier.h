@@ -220,18 +220,15 @@ TYPE *unshift(TYPE *signal, int length)
 
 	is_odd = length % 2;
 	if (is_odd) {
-/*
-		cutoff = length/2 + is_odd;
+		cutoff = length/2;
 
-		counter = 0;
-		for (i = 0; i < cutoff - 1; ++i, ++counter)
-			transf[i] = signal[cutoff + i];
+		for (i = cutoff; i < length; ++i, ++counter)
+			transf[i - cutoff] = signal[i];
 
-		for (i = cutoff - 1; i < length; ++i, ++counter)
-			transf[i] = signal[i - cutoff - 2];
-*/
+		for (i = cutoff + 1; i < length; ++i, ++counter)
+			transf[i] = signal[i - cutoff - 1];
+
 	} else {
-
 		cutoff = length/2;
 
 		for (i = 0; i < cutoff; ++i, ++counter)
