@@ -16,6 +16,9 @@ History:
 
         vs 0.03 17-09-2006: put code on svn repository
 
+
+TODO: move code into separated modules.
+
 *******************************************************************************/
 
 
