@@ -99,6 +99,7 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 
 	//Helper variables
 	int iMeanx, iMeany;//, max_area = 1000;
+	int length = 3;
 
 	// Display Sample image
 	//show_img("sample_image", sample_image);
@@ -160,8 +161,15 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 			// find the average of the blob (i.e. estimate its centre)
 			iMeanx=(point1.x + point2.x)/2; //(iMinx+iMaxx)/2;
 			iMeany=(point1.y + point2.y)/2; //(iMiny+iMaxy)/2;
-			cvRectangle(sample_image, cvPoint(iMeanx-1, iMeany-1), cvPoint(iMeanx+1, iMeany+1),
+			cvRectangle(sample_image,
+				    cvPoint(iMeanx - length, iMeany - length),
+				    cvPoint(iMeanx + length, iMeany + length),
 				    CV_RGB(0, 0, 255), 1);
+			cvRectangle(sample_image,
+				    cvPoint(iMeanx - length + 1, iMeany - length + 1),
+				    cvPoint(iMeanx + length + 1, iMeany + length + 1),
+				    CV_RGB(0, 0, 255), 1);
+
 			//************************** MOD SAVAGO*************************
 
 			cvRectangle(sample_image, point1, point2, CV_RGB(255, 0, 0), 1);
