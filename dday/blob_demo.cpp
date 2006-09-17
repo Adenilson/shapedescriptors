@@ -58,8 +58,8 @@ int main(int argc, char** argv)
 	int threshold, minarea, maxarea, opencount;
 	bool grayit = true;
 	threshold = 100;
-	minarea = 5;
-	maxarea = 120000;
+	minarea = 500;
+	maxarea = 5000;
 	opencount = 1;
 	process_image(sample_image, threshold, minarea, maxarea, opencount, grayit);
 
