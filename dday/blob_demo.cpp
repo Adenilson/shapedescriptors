@@ -1,10 +1,10 @@
 /*******************************************************************************
 Purpose: Given an image, it does blobs analysis, calculates area of
  isolated blobs in image. Steps
-a)
-b)
-c)
-d)
+a) read original image
+b) transform it to gray scale
+c) morphological operators
+d) blobanalysis (only identify blobs within a given area range).
 
 Author: Adenilson Cavalcanti da Silva savagobr@yahoo.com
 License: GPL for non comercial use (contact author for other licensing contracts)
@@ -14,7 +14,7 @@ History:
 
         vs 0.02 26-06-2006: Code clean up
 
-To-do:
+        vs 0.03 17-09-2006: put code on svn repository
 
 *******************************************************************************/
 
@@ -31,19 +31,33 @@ using namespace std;
 #include "blobs.h"
 
 
-/*
- * The worker. Parameters:
- *  SampleImage: analysed image
- *  Threshold: param to threshold image (we use OCV cvThreshold)
- *  MinArea: minimal area to consider a blob
- *  OpenCount: dilation factor (morphology)
+/** The worker, filters image and search for blobs.
+ *
+ * @param sample_image analysed image.
+ *
+ * @param threshold param to threshold image (we use OCV cvThreshold).
+ *
+ * @param min_area minimal area to consider a blob.
+ *
+ * @param max_area maximum area to consider a blob.
+ *
+ * @param open_count dilation factor (morphology).
+ *
+ * @param morpho_operator if we should run morphological operations on image.
+ *
  */
 void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
 		   int open_count = 0, bool grayit = true, bool morpho_operator = true);
 
-void show_img(const char* name, IplImage *Transformed);
+/** Show a given image in a window.
+ *
+ * @param name Window name.
+ *
+ * @param transformed Image to be show.
+ *
+ */
+void show_img(const char* name, IplImage *transformed);
 
-void examples();
 
 int main(int argc, char** argv)
 {
@@ -70,10 +84,9 @@ int main(int argc, char** argv)
 
 }
 
-//Show an Image
-void show_img(const char* name, IplImage *Transformed) {
+void show_img(const char* name, IplImage *transformed) {
 	cvNamedWindow(name, CV_WINDOW_AUTOSIZE);
-	cvShowImage(name, Transformed);
+	cvShowImage(name, transformed);
 	cvWaitKey(0);
 }
 
