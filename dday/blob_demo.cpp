@@ -34,6 +34,16 @@ using namespace std;
    include of std::iostream!) */
 #include "blobs.h"
 
+/** Square of number
+ *
+ * @param i A number to be squared.
+ *
+ * @return Squared number.
+ */
+inline float square(float i)
+{
+	return i * i;
+}
 
 /** Blobs descriptors features
  *
@@ -147,6 +157,7 @@ int main(int argc, char** argv)
 
 	IplImage* sample_image = 0;
 	blob_result result;
+	float distance;
 
 	// Input the sample picture. The user must make sure it's in the right folder
 	const char *filename = (argc >= 2 ? argv[1] : "data/Circles.jpg");
@@ -165,7 +176,25 @@ int main(int argc, char** argv)
 	cvReleaseImage(&sample_image);
 	cout << "ALL DONE" << endl;
 
-	cout << " blobs number: " << result.blob_count << endl; 
+	cout << " blobs number: " << result.blob_count << endl;
+	for (int i = 0; i < result.blob_count; ++i) {
+		/* XXX: Move this code to a proper function */
+		distance = square(result.blobs[i].min_x -
+				  result.blobs[i].max_x) +
+			square(result.blobs[i].min_y -
+			       result.blobs[i].max_y);
+		distance = sqrt(distance);
+		distance = result.blobs[i].area / distance;
+
+		cout << "distance: " << distance <<
+			" area: " << result.blobs[i].area <<
+			" x_max: " << result.blobs[i].max_x <<
+			" y_max: " << result.blobs[i].max_y <<
+			" x_min: " << result.blobs[i].min_x <<
+			" y_min: " << result.blobs[i].min_y <<
+			endl;
+	}
+
 
 	return 0;
 
@@ -285,6 +314,13 @@ blob_result process_image(IplImage* sample_image, int threshold, int min_area, i
 				result.blobs[counter].max_y = region_data[this_region][BLOBMAXY];
 				result.blobs[counter].calc_centroid();
 
+				result.blobs[counter].area = region_data[this_region][BLOBAREA];
+
+				result.blobs[counter].perimeter = region_data[this_region][BLOBPERIMETER];
+
+
+
+				counter++;
 			}
 
 
