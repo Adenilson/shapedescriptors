@@ -39,6 +39,8 @@ using namespace std;
  * @param i A number to be squared.
  *
  * @return Squared number.
+ *
+ * TODO: make it template based.
  */
 inline float square(float i)
 {
@@ -47,6 +49,7 @@ inline float square(float i)
 
 /** Blobs descriptors features
  *
+ * TODO: rectangluraty should become a new method.
  */
 struct blob_features {
 	/** Some feature descriptors of blobs */
@@ -113,7 +116,9 @@ struct blob_result {
 	}
 
 
-	/** Destructor, free up resources */
+	/** Destructor, free up resources
+	 * TODO: set pointer to NULL
+	 */
 	~blob_result() {
 		if (blobs)
 			delete [] blobs;
@@ -207,6 +212,9 @@ void show_img(const char* name, IplImage *transformed) {
 	cvDestroyWindow(name);
 }
 
+/* TODO: remove gratuitous comments
+ *       break this enormous function to smaller functions.
+ */
 blob_result process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
 		   int open_count, bool grayit, bool morpho_operator)
 {
