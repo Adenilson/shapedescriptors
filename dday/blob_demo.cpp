@@ -24,6 +24,7 @@ History:
 #include <opencv/highgui.h>
 #include <iostream>
 #include <set>
+#include <complex>
 using namespace std;
 
 /* Blob library (ps: pay attention that blobs.h require previous
@@ -36,12 +37,29 @@ using namespace std;
  */
 struct blob_features {
 	/** Some feature descriptors of blobs */
-	float area, perimeter, centroid;
+	float area, perimeter;
+	complex<float> centroid;
 	/** minimum coordinate values */
 	float min_x, min_y;
 	/** maximum coordinate values */
 	float max_x, max_y;
 
+	/** Function to calculate centroid */
+	void calc_centroid() {
+		centroid.real() = (min_x + max_x) / 2;
+		centroid.imag() = (min_y + max_y) / 2;
+	}
+
+	/** Overloaded operator */
+	blob_features &operator=(const blob_features &obj) {
+		area = obj.area;
+		perimeter = obj.perimeter;
+		min_x = obj.min_x;
+		min_y = obj.min_y;
+		max_x = obj.max_x;
+		max_y = obj.max_y;
+		centroid = obj.centroid;
+	}
 };
 
 /** Structure to hold filtered blobs.
@@ -65,7 +83,7 @@ struct blob_result {
 			blob_count = 0;
 			blobs = NULL;
 		}
-
+		return blob_count;
 	}
 
 	/** Constructor to allocate blob object vector */
@@ -73,10 +91,20 @@ struct blob_result {
 		allocate(num_blobs);
 	}
 
+	blob_result & operator=(const blob_result &obj) {
+		if (allocate(obj.blob_count)) {
+			for (int i = 0; i < blob_count; ++i)
+				blobs[i] = obj.blobs[i];
+		}
+		return *this;
+	}
+
+
 	/** Destructor, free up resources */
 	~blob_result() {
 		if (blobs)
 			delete [] blobs;
+
 	}
 
 };
@@ -96,7 +124,7 @@ struct blob_result {
  * @param morpho_operator if we should run morphological operations on image.
  *
  */
-void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
+blob_result process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
 		   int open_count = 0, bool grayit = true, bool morpho_operator = true);
 
 /** Show a given image in a window.
@@ -115,6 +143,7 @@ int main(int argc, char** argv)
 {
 
 	IplImage* sample_image = 0;
+	blob_result result;
 
 	// Input the sample picture. The user must make sure it's in the right folder
 	const char *filename = (argc >= 2 ? argv[1] : "data/Circles.jpg");
@@ -127,11 +156,14 @@ int main(int argc, char** argv)
 	minarea = 500;
 	maxarea = 2000;
 	opencount = 1;
-	process_image(sample_image, threshold, minarea, maxarea, opencount,
+	result = process_image(sample_image, threshold, minarea, maxarea, opencount,
 		      grayit, morpho_operator);
 
 	cvReleaseImage(&sample_image);
 	cout << "ALL DONE" << endl;
+
+	cout << " blobs number: " << result.blob_count << endl; 
+
 	return 0;
 
 }
@@ -143,7 +175,7 @@ void show_img(const char* name, IplImage *transformed) {
 	cvDestroyWindow(name);
 }
 
-void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
+blob_result process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
 		   int open_count, bool grayit, bool morpho_operator)
 {
 	//Images
@@ -159,6 +191,7 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	int length = 3;
 	int counter = 0;
 	CvPoint point1,point2;
+	blob_result result;
 
 	// Display Sample image
 	//show_img("sample_image", sample_image);
@@ -234,6 +267,27 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 
 	}
 
+	if (result.allocate(counter))
+		/* XXX: move this code to a separated function */
+		for (int this_region = 1, counter = 0; this_region <= high_region_num; this_region++)
+		{
+			if (region_data[this_region][BLOBAREA] < max_area) {
+
+				result.blobs[counter].min_x = region_data[this_region][BLOBMINX];
+				result.blobs[counter].min_y = region_data[this_region][BLOBMINY];
+
+				result.blobs[counter].max_x = region_data[this_region][BLOBMAXX];
+				result.blobs[counter].max_y = region_data[this_region][BLOBMAXY];
+
+				result.blobs[counter].max_y = region_data[this_region][BLOBMAXY];
+				result.blobs[counter].calc_centroid();
+
+			}
+
+
+		}
+
+
         cout << "number of blobs = " << counter << endl;
 	// Display Sample image with bounding rectangles added
 	show_img("processed_image", sample_image);
@@ -246,4 +300,6 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	cvReleaseImage(&gray_image);
 	delete [] region_data;
 	delete [] working_storage;
+
+	return result;
 }
