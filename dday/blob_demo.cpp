@@ -55,6 +55,8 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
  *
  * @param transformed Image to be show.
  *
+ * TODO: make some widget resource management (I want to keep
+ *       opened windows still active).
  */
 void show_img(const char* name, IplImage *transformed);
 
@@ -88,6 +90,7 @@ void show_img(const char* name, IplImage *transformed) {
 	cvNamedWindow(name, CV_WINDOW_AUTOSIZE);
 	cvShowImage(name, transformed);
 	cvWaitKey(0);
+	cvDestroyWindow(name);
 }
 
 void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
