@@ -92,81 +92,80 @@ void show_img(const char* name, IplImage *transformed) {
 	cvWaitKey(0);
 	cvDestroyWindow(name);
 }
-
+/** FIXME: solve memory leak in region_data */
 void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
 		   int open_count, bool grayit, bool morpho_operator)
 {
 	//Images
-	IplImage* GrayImage = 0;
-	IplImage* ThresholdedImage = 0;
+	IplImage* gray_image = 0;
+	IplImage* thresholded_image = 0;
 
 	//Holds blob related descriptors
 	float (*region_data)[BLOBDATACOUNT];
-
+	int* working_storage;
+	int high_region_num;
 	//Helper variables
 	int iMeanx, iMeany;//, max_area = 1000;
 	int length = 3;
+	int counter = 0;
 
 	// Display Sample image
 	//show_img("sample_image", sample_image);
-	int Cols = sample_image->width;
-	int Rows = sample_image->height;
+	int cols = sample_image->width;
+	int rows = sample_image->height;
 
 	// Make the sample picture into a gray image
-	if(grayit) {
-		GrayImage = cvCreateImage(cvSize(Cols, Rows), IPL_DEPTH_8U, 1);
-		cvCvtColor(sample_image, GrayImage, CV_BGR2GRAY);
-        }
-        else
-		GrayImage = sample_image;
+	if (grayit) {
+		gray_image = cvCreateImage(cvSize(cols, rows), IPL_DEPTH_8U, 1);
+		cvCvtColor(sample_image, gray_image, CV_BGR2GRAY);
+        } else
+		gray_image = sample_image;
 
 	// Display Gray image
-	show_img("GrayImage", GrayImage);
+	show_img("gray_image", gray_image);
 
 	// Make it into a binary image
-	ThresholdedImage = cvCreateImage(cvSize(Cols, Rows), IPL_DEPTH_8U, 1);
-	cvThreshold(GrayImage, ThresholdedImage, threshold, 255, CV_THRESH_BINARY);
+	thresholded_image = cvCreateImage(cvSize(cols, rows), IPL_DEPTH_8U, 1);
+	cvThreshold(gray_image, thresholded_image, threshold, 255, CV_THRESH_BINARY);
 
 	// Make sure that there are no isolated spots in the image
 	if (morpho_operator)
 		if(open_count > 0)
 		{
-			cvDilate(ThresholdedImage, ThresholdedImage, NULL, open_count);
-			cvErode(ThresholdedImage, ThresholdedImage, NULL, open_count);
+			cvDilate(thresholded_image, thresholded_image, NULL, open_count);
+			cvErode(thresholded_image, thresholded_image, NULL, open_count);
 		}
 		else
 		{
-			cvErode(ThresholdedImage, ThresholdedImage, NULL, -open_count);
-			cvDilate(ThresholdedImage, ThresholdedImage, NULL, -open_count);
+			cvErode(thresholded_image, thresholded_image, NULL, -open_count);
+			cvDilate(thresholded_image, thresholded_image, NULL, -open_count);
 		}
 
 	// Display Thresholded image
-	show_img("ThresholdedImage", ThresholdedImage);
+	show_img("thresholded_image", thresholded_image);
 
 	// Call Blob Analysis routine to analyze image
 	// Working storage. Note +2 +2
-	int* WorkingStorage = new int[(BLOBROWCOUNT+2)*(BLOBCOLCOUNT+2)];
+	working_storage = new int[(BLOBROWCOUNT+2)*(BLOBCOLCOUNT+2)];
 
 	// Blob result array
 	region_data = new float[BLOBTOTALCOUNT][BLOBDATACOUNT];
 
-	int HighRegionNum = BlobAnalysis(ThresholdedImage, WorkingStorage, region_data, Cols, Rows, (uchar)255, min_area);
+	high_region_num = BlobAnalysis(thresholded_image, working_storage, region_data, cols, rows, (uchar)255, min_area);
 
 	// Add bounding rectangles to Sample image
 	CvPoint point1,point2;
-	int counter = 0;
-	for(int ThisRegion = 1; ThisRegion <= HighRegionNum; ThisRegion++)
+	for (int this_region = 1; this_region <= high_region_num; this_region++)
 	{
-		if(region_data[ThisRegion][BLOBAREA] < max_area) {
-			point1.x = cvRound(region_data[ThisRegion][BLOBMINX]);
-			point1.y = cvRound(region_data[ThisRegion][BLOBMINY]);
-			point2.x = cvRound(region_data[ThisRegion][BLOBMAXX]);
-			point2.y = cvRound(region_data[ThisRegion][BLOBMAXY]);
+		if (region_data[this_region][BLOBAREA] < max_area) {
+			point1.x = cvRound(region_data[this_region][BLOBMINX]);
+			point1.y = cvRound(region_data[this_region][BLOBMINY]);
+			point2.x = cvRound(region_data[this_region][BLOBMAXX]);
+			point2.y = cvRound(region_data[this_region][BLOBMAXY]);
 
-			//************************** MOD SAVAGO*************************
 			// find the average of the blob (i.e. estimate its centre)
-			iMeanx=(point1.x + point2.x)/2; //(iMinx+iMaxx)/2;
-			iMeany=(point1.y + point2.y)/2; //(iMiny+iMaxy)/2;
+			iMeanx=(point1.x + point2.x) / 2;
+			iMeany=(point1.y + point2.y) / 2;
 			cvRectangle(sample_image,
 				    cvPoint(iMeanx - length, iMeany - length),
 				    cvPoint(iMeanx + length, iMeany + length),
@@ -176,7 +175,6 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 				    cvPoint(iMeanx + length + 1, iMeany + length + 1),
 				    CV_RGB(0, 0, 255), 1);
 
-			//************************** MOD SAVAGO*************************
 
 			cvRectangle(sample_image, point1, point2, CV_RGB(255, 0, 0), 1);
 			counter++;
@@ -193,7 +191,7 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	// Print the results
 	PrintRegionDataArray(region_data);
 
-	cvReleaseImage(&ThresholdedImage);
-	cvReleaseImage(&GrayImage);
+	cvReleaseImage(&thresholded_image);
+	cvReleaseImage(&gray_image);
 
 }
