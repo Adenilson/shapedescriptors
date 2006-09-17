@@ -108,6 +108,7 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	int iMeanx, iMeany;//, max_area = 1000;
 	int length = 3;
 	int counter = 0;
+	CvPoint point1,point2;
 
 	// Display Sample image
 	//show_img("sample_image", sample_image);
@@ -154,7 +155,6 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	high_region_num = BlobAnalysis(thresholded_image, working_storage, region_data, cols, rows, (uchar)255, min_area);
 
 	// Add bounding rectangles to Sample image
-	CvPoint point1,point2;
 	for (int this_region = 1; this_region <= high_region_num; this_region++)
 	{
 		if (region_data[this_region][BLOBAREA] < max_area) {
