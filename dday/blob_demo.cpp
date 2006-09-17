@@ -17,7 +17,7 @@ History:
         vs 0.03 17-09-2006: put code on svn repository
 
 
-TODO: move code into separated modules.
+TODO: add copyright and license in source code files.
 
 *******************************************************************************/
 
@@ -49,7 +49,6 @@ inline float square(float i)
 
 int main(int argc, char** argv)
 {
-
 	IplImage* sample_image = 0;
 	blob_result result;
 	float distance;
@@ -90,7 +89,5 @@ int main(int argc, char** argv)
 			endl;
 	}
 
-
 	return 0;
-
 }

@@ -71,14 +71,12 @@ struct blob_result {
 		return *this;
 	}
 
-
 	/** Destructor, free up resources
 	 * TODO: set pointer to NULL
 	 */
 	~blob_result() {
 		if (blobs)
 			delete [] blobs;
-
 	}
 
 };
