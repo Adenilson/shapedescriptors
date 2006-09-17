@@ -194,4 +194,5 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	cvReleaseImage(&thresholded_image);
 	cvReleaseImage(&gray_image);
 	delete [] region_data;
+	delete [] working_storage;
 }
