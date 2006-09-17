@@ -164,6 +164,7 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 			point2.y = cvRound(region_data[this_region][BLOBMAXY]);
 
 			// find the average of the blob (i.e. estimate its centre)
+			// and draw a retangle.
 			iMeanx=(point1.x + point2.x) / 2;
 			iMeany=(point1.y + point2.y) / 2;
 			cvRectangle(sample_image,
