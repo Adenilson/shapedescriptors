@@ -31,6 +31,56 @@ using namespace std;
 #include "blobs.h"
 
 
+/** Blobs descriptors features
+ *
+ */
+struct blob_features {
+	/** Some feature descriptors of blobs */
+	float area, perimeter, centroid;
+	/** minimum coordinate values */
+	float min_x, min_y;
+	/** maximum coordinate values */
+	float max_x, max_y;
+
+};
+
+/** Structure to hold filtered blobs.
+ *
+ */
+struct blob_result {
+	/** holds blob descriptors vector */
+	blob_features *blobs;
+
+	/** number of blobs within vector */
+	int blob_count;
+
+	/** Default empty constructor */
+	blob_result(void): blob_count(0), blobs(NULL) { }
+
+	/** Allocate memory space for blobs */
+	int allocate(int length) {
+		blob_count = length;
+		blobs = new blob_features[blob_count];
+		if (!blobs) {
+			blob_count = 0;
+			blobs = NULL;
+		}
+
+	}
+
+	/** Constructor to allocate blob object vector */
+	blob_result(int num_blobs) {
+		allocate(num_blobs);
+	}
+
+	/** Destructor, free up resources */
+	~blob_result() {
+		if (blobs)
+			delete [] blobs;
+	}
+
+};
+
 /** The worker, filters image and search for blobs.
  *
  * @param sample_image analysed image.
