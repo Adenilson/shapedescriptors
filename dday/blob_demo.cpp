@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	bool grayit = true, morpho_operator = true;
 	threshold = 100;
 	minarea = 500;
-	maxarea = 5000;
+	maxarea = 2000;
 	opencount = 1;
 	process_image(sample_image, threshold, minarea, maxarea, opencount,
 		      grayit, morpho_operator);
@@ -92,7 +92,7 @@ void show_img(const char* name, IplImage *transformed) {
 	cvWaitKey(0);
 	cvDestroyWindow(name);
 }
-/** FIXME: solve memory leak in region_data */
+
 void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
 		   int open_count, bool grayit, bool morpho_operator)
 {
@@ -193,5 +193,5 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 
 	cvReleaseImage(&thresholded_image);
 	cvReleaseImage(&gray_image);
-
+	delete [] region_data;
 }
