@@ -39,7 +39,7 @@ using namespace std;
  *  OpenCount: dilation factor (morphology)
  */
 void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
-	int open_count = 0, bool grayit = true);
+		   int open_count = 0, bool grayit = true, bool morpho_operator = true);
 
 void show_img(const char* name, IplImage *Transformed);
 
@@ -56,12 +56,13 @@ int main(int argc, char** argv)
 	show_img("Original", sample_image);
 
 	int threshold, minarea, maxarea, opencount;
-	bool grayit = true;
+	bool grayit = true, morpho_operator = true;
 	threshold = 100;
 	minarea = 500;
 	maxarea = 5000;
 	opencount = 1;
-	process_image(sample_image, threshold, minarea, maxarea, opencount, grayit);
+	process_image(sample_image, threshold, minarea, maxarea, opencount,
+		      grayit, morpho_operator);
 
 	cvReleaseImage(&sample_image);
 	cout << "ALL DONE" << endl;
@@ -77,7 +78,7 @@ void show_img(const char* name, IplImage *Transformed) {
 }
 
 void process_image(IplImage* sample_image, int threshold, int min_area, int max_area,
-	int open_count, bool grayit)
+		   int open_count, bool grayit, bool morpho_operator)
 {
 	//Images
 	IplImage* GrayImage = 0;
@@ -93,11 +94,11 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 
 	// Make the sample picture into a gray image
 	if(grayit) {
-           GrayImage = cvCreateImage(cvSize(Cols, Rows), IPL_DEPTH_8U, 1);
-           cvCvtColor(sample_image, GrayImage, CV_BGR2GRAY);
+		GrayImage = cvCreateImage(cvSize(Cols, Rows), IPL_DEPTH_8U, 1);
+		cvCvtColor(sample_image, GrayImage, CV_BGR2GRAY);
         }
         else
-           GrayImage = sample_image;
+		GrayImage = sample_image;
 
 	// Display Gray image
 	show_img("GrayImage", GrayImage);
@@ -107,16 +108,17 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	cvThreshold(GrayImage, ThresholdedImage, threshold, 255, CV_THRESH_BINARY);
 
 	// Make sure that there are no isolated spots in the image
-	if(open_count > 0)
-	{
-		cvDilate(ThresholdedImage, ThresholdedImage, NULL, open_count);
-		cvErode(ThresholdedImage, ThresholdedImage, NULL, open_count);
-	}
-	else
-	{
-		cvErode(ThresholdedImage, ThresholdedImage, NULL, -open_count);
-		cvDilate(ThresholdedImage, ThresholdedImage, NULL, -open_count);
-	}
+	if (morpho_operator)
+		if(open_count > 0)
+		{
+			cvDilate(ThresholdedImage, ThresholdedImage, NULL, open_count);
+			cvErode(ThresholdedImage, ThresholdedImage, NULL, open_count);
+		}
+		else
+		{
+			cvErode(ThresholdedImage, ThresholdedImage, NULL, -open_count);
+			cvDilate(ThresholdedImage, ThresholdedImage, NULL, -open_count);
+		}
 
 	// Display Thresholded image
 	show_img("ThresholdedImage", ThresholdedImage);
@@ -135,23 +137,23 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	int counter = 0;
 	for(int ThisRegion = 1; ThisRegion <= HighRegionNum; ThisRegion++)
 	{
-	   if(RegionData[ThisRegion][BLOBAREA] < max_area) {
-		point1.x = cvRound(RegionData[ThisRegion][BLOBMINX]);
-		point1.y = cvRound(RegionData[ThisRegion][BLOBMINY]);
-		point2.x = cvRound(RegionData[ThisRegion][BLOBMAXX]);
-		point2.y = cvRound(RegionData[ThisRegion][BLOBMAXY]);
+		if(RegionData[ThisRegion][BLOBAREA] < max_area) {
+			point1.x = cvRound(RegionData[ThisRegion][BLOBMINX]);
+			point1.y = cvRound(RegionData[ThisRegion][BLOBMINY]);
+			point2.x = cvRound(RegionData[ThisRegion][BLOBMAXX]);
+			point2.y = cvRound(RegionData[ThisRegion][BLOBMAXY]);
 
-		//************************** MOD SAVAGO*************************
-		// find the average of the blob (i.e. estimate its centre)
-		iMeanx=(point1.x + point2.x)/2; //(iMinx+iMaxx)/2;
-		iMeany=(point1.y + point2.y)/2; //(iMiny+iMaxy)/2;
-		cvRectangle(sample_image, cvPoint(iMeanx-1, iMeany-1), cvPoint(iMeanx+1, iMeany+1),
-			CV_RGB(0, 0, 255), 1);
-		//************************** MOD SAVAGO*************************
+			//************************** MOD SAVAGO*************************
+			// find the average of the blob (i.e. estimate its centre)
+			iMeanx=(point1.x + point2.x)/2; //(iMinx+iMaxx)/2;
+			iMeany=(point1.y + point2.y)/2; //(iMiny+iMaxy)/2;
+			cvRectangle(sample_image, cvPoint(iMeanx-1, iMeany-1), cvPoint(iMeanx+1, iMeany+1),
+				    CV_RGB(0, 0, 255), 1);
+			//************************** MOD SAVAGO*************************
 
-		cvRectangle(sample_image, point1, point2, CV_RGB(255, 0, 0), 1);
-		counter++;
-	   }
+			cvRectangle(sample_image, point1, point2, CV_RGB(255, 0, 0), 1);
+			counter++;
+		}
 
 
 	}
