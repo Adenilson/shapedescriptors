@@ -100,6 +100,9 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	IplImage* GrayImage = 0;
 	IplImage* ThresholdedImage = 0;
 
+	//Holds blob related descriptors
+	float (*region_data)[BLOBDATACOUNT];
+
 	//Helper variables
 	int iMeanx, iMeany;//, max_area = 1000;
 	int length = 3;
@@ -145,20 +148,20 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	int* WorkingStorage = new int[(BLOBROWCOUNT+2)*(BLOBCOLCOUNT+2)];
 
 	// Blob result array
-	float (*RegionData)[BLOBDATACOUNT] = new float[BLOBTOTALCOUNT][BLOBDATACOUNT];
+	region_data = new float[BLOBTOTALCOUNT][BLOBDATACOUNT];
 
-	int HighRegionNum = BlobAnalysis(ThresholdedImage, WorkingStorage, RegionData, Cols, Rows, (uchar)255, min_area);
+	int HighRegionNum = BlobAnalysis(ThresholdedImage, WorkingStorage, region_data, Cols, Rows, (uchar)255, min_area);
 
 	// Add bounding rectangles to Sample image
 	CvPoint point1,point2;
 	int counter = 0;
 	for(int ThisRegion = 1; ThisRegion <= HighRegionNum; ThisRegion++)
 	{
-		if(RegionData[ThisRegion][BLOBAREA] < max_area) {
-			point1.x = cvRound(RegionData[ThisRegion][BLOBMINX]);
-			point1.y = cvRound(RegionData[ThisRegion][BLOBMINY]);
-			point2.x = cvRound(RegionData[ThisRegion][BLOBMAXX]);
-			point2.y = cvRound(RegionData[ThisRegion][BLOBMAXY]);
+		if(region_data[ThisRegion][BLOBAREA] < max_area) {
+			point1.x = cvRound(region_data[ThisRegion][BLOBMINX]);
+			point1.y = cvRound(region_data[ThisRegion][BLOBMINY]);
+			point2.x = cvRound(region_data[ThisRegion][BLOBMAXX]);
+			point2.y = cvRound(region_data[ThisRegion][BLOBMAXY]);
 
 			//************************** MOD SAVAGO*************************
 			// find the average of the blob (i.e. estimate its centre)
@@ -188,7 +191,7 @@ void process_image(IplImage* sample_image, int threshold, int min_area, int max_
 	cvSaveImage("sample_image.jpg", sample_image);
 
 	// Print the results
-	PrintRegionDataArray(RegionData);
+	PrintRegionDataArray(region_data);
 
 	cvReleaseImage(&ThresholdedImage);
 	cvReleaseImage(&GrayImage);
