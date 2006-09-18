@@ -1,6 +1,7 @@
-
+#include <opencv/highgui.h>
 #include "post_process.h"
 #include "window.h"
+
 
 void threshold(int threshold_value, void *gray_img, void *thres_img,
 	       int block_size, double std_desv)
