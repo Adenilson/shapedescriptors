@@ -20,7 +20,7 @@
  * @param morpho_operator if we should run morphological operations on image.
  *
  */
-blob_result process_image(IplImage* sample_image, int threshold,
+blob_result process_image(IplImage* image, int threshold,
 			  int min_area, int max_area,
 			  int open_count = 0, bool grayit = true,
 			  bool morpho_operator = true);

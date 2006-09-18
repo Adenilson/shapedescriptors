@@ -8,9 +8,10 @@ using namespace std;
 #include "window.h"
 
 /* TODO: remove gratuitous comments
- *       break this enormous function to smaller functions.
+ *       break this enormous function to smaller functions
+ *       remove verbosity (messages, windows, etc)
  */
-blob_result process_image(IplImage* sample_image, int threshold,
+blob_result process_image(IplImage* image, int threshold,
 			  int min_area, int max_area,
 			  int open_count, bool grayit,
 			  bool morpho_operator)
@@ -18,6 +19,7 @@ blob_result process_image(IplImage* sample_image, int threshold,
 	//Images
 	IplImage* gray_image = 0;
 	IplImage* thresholded_image = 0;
+	IplImage *sample_image = cvCloneImage(image);
 
 	//Holds blob related descriptors
 	float (*region_data)[BLOBDATACOUNT];
@@ -142,6 +144,7 @@ blob_result process_image(IplImage* sample_image, int threshold,
 
 	cvReleaseImage(&thresholded_image);
 	cvReleaseImage(&gray_image);
+	cvReleaseImage(&sample_image);
 	delete [] region_data;
 	delete [] working_storage;
 
