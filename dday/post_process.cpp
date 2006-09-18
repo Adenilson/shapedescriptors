@@ -37,9 +37,14 @@ void test(IplImage *img, blob_features &coord)
 	size = cvSize(minor->width, minor->height);
 	IplImage *major = cvCreateImage(cvSize(size.width * 2, size.height * 2), IPL_DEPTH_8U, 3);
 	cvPyrUp(minor, major);
-	show_img("upscale", major);
 
-	cvSaveImage("license_plate.bmp", major);
+	IplImage *big = cvCreateImage(cvSize(major->width * 2, major->height * 2), IPL_DEPTH_8U, 3);
+	cvPyrUp(major, big);
+
+	show_img("upscale", big);
+	cvSaveImage("license_plate_small.bmp", minor);
+	cvSaveImage("license_plate_normal.bmp", major);
+	cvSaveImage("license_plate_big.bmp", big);
 
 	//Resources release
 	//XXX: it seems that it doesn't copies data to new image
@@ -47,5 +52,6 @@ void test(IplImage *img, blob_features &coord)
 	cvReleaseImage(&major);
 	//XXX: cvGetImageRawData dont seems to copy data
 	//delete [] data;
+	cvReleaseImage(&big);
 }
 
