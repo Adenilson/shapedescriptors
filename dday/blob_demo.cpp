@@ -4,7 +4,9 @@ Purpose: Given an image, it does blobs analysis, calculates area of
 a) read original image
 b) transform it to gray scale
 c) morphological operators
-d) blobanalysis (only identify blobs within a given area range).
+d) blobanalysis (only identify blobs within a given area range)
+e) crop and resize a ROI from original image
+
 
 Author: Adenilson Cavalcanti da Silva savagobr@yahoo.com
 License: GPL for non comercial use (contact author for other licensing contracts)
@@ -31,6 +33,7 @@ using namespace std;
 
 #include "blob_filter.h"
 #include "window.h"
+#include "post_process.h"
 
 /** Square of number
  *
@@ -43,46 +46,6 @@ using namespace std;
 inline float square(float i)
 {
 	return i * i;
-}
-
-
-/** Experimental function to crop a ROI and upscale it.
- *
- * @param img A image pointer.
- *
- * @param blob_features A object with coordinates of ROI.
- *
- * TODO: rewrite the function move it to another file module
- */
-void test(IplImage *img, blob_features &coord)
-{
-	CvRect comp_rect;
-	comp_rect = cvRect((int) coord.min_x, (int) coord.min_y,
-			   (int) coord.max_y, (int) coord.max_x);
-
-	//Cropping the image
-	cvSetImageROI(img, comp_rect);
-	uchar *data = NULL;
-	cvGetImageRawData(img, &data, NULL, NULL);
-	//XXX: CvSize != cvSize
-	CvSize size = cvSize((int) (coord.max_x - coord.min_x),
-			     (int) (coord.max_y - coord.min_y));
-	IplImage *minor = cvCreateImage(size, IPL_DEPTH_8U, 3);//IPL_DEPTH_32F
-	cvSetImageData(minor, data, img->widthStep);
-	show_img("ROI", minor);
-
-	//Upscaling
-	size = cvSize(minor->width, minor->height);
-	IplImage *major = cvCreateImage(cvSize(size.width * 2, size.height * 2), IPL_DEPTH_8U, 3);
-	cvPyrUp(minor, major);
-	show_img("upscale", major);
-
-	//Resources release
-	//XXX: it seems that it doesn't copies data to new image
-	//cvReleaseImage(&minor);
-	cvReleaseImage(&major);
-	//XXX: cvGetImageRawData dont seems to copy data
-	//delete [] data;
 }
 
 
@@ -124,9 +87,10 @@ int main(int argc, char** argv)
 			" y_min: " << result.blobs[i].min_y <<
 			endl;
 
-		test(sample_image, result.blobs[i]);
+
 	}
 
+	test(sample_image, result.blobs[1]);
 
 	cvReleaseImage(&sample_image);
 	return 0;

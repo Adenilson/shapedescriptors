@@ -1,6 +1,8 @@
 #ifndef __DEMO_WINDOW__
 #define __DEMO_WINDOW__
 
+#include <opencv/highgui.h>
+
 /** Show a given image in a window.
  *
  * @param name Window name.
