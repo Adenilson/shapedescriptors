@@ -15,8 +15,10 @@ void threshold(int threshold_value, void *gray_img, void *thres_img,
  *
  * @param blob_features A object with coordinates of ROI.
  *
+ * @param border A border around ROI to crop.
+ *
  * TODO: rewrite the function
  */
-void test(IplImage *img, blob_features &coord);
+void test(IplImage *img, blob_features &coord, char *name, int border = 4);
 
 #endif

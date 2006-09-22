@@ -54,6 +54,7 @@ int main(int argc, char** argv)
 	IplImage* sample_image = 0;
 	blob_result result;
 	float distance;
+	char plate_name[100], *file_name = "plate_", *tmp;
 
 	// Input the sample picture. The user must make sure it's in the right folder
 	const char *filename = (argc >= 2 ? argv[1] : "data/Circles.jpg");
@@ -87,10 +88,15 @@ int main(int argc, char** argv)
 			" y_min: " << result.blobs[i].min_y <<
 			endl;
 
+		strcpy(plate_name, file_name);
+		tmp = plate_name;
+		tmp += sizeof(file_name) + 2;
+		sprintf(tmp, "%d", i);
+		strcat(tmp, ".bmp");
+		cout << plate_name << endl;
+		test(sample_image, result.blobs[i], plate_name, 0);
 
 	}
-
-	test(sample_image, result.blobs[1]);
 
 	cvReleaseImage(&sample_image);
 	return 0;
