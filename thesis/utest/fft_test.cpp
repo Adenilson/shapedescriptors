@@ -198,14 +198,14 @@ START_TEST (diff)
 	for (int i = 0; i < length; ++i) {
 		time[i].real() = pos;
 		//mcomplex operators at rescue!
-		g_sin[i][0] = sin(pos);
+		g_sin[i][0] = cos(2 * pos) + sin(pos * pos);
 		g_cos[i][0] = cos(pos);
 		pos += step;
 	}
 
 	g_transf = differentiate(g_sin, length, diff_level);
 	for (int i = 0; i < length; ++i)
-		cout << "\n\t" << i << "\t" << g_transf[i].real();
+	  cout << "\n\t" << i << "\t" << g_transf[i].real();//g_sin[i][0]; //
 /*
 		cout << "\n" << i << "\tcos: " << g_cos[i][0] <<
 			"\tdiff: " << g_transf[i].real();

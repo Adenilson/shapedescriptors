@@ -147,7 +147,7 @@ void inverse(TYPE1 G, int length, TYPE2 g, TYPE3 *mutex)
  * @param length Length of signal vector
  *
  * @return A new vector with shifted signal or NULL on error.
- * TODO: make it work with vector's length = 3.
+ * FIXME: make it work with vector's length = 3.
  */
 template <class TYPE>
 TYPE *shift(TYPE *signal, int length)
@@ -281,10 +281,14 @@ std::complex<double> *create_filter(double diff_level, int length)
  *                   first derivate of signal function.
  *
  * @return  Complex object vector that holds filtered signal or NULL
+ * FIXME:
+ *       normalization issues in differentiated signal
+ *
  * TODO:
  *       add gaussian filter to derivative
  *       add sigmoid filter to derivative
  *       use thread safe version of Fourier transform
+ *       should I use auto pointers?
  */
 template <class TYPE1>
 std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
@@ -327,7 +331,7 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 	goto dealloc;
 
 error:
-	/* FIXME: How to handle errors? */
+	/* FIXME: should I throw an exception? */
 	printf("\nWe got a problem\n!");
 
 dealloc:
@@ -341,15 +345,5 @@ dealloc:
 exit:
 	return res;
 }
-
-/*
-template <class TYPE1, class TYPE2>
-void differentiate(TYPE1 signal, int length, TYPE2 transf, double diff_level)
-{
-
-
-}
-*/
-
 
 #endif
