@@ -299,21 +299,19 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 	transform(signal, length, transformed);
 	tmp = shift(transformed, length);
 	if (!tmp) {
-		/* TODO: unify deallocation of resources. */
-		delete [] transformed;
 		goto error;
 	}
 
 	diff_filter = create_filter(diff_level, length);
 	if (!diff_filter)
-		goto dealloc;
+		goto error;
 	/* Apply diff filter to shifted signal */
 	for (int i = 0; i < length; ++i)
 		tmp[i] *= diff_filter[i];
 
 	tmp2 = unshift(tmp, length);
 	if (!tmp2)
-		goto dealloc;
+		goto error;
 
 	inverse(tmp2, length, tmp);
 	res = tmp;
@@ -331,13 +329,15 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 error:
 	/* FIXME: How to handle errors? */
 	printf("\nWe got a problem\n!");
-	goto exit;
 
 dealloc:
-	delete [] transformed;
-	delete [] tmp2;
-	delete [] diff_filter;
-	transformed = tmp = NULL;
+	if (transformed)
+		delete [] transformed;
+	if (tmp2)
+		delete [] tmp2;
+	if (diff_filter)
+		delete [] diff_filter;
+
 exit:
 	return res;
 }
