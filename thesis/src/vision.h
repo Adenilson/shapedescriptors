@@ -40,6 +40,14 @@ inline void threshold(int threshold, IplImage *gray, IplImage *thres) {
   //cvThreshold( IplImage* src, IplImage* dst, float thresh, float maxvalue,
 	//CvThreshType type);
   cvThreshold(gray, thres, threshold, 256, CV_THRESH_BINARY_INV);
+
+
+  /*
+	cvAdaptiveThreshold(gray, thres, threshold,
+			    CV_ADAPTIVE_THRESH_MEAN_C,//_THRESH_GAUSSIAN_C
+			    CV_THRESH_BINARY_INV, 7, 5);
+  */
+
 }
 //------------------------------------------------------------------------------
 
