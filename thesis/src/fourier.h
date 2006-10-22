@@ -290,30 +290,35 @@ template <class TYPE1>
 std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 {
 
-	std::complex<double> *transformed, *diff_filter, *tmp, *res = NULL;
+	std::complex<double> *transformed, *diff_filter, *tmp, *tmp2, *res;
+	transformed = diff_filter = tmp = tmp2 = res = NULL;
 	transformed = new std::complex<double> [length];
-	tmp = new std::complex<double> [length];
-	if ((!transformed) || (!tmp))
+	if (!transformed)
 		goto error;
 
 	transform(signal, length, transformed);
-	shift(transformed, length);
+	tmp = shift(transformed, length);
+	if (!tmp) {
+		/* TODO: unify deallocation of resources. */
+		delete [] transformed;
+		goto error;
+	}
+
 	diff_filter = create_filter(diff_level, length);
 	if (!diff_filter)
 		goto dealloc;
-
-
+	/* Apply diff filter to shifted signal */
 	for (int i = 0; i < length; ++i)
-		tmp[i] = transformed[i] * diff_filter[i];
-	delete [] diff_filter;
+		tmp[i] *= diff_filter[i];
 
-
-	res = unshift(tmp, length);
-	if (!res)
+	tmp2 = unshift(tmp, length);
+	if (!tmp2)
 		goto dealloc;
 
-	/* FIXME: we must do inverse Fourier transform before returning
-	 * result vector. Also pay attention that Fourier inverse is not
+	inverse(tmp2, length, tmp);
+	res = tmp;
+
+	/* Pay attention that Fourier inverse is not
 	 * normalized!
 	 */
 	for (int i = 0; i < length; ++i) {
@@ -324,14 +329,16 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 	goto dealloc;
 
 error:
-	transformed = NULL;
-	return transformed;
+	/* FIXME: How to handle errors? */
+	printf("\nWe got a problem\n!");
+	goto exit;
 
 dealloc:
 	delete [] transformed;
-	delete [] tmp;
+	delete [] tmp2;
+	delete [] diff_filter;
 	transformed = tmp = NULL;
-
+exit:
 	return res;
 }
 
