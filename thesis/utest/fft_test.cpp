@@ -198,7 +198,7 @@ START_TEST (diff)
 	for (int i = 0; i < length; ++i) {
 		time[i].real() = pos;
 		//mcomplex operators at rescue!
-		g_sin[i][0] = cos(2 * pos) + sin(pos * pos);
+		g_sin[i][0] = sin(pos);
 		g_cos[i][0] = cos(pos);
 		pos += step;
 	}
