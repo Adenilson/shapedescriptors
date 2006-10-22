@@ -69,6 +69,25 @@ int compare_vectors(double *vector1, int length, double *vector2)
 	return res;
 }
 
+
+//Test for derivative filter
+START_TEST (diff_filter)
+{
+
+	int length = 40;
+	complex<double> *base;// = new complex<double>[length];
+
+	base = create_filter(2, length);
+	if (base)
+		for (int i = 0; i < length; ++i)
+			;//cout << "base[" << i << "] = " << base[i] << endl;
+
+	delete[] base;
+
+}
+END_TEST
+
+
 //Tests for unshift operation
 //Tests for shift operation
 START_TEST (tunshift)
@@ -162,18 +181,19 @@ START_TEST (diff)
 {
 
 	complex<double> *time;
-	mcomplex<double> *g_sin, *g_cos, *g_transf;
+	mcomplex<double> *g_sin, *g_cos;
 	int length = 256;
 	int diff_level = 1;
 	double tolerance = 0.05;
 	double step = 2 * PI /(length - 1);
-	double pos = 0;
+	double pos = 0, tmp;
 	int res = 1;
 
+	complex<double> *g_transf;
 	time = new complex<double> [length];
 	g_sin = new mcomplex<double> [length];
 	g_cos = new mcomplex<double> [length];
-	g_transf = new mcomplex<double> [length];
+	//g_transf = new mcomplex<double> [length];
 
 	for (int i = 0; i < length; ++i) {
 		time[i].real() = pos;
@@ -183,14 +203,44 @@ START_TEST (diff)
 		pos += step;
 	}
 
-	differentiate(g_sin, length, g_transf, diff_level);
+	g_transf = differentiate(g_sin, length, diff_level);
 	for (int i = 0; i < length; ++i)
-		if (((tolerance * g_cos[i][0]) < g_transf[i][0]) &&
-		    (((tolerance + 1) * g_cos[i][0]) > g_transf[i][0]))
-			res = 0;
+		cout << "\n\t" << i << "\t" << g_transf[i].real();
+/*
+		cout << "\n" << i << "\tcos: " << g_cos[i][0] <<
+			"\tdiff: " << g_transf[i].real();
+*/
 
+	bool test;
+	for (int i = 0; i < length; ++i) {
+		tmp = g_cos[i][0];
+		tmp *= (1 + tolerance);
+		test = tmp > g_transf[i].real();
+		if (!test) {
+			/* bigger! */
+			goto error;
+		}
+
+		tmp = g_cos[i][0];
+		tmp *= (1 - tolerance);
+		test = tmp < g_transf[i].real();
+		if (!test) {
+			/* smaller! */
+			goto error;
+		}
+	}
+
+	goto cleanup;
+
+/*		if (((tolerance * g_cos[i][0]) < g_transf[i].real()) &&
+		    (((tolerance + 1) * g_cos[i][0]) > g_transf[i].real()))
+
+			res = 0;
+*/
+error:
 	fail_unless(res == 0, "differentiate out of acceptable values");
 
+cleanup:
 	delete [] time;
 	delete [] g_sin;
 	delete [] g_cos;
@@ -339,6 +389,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, diff);
 	tcase_add_test(test_case, tshift);
 	tcase_add_test(test_case, tunshift);
+	tcase_add_test(test_case, diff_filter);
 	return s;
 }
 

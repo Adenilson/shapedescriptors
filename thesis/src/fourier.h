@@ -15,6 +15,7 @@
 
 #include <fftw3.h>
 #include <pthread.h>
+#include <complex>
 
 /** PI value */
 #define PI 3.14159265359
@@ -245,29 +246,103 @@ TYPE *unshift(TYPE *signal, int length)
 	return transf;
 }
 
+
+/** Create filter function
+ *
+ * @param j Level of derivative
+ *
+ * @return A vector with filter, NULL otherwise.
+ */
+std::complex<double> *create_filter(double diff_level, int length)
+{
+	std::complex<double> *res;
+	res = new std::complex<double>[length];
+
+	if (res)
+		for (int i = 0; i < length; ++i) {
+			res[i].imag() = 1;
+			res[i].imag() *= i - length/2;
+			res[i] = pow(res[i] * (2 * PI), diff_level);
+		}
+	else
+		res = NULL;
+
+	return res;
+}
+
+
 /** Calculate derivate using Fourier derivative property.
  *
  * @param signal A given real or complex signal vector.
  *
  * @param length Signal vector length.
  *
- * @param transf Preallocated complex object vector, will hold filtered
- *               signal.
  * @param diff_level Which derivate we want i.e. use 'diff_level = 1' for
  *                   first derivate of signal function.
  *
- * TODO: implement the code!
+ * @return  Complex object vector that holds filtered signal or NULL
+ * TODO:
  *       add gaussian filter to derivative
  *       add sigmoid filter to derivative
+ *       use thread safe version of Fourier transform
  */
+template <class TYPE1>
+std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
+{
+
+	std::complex<double> *transformed, *diff_filter, *tmp, *res = NULL;
+	transformed = new std::complex<double> [length];
+	tmp = new std::complex<double> [length];
+	if ((!transformed) || (!tmp))
+		goto error;
+
+	transform(signal, length, transformed);
+	shift(transformed, length);
+	diff_filter = create_filter(diff_level, length);
+	if (!diff_filter)
+		goto dealloc;
+
+
+	for (int i = 0; i < length; ++i)
+		tmp[i] = transformed[i] * diff_filter[i];
+	delete [] diff_filter;
+
+
+	res = unshift(tmp, length);
+	if (!res)
+		goto dealloc;
+
+	/* FIXME: we must do inverse Fourier transform before returning
+	 * result vector. Also pay attention that Fourier inverse is not
+	 * normalized!
+	 */
+	for (int i = 0; i < length; ++i) {
+		res[i].imag() /= length;
+		res[i].real() /= length;
+	}
+
+	goto dealloc;
+
+error:
+	transformed = NULL;
+	return transformed;
+
+dealloc:
+	delete [] transformed;
+	delete [] tmp;
+	transformed = tmp = NULL;
+
+	return res;
+}
+
+/*
 template <class TYPE1, class TYPE2>
 void differentiate(TYPE1 signal, int length, TYPE2 transf, double diff_level)
 {
 
 
-
-
-
 }
+*/
+
 
 #endif
