@@ -302,9 +302,8 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 
 	transform(signal, length, transformed);
 	tmp = shift(transformed, length);
-	if (!tmp) {
+	if (!tmp)
 		goto error;
-	}
 
 	diff_filter = create_filter(diff_level, length);
 	if (!diff_filter)
