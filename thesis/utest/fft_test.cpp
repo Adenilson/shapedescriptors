@@ -253,7 +253,7 @@ END_TEST
 START_TEST (thread_transf)
 {
 	int res = 0, tid;
-	pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+	static pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 	pthread_t thread1;
 	function_param parameters;
 
@@ -290,7 +290,8 @@ END_TEST
 START_TEST (thread_inver)
 {
 	int res = 0, tid;
-	pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutex1;
+	pthread_mutex_init(&mutex1, NULL);
 	pthread_t thread1;
 	function_param parameters;
 
