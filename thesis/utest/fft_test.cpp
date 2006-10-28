@@ -176,6 +176,23 @@ START_TEST (tshift)
 }
 END_TEST
 
+void save_data(complex<double> *calc, complex<double> *symbolic, int length)
+{
+	ofstream fout("diff_data.txt");
+	fout << "t" << "  "
+	     << "diff" << "  "
+	     << "analytic" << "  "
+	     << "error" << "  "
+	     << endl;
+
+	for (int i = 0; i < length; ++i)
+		fout << i << "  "
+		     << calc[i].real() << "  "
+		     << symbolic[i].real() << "  "
+		     << calc[i].real() - symbolic[i].real()
+		     << endl;
+
+}
 
 //Tests diferentiate calculus with fourier
 START_TEST (diff)
@@ -222,6 +239,7 @@ START_TEST (diff)
 	goto cleanup;
 
 error:
+	save_data(g_transf, g_diff, length);
 	fail_unless(res == 0, "differentiate out of acceptable values");
 
 cleanup:
