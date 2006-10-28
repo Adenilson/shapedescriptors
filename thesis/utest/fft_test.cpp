@@ -11,6 +11,7 @@
 #include "src/fourier.h"
 #include "src/ccomplex.h"
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 #include <check.h>
@@ -179,41 +180,29 @@ END_TEST
 //Tests diferentiate calculus with fourier
 START_TEST (diff)
 {
-
-	complex<double> *time;
-	mcomplex<double> *g_sin, *g_cos;
+	mcomplex<double> *g_signal, *g_diff;
 	int length = 256;
 	int diff_level = 1;
 	double tolerance = 0.05;
 	double step = 2 * PI /(length - 1);
 	double pos = 0, tmp;
 	int res = 1;
-
 	complex<double> *g_transf;
-	time = new complex<double> [length];
-	g_sin = new mcomplex<double> [length];
-	g_cos = new mcomplex<double> [length];
-	//g_transf = new mcomplex<double> [length];
 
+	g_signal = new mcomplex<double> [length];
+	g_diff = new mcomplex<double> [length];
 	for (int i = 0; i < length; ++i) {
-		time[i].real() = pos;
 		//mcomplex operators at rescue!
-		g_sin[i][0] = sin(pos);
-		g_cos[i][0] = cos(pos);
+		g_signal[i][0] = cos(2 * pos) + sin(pos * pos);
+		g_diff[i][0] = -2 * sin(2 * pos) + 2 * pos * cos(pos * pos);
 		pos += step;
 	}
 
-	g_transf = differentiate(g_sin, length, diff_level);
-	for (int i = 0; i < length; ++i)
-	  cout << "\n\t" << i << "\t" << g_transf[i].real();//g_sin[i][0]; //
-/*
-		cout << "\n" << i << "\tcos: " << g_cos[i][0] <<
-			"\tdiff: " << g_transf[i].real();
-*/
+	g_transf = differentiate(g_signal, length, diff_level);
 
 	bool test;
 	for (int i = 0; i < length; ++i) {
-		tmp = g_cos[i][0];
+		tmp = g_diff[i][0];
 		tmp *= (1 + tolerance);
 		test = tmp > g_transf[i].real();
 		if (!test) {
@@ -221,7 +210,7 @@ START_TEST (diff)
 			goto error;
 		}
 
-		tmp = g_cos[i][0];
+		tmp = g_diff[i][0];
 		tmp *= (1 - tolerance);
 		test = tmp < g_transf[i].real();
 		if (!test) {
@@ -232,18 +221,12 @@ START_TEST (diff)
 
 	goto cleanup;
 
-/*		if (((tolerance * g_cos[i][0]) < g_transf[i].real()) &&
-		    (((tolerance + 1) * g_cos[i][0]) > g_transf[i].real()))
-
-			res = 0;
-*/
 error:
 	fail_unless(res == 0, "differentiate out of acceptable values");
 
 cleanup:
-	delete [] time;
-	delete [] g_sin;
-	delete [] g_cos;
+	delete [] g_signal;
+	delete [] g_diff;
 	delete [] g_transf;
 
 }
