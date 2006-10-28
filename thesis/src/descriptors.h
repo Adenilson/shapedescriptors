@@ -1,7 +1,17 @@
-//------------------------------------------------------------------------------
+/** @file
+ *
+ * Shape descriptors code module.
+ *
+ * Copyright 2005
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com>
+ *
+ * @version
+ */
+
 #ifndef _DESCRIPTOR_H_
 #define _DESCRIPTOR_H_
-//------------------------------------------------------------------------------
+
+
 #include "base.h"
 
 //Calculates diameter, parameters
@@ -65,5 +75,4 @@ void ratio_dist(CvSeq *contour, m_point* centroid, int size, d3point *distances)
 
 
 
-//------------------------------------------------------------------------------
 #endif

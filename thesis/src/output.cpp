@@ -1,6 +1,15 @@
-//------------------------------------------------------------------------------
+/** @file
+ *
+ * Scilab auto generated code goes here
+ *
+ *
+ *
+ * Copyright 2005
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com>
+ *
+ * @version
+ */
 
-//------------------------------------------------------------------------------
 #include "output.h"
 #include "descriptors.h"
 #include <fstream>
@@ -8,19 +17,19 @@
 #include <string>
 //Class stringstream
 #include <sstream>
-
 using namespace std;
-//------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
 //Create a scilab program to handle exported text files with coordinates of
 //contours
-void sci_prog(int n_contour, string img_file_name) {
+void sci_prog(int n_contour, string img_file_name)
+{
 
-  string filename, buffer;
-  typedef enum { IMG_NAME, STR_CLOS, LST_NXT, LST_END, CONTOUR_LIST, PRG_BULK } prog_step;
-  const char* prog[] = {"img_name ='", "'", ",", ");", "contour_name= list(",
-                        "stacksize(13000000); \n \
+	string filename, buffer;
+	typedef enum { IMG_NAME, STR_CLOS, LST_NXT,
+		       LST_END, CONTOUR_LIST, PRG_BULK } prog_step;
+
+	const char* prog[] = {"img_name ='", "'", ",", ");", "contour_name= list(",
+			      "stacksize(13000000); \n \
                          function D = showcontour() \n \
                          Img = imread(img_name); \n \
                          n = size(contour_name); \n \
@@ -35,106 +44,105 @@ void sci_prog(int n_contour, string img_file_name) {
                          D = 1 \n \
                          endfunction;" };
 
-  ofstream fout;
-  fout.open("plotter.sci");
+	ofstream fout;
+	fout.open("plotter.sci");
 
-  fout << prog[IMG_NAME] << img_file_name << prog[STR_CLOS] << endl;
+	fout << prog[IMG_NAME] << img_file_name << prog[STR_CLOS] << endl;
 
-  for(int i = 1; i <= n_contour; ++i) {
+	for (int i = 1; i <= n_contour; ++i) {
 
-    stringstream i2s;
-    i2s << "_contour_" << i << ".txt";
-    filename = img_file_name; filename += i2s.str();
-    buffer += prog[STR_CLOS];
-    buffer += filename;
-    buffer += prog[STR_CLOS];
+		stringstream i2s;
+		i2s << "_contour_" << i << ".txt";
+		filename = img_file_name; filename += i2s.str();
+		buffer += prog[STR_CLOS];
+		buffer += filename;
+		buffer += prog[STR_CLOS];
 
-    if(i < n_contour)
-      buffer += prog[LST_NXT];
-    else
-      buffer += prog[LST_END];
+		if (i < n_contour)
+			buffer += prog[LST_NXT];
+		else
+			buffer += prog[LST_END];
 
-  }
-  fout << prog[CONTOUR_LIST] << buffer << endl;
-  fout << prog[PRG_BULK] << endl;
+	}
+	fout << prog[CONTOUR_LIST] << buffer << endl;
+	fout << prog[PRG_BULK] << endl;
 }
 
-//------------------------------------------------------------------------------
 //Write the scilab code into a text file
 //void print_contour4(string img_file_name, CvSeq *contours) {
-void print_contour(char *img_file_name, CvSeq *contours, bool mthreshold, float diam_thres) {
+void print_contour(char *img_file_name, CvSeq *contours, bool mthreshold,
+		   float diam_thres)
+{
 
-  CvSeq* contourPtr = contours;
-  CvSeqReader reader;
-  int n_point = 0;
-  int c_contour = 0;
-  CvPoint p;
-  ofstream f_contour;
-  string filename;
-  float *diameters = NULL;
-  int d_size = 0;
+	CvSeq* contourPtr = contours;
+	CvSeqReader reader;
+	int n_point = 0;
+	int c_contour = 0;
+	CvPoint p;
+	ofstream f_contour;
+	string filename;
+	float *diameters = NULL;
+	int d_size = 0;
 
-  if(mthreshold) {
-    diameters = calc_diam(contours, &d_size);
+	if (mthreshold) {
+		diameters = calc_diam(contours, &d_size);
 
-    for (int i = 0; i < d_size; ++i)
-      if(diameters[i] >= diam_thres) {
+		for (int i = 0; i < d_size; ++i)
+			if (diameters[i] >= diam_thres) {
 
-        cvStartReadSeq(contourPtr, &reader);
-        n_point = contourPtr->total;
+				cvStartReadSeq(contourPtr, &reader);
+				n_point = contourPtr->total;
 
-        cout << n_point << endl;
-        ++c_contour;
+				cout << n_point << endl;
+				++c_contour;
 
-        stringstream i2s;
-        i2s << "_contour_" << c_contour << ".txt";
-        filename = img_file_name; filename += i2s.str();
-        cout << filename << endl;
-        f_contour.open(filename.c_str());
+				stringstream i2s;
+				i2s << "_contour_" << c_contour << ".txt";
+				filename = img_file_name; filename += i2s.str();
+				cout << filename << endl;
+				f_contour.open(filename.c_str());
 
-        for (int i = 0; i < n_point; ++i) {
-          CV_READ_SEQ_ELEM(p, reader);
-          //CV_REV_READ_SEQ_ELEM(p, reader);
-          f_contour << p.x << " " << p.y << endl;
-        }
+				for (int i = 0; i < n_point; ++i) {
+					CV_READ_SEQ_ELEM(p, reader);
+					//CV_REV_READ_SEQ_ELEM(p, reader);
+					f_contour << p.x << " " << p.y << endl;
+				}
 
-        f_contour.close();
-        contourPtr = contourPtr->h_next;
+				f_contour.close();
+				contourPtr = contourPtr->h_next;
 
-      }
-      delete [] diameters;
-  }
-  else {
+			}
+		delete [] diameters;
 
-    for(; contourPtr != NULL; contourPtr = contourPtr->h_next) {
-      cvStartReadSeq(contourPtr, &reader);
-      n_point = contourPtr->total;
+	} else {
 
-      cout << n_point << endl;
-      ++c_contour;
+		for (; contourPtr != NULL; contourPtr = contourPtr->h_next) {
+			cvStartReadSeq(contourPtr, &reader);
+			n_point = contourPtr->total;
 
-      stringstream i2s;
-      i2s << "_contour_" << c_contour << ".txt";
-      filename = img_file_name; filename += i2s.str();
-      cout << filename << endl;
-      f_contour.open(filename.c_str());
+			cout << n_point << endl;
+			++c_contour;
 
-      for (int i = 0; i < n_point; ++i) {
-        CV_READ_SEQ_ELEM(p, reader);
-        //CV_REV_READ_SEQ_ELEM(p, reader);
-        f_contour << p.x << " " << p.y << endl;
-      }
+			stringstream i2s;
+			i2s << "_contour_" << c_contour << ".txt";
+			filename = img_file_name; filename += i2s.str();
+			cout << filename << endl;
+			f_contour.open(filename.c_str());
 
-      f_contour.close();
+			for (int i = 0; i < n_point; ++i) {
+				CV_READ_SEQ_ELEM(p, reader);
+				//CV_REV_READ_SEQ_ELEM(p, reader);
+				f_contour << p.x << " " << p.y << endl;
+			}
 
-    }
+			f_contour.close();
+
+		}
 
 
-  }
+	}
 
-  sci_prog(c_contour, img_file_name);
+	sci_prog(c_contour, img_file_name);
 
 }
-//------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------

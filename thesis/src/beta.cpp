@@ -98,17 +98,20 @@ typedef enum { ORIGINAL, THRESH, CONTOUR } wnames;
 
 //Write centroid of each contour in external file
 //ps: the last one is the external contour
-bool write_centroid(CvSeq* contours, char *filename, float diam, float *diameters);
+bool write_centroid(CvSeq* contours, char *filename, float diam,
+		    float *diameters);
 
 
 //Write area of each contour in external file
 //ps: idem
-bool write_area(CvSeq* contours, char *filename, float diam, float *diameters);
+bool write_area(CvSeq* contours, char *filename, float diam,
+		float *diameters);
 
 //Write diameter of each contour in external file
 //ps: idem
 //bool write_diam(CvSeq* contours, char *filename, float diam);
-bool write_diam(CvSeq* contours, char *filename, float diam, float *diameters, int thasize);
+bool write_diam(CvSeq* contours, char *filename, float diam,
+		float *diameters, int thasize);
 
 //Show the contour stored in a sequence
 void show_contour(void);
@@ -117,228 +120,240 @@ void show_contour(void);
 void on_trackbar(int h);
 
 //Main function (duh!)
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 
-  char *filename = (argc >= 2 ? argv[1] : (char*)"escamas.bmp");
-  if( (image = cvLoadImage( filename, 1)) == 0 ) {
-    cout << "Can't find image \"escamas.bmp\". Please supply the image." << endl;
-    return -1;
-  }
+	char *filename = (argc >= 2 ? argv[1] : (char*)"escamas.bmp");
+	if ((image = cvLoadImage( filename, 1)) == 0) {
+		cout << "Can't find image \"escamas.bmp\". Please supply the image." << endl;
+		return -1;
+	}
 
-  bool interactive = true;
-  int thres_value = 160;
-  string temp;
-  int pos = 0;
-  float *diameters = NULL;
-  int d_size = 0;
+	bool interactive = true;
+	int thres_value = 160;
+	string temp;
+	int pos = 0;
+	float *diameters = NULL;
+	int d_size = 0;
 
-  for(int i = 2; i < argc; ++i) {
-    temp = argv[i];
-    if(temp == "batch")
-      interactive = false;
-    else if(i == 2) {
-      thres_value = atoi(argv[2]);
-        //do_thres = true;
-    }
-  }
+	for (int i = 2; i < argc; ++i) {
+		temp = argv[i];
+		if (temp == "batch")
+			interactive = false;
+		else if (i == 2) {
+			thres_value = atoi(argv[2]);
+			//do_thres = true;
+		}
+	}
 
-  //Allocate image structure resource
-  gray = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
-  thres = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
-  cnt_img = cvCreateImage(cvSize(thres->width, thres->height), IPL_DEPTH_8U, 3);
+	//Allocate image structure resource
+	gray = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
+	thres = cvCreateImage(cvSize(image->width,image->height), IPL_DEPTH_8U, 1);
+	cnt_img = cvCreateImage(cvSize(thres->width, thres->height), IPL_DEPTH_8U, 3);
 
-  //Convert to grayscale,
-  cvCvtColor(image, gray, CV_BGR2GRAY);
+	//Convert to grayscale,
+	cvCvtColor(image, gray, CV_BGR2GRAY);
 
-  /*
-  cvNamedWindow("gray", 1);
-  cvShowImage("gray", gray);
-  */
-  //Non interactive mode
-  if(!interactive) {
-    //Do the threshold
-    threshold(thres_value, gray, thres);
-    //Morphology operations to ensure closing of contour
-    dilation(thres, thres);
-    erosion(thres, thres);
-    //Try to do contour following
-    contours = contour_follow(thres, storage, &num_cell);
-    //Plots contours in a IplImage
-    plot_contour(cnt_img, contours);
-  }
-  else {
-    //Alocates window resources and reloads original image
-    win_alloc(n_windows, win_names);
-    image = cvLoadImage(filename, 1);
-    //Show original image
-    cvShowImage(win_names[ORIGINAL], image);
+	/*
+	  cvNamedWindow("gray", 1);
+	  cvShowImage("gray", gray);
+	*/
+	//Non interactive mode
+	if (!interactive) {
+		//Do the threshold
+		threshold(thres_value, gray, thres);
+		//Morphology operations to ensure closing of contour
+		dilation(thres, thres);
+		erosion(thres, thres);
+		//Try to do contour following
+		contours = contour_follow(thres, storage, &num_cell);
+		//Plots contours in a IplImage
+		plot_contour(cnt_img, contours);
+	} else {
+		//Alocates window resources and reloads original image
+		win_alloc(n_windows, win_names);
+		image = cvLoadImage(filename, 1);
+		//Show original image
+		cvShowImage(win_names[ORIGINAL], image);
 
-    //Create a window and toolbar
-    cvNamedWindow(win_names[THRESH], 1);
-    cvCreateTrackbar(tbarname, win_names[THRESH], &thres_value, edge_thresh, on_trackbar);
-    //Activates callback (which shows the image)
-    on_trackbar(thres_value);
+		//Create a window and toolbar
+		cvNamedWindow(win_names[THRESH], 1);
+		cvCreateTrackbar(tbarname, win_names[THRESH], &thres_value, edge_thresh, on_trackbar);
+		//Activates callback (which shows the image)
+		on_trackbar(thres_value);
 
-    //Now show the contour
-    show_contour();
+		//Now show the contour
+		show_contour();
 
-    // Wait for a key stroke; the same function arranges events processing
-    cvWaitKey(0);
+		// Wait for a key stroke; the same function arranges events processing
+		cvWaitKey(0);
 
-    //Frees allocated resources
-    win_free(n_windows, win_names);
-  }
+		//Frees allocated resources
+		win_free(n_windows, win_names);
+	}
 
-  //Save the image with contours
-  temp = filename;
-  pos = temp.size();
-  pos -= 4;
-  temp = temp.substr(0, pos);
-  temp += "contour";
-  temp += ".png";
-  cvSaveImage(temp.c_str(), cnt_img);
+	//Save the image with contours
+	temp = filename;
+	pos = temp.size();
+	pos -= 4;
+	temp = temp.substr(0, pos);
+	temp += "contour";
+	temp += ".png";
+	cvSaveImage(temp.c_str(), cnt_img);
 
-  //Free allocated resources
-  cvReleaseImage(&image);
-  cvReleaseImage(&gray);
-  cvReleaseImage(&thres);
-  cvReleaseImage(&cnt_img);
+	//Free allocated resources
+	cvReleaseImage(&image);
+	cvReleaseImage(&gray);
+	cvReleaseImage(&thres);
+	cvReleaseImage(&cnt_img);
 
-  //Prints files with contour coordinates, we want diameter threshold
-  //(only contours with diameter greater than 7 pixels)
-  print_contour(filename, contours, true, diam_thres);
+	//Prints files with contour coordinates, we want diameter threshold
+	//(only contours with diameter greater than 7 pixels)
+	print_contour(filename, contours, true, diam_thres);
 
 
-  //Calculates all diameters. Its the threshold descriptor for others!
-  diameters = calc_diam(contours, &d_size);
+	//Calculates all diameters. Its the threshold descriptor for others!
+	diameters = calc_diam(contours, &d_size);
 
-  //Write external file with each contour centroid
-  write_centroid(contours, file_centroid, diam_thres, diameters);
-  //Write external file with each contour area
-  write_area(contours, file_area, diam_thres, diameters);
-  //Write external file with each contour diameter
-  write_diam(contours, file_diam, diam_thres, diameters, d_size);
+	//Write external file with each contour centroid
+	write_centroid(contours, file_centroid, diam_thres, diameters);
+	//Write external file with each contour area
+	write_area(contours, file_area, diam_thres, diameters);
+	//Write external file with each contour diameter
+	write_diam(contours, file_diam, diam_thres, diameters, d_size);
 
-  return 0;
+	return 0;
 }
 
-void show_contour(void) {
-  CvSeq *_contours = contours;
-  cvZero(cnt_img);
+void show_contour(void)
+{
+	CvSeq *_contours = contours;
+	cvZero(cnt_img);
 
-  //Plot a contour in a image and marks its centroid
-  plot_contour(cnt_img, _contours);
-  mark_centroid(_contours, cnt_img);
-  cvShowImage(win_names[CONTOUR], cnt_img);
+	//Plot a contour in a image and marks its centroid
+	plot_contour(cnt_img, _contours);
+	mark_centroid(_contours, cnt_img);
+	cvShowImage(win_names[CONTOUR], cnt_img);
 
 }
 
 
 void on_trackbar(int h)
 {
-  threshold(h, gray, thres);
-  dilation(thres, thres);//, 1, 2);
-  erosion(thres, thres);//, 1, 2);
-  cvShowImage(win_names[THRESH], thres);
-  //Try to found the contour in thresholded image and display it
-  contours = contour_follow(thres, storage, &num_cell);
-  show_contour();
+	threshold(h, gray, thres);
+	dilation(thres, thres);//, 1, 2);
+	erosion(thres, thres);//, 1, 2);
+	cvShowImage(win_names[THRESH], thres);
+	//Try to found the contour in thresholded image and display it
+	contours = contour_follow(thres, storage, &num_cell);
+	show_contour();
 }
 
 //Write max/min, max & min distances from centroid of each contour in external file
 //ps: the last one is the external contour
-bool write_dist(CvSeq* contours, char *filename, float diam, float *diameters, m_point *centroid, int size);
-bool write_centroid(CvSeq* contours, char *filename, float diam, float *diameters) {
-  m_point *dumbo = NULL;
-  bool result = true;
-  int thasize = 0;
+bool write_dist(CvSeq* contours, char *filename, float diam,
+		float *diameters, m_point *centroid, int size);
 
-  dumbo = calc_centroid(contours, &thasize);
-  write_dist(contours, file_ratio, diam, diameters, dumbo, thasize);
-  //ratio_dist(contours, dumbo, thasize, file_ratio);
+bool write_centroid(CvSeq* contours, char *filename, float diam,
+		    float *diameters)
+{
+	m_point *dumbo = NULL;
+	bool result = true;
+	int thasize = 0;
+
+	dumbo = calc_centroid(contours, &thasize);
+	write_dist(contours, file_ratio, diam, diameters, dumbo, thasize);
+	//ratio_dist(contours, dumbo, thasize, file_ratio);
 
 
-  try {
-    ofstream fout(filename);
-    for(int k = 0; k < thasize; ++k)
-      if(diameters[k] >= diam)
-	fout << dumbo[k].x << "     " << dumbo[k].y << endl;
+	try {
+		ofstream fout(filename);
+		for (int k = 0; k < thasize; ++k)
+			if (diameters[k] >= diam)
+				fout << dumbo[k].x << "     " << dumbo[k].y << endl;
 
-  }
-  catch(...) {
-    delete [] dumbo;
-    return false;
-  }
-  delete [] dumbo;
-  return result;
+	}
+	catch(...) {
+		delete [] dumbo;
+		return false;
+	}
+	delete [] dumbo;
+	return result;
 }
 
-bool write_area(CvSeq* contours, char *filename, float diam, float *diameters) {
-  float *dumbo = NULL;
-  bool result = true;
-  int thasize = 0;
-  dumbo = calc_area(contours, &thasize);
+bool write_area(CvSeq* contours, char *filename, float diam,
+		float *diameters)
+{
+	float *dumbo = NULL;
+	bool result = true;
+	int thasize = 0;
+	dumbo = calc_area(contours, &thasize);
 
-  try {
-    ofstream fout(filename);
-    for(int k = 0; k < thasize; ++k)
-      if(diameters[k] >= diam)
-	fout << dumbo[k] << endl;
+	try {
+		ofstream fout(filename);
+		for (int k = 0; k < thasize; ++k)
+			if (diameters[k] >= diam)
+				fout << dumbo[k] << endl;
 
-  }
-  catch(...) {
-    delete [] dumbo;
-    return false;
-  }
-  delete [] dumbo;
-  return result;
+	}
+	catch(...) {
+		delete [] dumbo;
+		return false;
+	}
+	delete [] dumbo;
+	return result;
 }
 
-bool write_diam(CvSeq* contours, char *filename, float diam, float *diameters, int thasize) {
-  float *dumbo = NULL;
-  bool result = true;
-  //int thasize = 0;
-  //dumbo = calc_diam(contours, &thasize);
+bool write_diam(CvSeq* contours, char *filename, float diam,
+		float *diameters, int thasize)
+{
+	float *dumbo = NULL;
+	bool result = true;
+	//int thasize = 0;
+	//dumbo = calc_diam(contours, &thasize);
 
-  try {
-    ofstream fout(filename);
-    for(int k = 0; k < thasize; ++k)
-      if(diameters[k] >= diam)
-	fout << diameters[k] << endl;
-  }
-  catch(...) {
-    delete [] dumbo;
-    return false;
-  }
-  delete [] dumbo;
-  return result;
+	try {
+		ofstream fout(filename);
+		for (int k = 0; k < thasize; ++k)
+			if (diameters[k] >= diam)
+				fout << diameters[k] << endl;
+	}
+	catch(...) {
+		delete [] dumbo;
+		return false;
+	}
+	delete [] dumbo;
+	return result;
 }
 
 
 //Write centroid of each contour in external file
 //ps: the last one is the external contour
-bool write_dist(CvSeq* contours, char *filename, float diam, float *diameters, m_point *centroid, int size) {
+bool write_dist(CvSeq* contours, char *filename, float diam,
+		float *diameters, m_point *centroid, int size)
+{
 
-  d3point *distances = NULL;
-  bool result = true;
+	d3point *distances = NULL;
+	bool result = true;
 
-  distances = new d3point[size];
-  ratio_dist(contours, centroid, size, distances);
-  //calc_centroid(contours, &thasize);  
-  //ratio_dist(contours, dumbo, thasize, file_ratio);      
-  
-  try {
-    ofstream fout(filename);
-    for(int k = 0; k < size; ++k)
-      if(diameters[k] >= diam)
-	fout << distances[k].x << "     " << distances[k].y << "     " << distances[k].z << endl;  
-    //cout << "Contour " << k << " centroid= " << dumbo[k].x << " " << dumbo[k].y << endl;    
-  }
-  catch(...) {
-    delete [] distances;
-    return false;       
-  }
-  delete [] distances;
-  return result;  
+	distances = new d3point[size];
+	ratio_dist(contours, centroid, size, distances);
+	//calc_centroid(contours, &thasize);
+	//ratio_dist(contours, dumbo, thasize, file_ratio);
+
+	try {
+		ofstream fout(filename);
+		for (int k = 0; k < size; ++k)
+			if (diameters[k] >= diam)
+				fout << distances[k].x << "     "
+				     << distances[k].y << "     "
+				     << distances[k].z << endl;
+	}
+	catch(...) {
+		delete [] distances;
+		return false;
+	}
+	delete [] distances;
+	return result;
 
 }
