@@ -3,7 +3,7 @@ blob_analysis: blob_demo.o blob_filter.o window.o post_process.o
 	post_process.o -lcv0.9 -lhighgui0.9 -lstdc++
 
 clean:
-	rm -f *.o *.out *~ blob_analysis sample_image.jpg TAGS
+	rm -f *.o *.out *~ blob_analysis sample_image.jpg TAGS *.bmp *.png
 
 tags:
-	sh tagger.sh
+	find . -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs etags --append
