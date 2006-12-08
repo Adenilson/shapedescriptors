@@ -20,7 +20,7 @@ inline T square(T i)
 
 /** Blobs descriptors features
  *
- * TODO: rectanglelarity should become a new method.
+ * TODO: Doxygen comments.
  */
 struct blob_features {
 	/** Some feature descriptors of blobs */
