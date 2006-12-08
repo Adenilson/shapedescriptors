@@ -1,4 +1,4 @@
-/*******************************************************************************
+/**********************************************************************
 Purpose: Given an image, it does blobs analysis, calculates area of
  isolated blobs in image. Steps
 a) read original image
@@ -9,7 +9,8 @@ e) crop and resize a ROI from original image
 
 
 Author: Adenilson Cavalcanti da Silva savagobr@yahoo.com
-License: GPL for non comercial use (contact author for other licensing contracts)
+License: GPL for non comercial use (contact author for other licensing
+         contracts)
 Dependencies: OpenCV (0.96) and Dave Grossman's blob code
 History:
 	vs 0.01 22-07-2005 Start
@@ -20,12 +21,12 @@ History:
 
 
 TODO: add copyright and license in source code files.
+      add doxygen generation into build.
 
-*******************************************************************************/
+*************************************************************************/
 
 
 #include <stdlib.h>
-
 #include <opencv/highgui.h>
 #include <set>
 #include <iostream>
@@ -49,9 +50,9 @@ inline T square(T i)
 }
 
 
-/** Diagonal of given blob
+/** Diagonal of given blob bouding box
  *
- * @param blob_features A struct with blob extracted features
+ * @param blob_features A struct with blob extracted features.
  *
  * @return The diagonal of the bounding box of blob.
  *

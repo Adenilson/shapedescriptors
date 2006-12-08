@@ -5,7 +5,7 @@
 
 /** Blobs descriptors features
  *
- * TODO: rectangluraty should become a new method.
+ * TODO: rectanglelarity should become a new method.
  */
 struct blob_features {
 	/** Some feature descriptors of blobs */
@@ -35,7 +35,7 @@ struct blob_features {
 };
 
 /** Structure to hold filtered blobs.
- *
+ * TODO: Add doxygen comments in struct methods.
  */
 struct blob_result {
 	/** holds blob descriptors vector */
