@@ -41,13 +41,32 @@ using namespace std;
  *
  * @return Squared number.
  *
- * TODO: make it template based.
  */
-inline float square(float i)
+template <typename T>
+inline T square(T i)
 {
 	return i * i;
 }
 
+
+/** Diagonal of given blob
+ *
+ * @param blob_features A struct with blob extracted features
+ *
+ * @return The diagonal of the bounding box of blob.
+ *
+ */
+float bounding_box_diagonal(blob_features &blob_feature)
+{
+	float distance;
+
+	distance = square(blob_feature.min_x - blob_feature.max_x) +
+		square(blob_feature.min_y - blob_feature.max_y);
+	distance = sqrt(distance);
+	distance = blob_feature.area / distance;
+
+	return distance;
+}
 
 int main(int argc, char** argv)
 {
@@ -56,7 +75,7 @@ int main(int argc, char** argv)
 	float distance;
 	char plate_name[100], *file_name = "plate_", *tmp;
 
-	// Input the sample picture. The user must make sure it's in the right folder
+	// Input the sample picture.
 	const char *filename = (argc >= 2 ? argv[1] : "data/Circles.jpg");
 	sample_image = cvLoadImage(filename, -1);
 	show_img("Original", sample_image);
@@ -72,13 +91,8 @@ int main(int argc, char** argv)
 
 	cout << " blobs number: " << result.blob_count << endl;
 	for (int i = 0; i < result.blob_count; ++i) {
-		/* XXX: Move this code to a proper function */
-		distance = square(result.blobs[i].min_x -
-				  result.blobs[i].max_x) +
-			square(result.blobs[i].min_y -
-			       result.blobs[i].max_y);
-		distance = sqrt(distance);
-		distance = result.blobs[i].area / distance;
+
+		distance = bounding_box_diagonal(result.blobs[i]);
 
 		cout << "distance: " << distance <<
 			" area: " << result.blobs[i].area <<
