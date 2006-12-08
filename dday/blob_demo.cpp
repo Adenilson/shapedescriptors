@@ -36,38 +36,6 @@ using namespace std;
 #include "window.h"
 #include "post_process.h"
 
-/** Square of number
- *
- * @param i A number to be squared.
- *
- * @return Squared number.
- *
- */
-template <typename T>
-inline T square(T i)
-{
-	return i * i;
-}
-
-
-/** Diagonal of given blob bouding box
- *
- * @param blob_features A struct with blob extracted features.
- *
- * @return The diagonal of the bounding box of blob.
- *
- */
-float bounding_box_diagonal(blob_features &blob_feature)
-{
-	float distance;
-
-	distance = square(blob_feature.min_x - blob_feature.max_x) +
-		square(blob_feature.min_y - blob_feature.max_y);
-	distance = sqrt(distance);
-	distance = blob_feature.area / distance;
-
-	return distance;
-}
 
 int main(int argc, char** argv)
 {
@@ -93,9 +61,8 @@ int main(int argc, char** argv)
 	cout << " blobs number: " << result.blob_count << endl;
 	for (int i = 0; i < result.blob_count; ++i) {
 
-		distance = bounding_box_diagonal(result.blobs[i]);
 
-		cout << "distance: " << distance <<
+		cout << "rect.: " << result.blobs[i].rectangularity <<
 			" area: " << result.blobs[i].area <<
 			" x_max: " << result.blobs[i].max_x <<
 			" y_max: " << result.blobs[i].max_y <<

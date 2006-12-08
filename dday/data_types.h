@@ -3,6 +3,21 @@
 
 #include <complex>
 
+
+/** Square of number
+ *
+ * @param i A number to be squared.
+ *
+ * @return Squared number.
+ *
+ */
+template <typename T>
+inline T square(T i)
+{
+	return i * i;
+}
+
+
 /** Blobs descriptors features
  *
  * TODO: rectanglelarity should become a new method.
@@ -15,6 +30,8 @@ struct blob_features {
 	float min_x, min_y;
 	/** maximum coordinate values */
 	float max_x, max_y;
+	/** Bounding box diagonal */
+	float rectangularity;
 
 	/** Function to calculate centroid */
 	void calc_centroid() {
@@ -22,8 +39,25 @@ struct blob_features {
 		centroid.imag() = (min_y + max_y) / 2;
 	}
 
+	/** Diagonal of given blob bouding box
+	 *
+	 * @param blob_features A struct with blob extracted features.
+	 *
+	 * @return The diagonal of the bounding box of blob.
+	 *
+	 */
+	void calc_rectangularity() {
+
+		float diagonal;
+		diagonal = square(min_x - max_x) +
+			square(min_y - max_y);
+		diagonal = sqrt(diagonal);
+		rectangularity = area / diagonal;
+	}
+
 	/** Overloaded operator */
 	blob_features &operator=(const blob_features &obj) {
+		rectangularity = obj.rectangularity;
 		area = obj.area;
 		perimeter = obj.perimeter;
 		min_x = obj.min_x;

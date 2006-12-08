@@ -126,6 +126,7 @@ blob_result process_image(IplImage* image, int threshold,
 				result.blobs[counter].perimeter = region_data[this_region][BLOBPERIMETER];
 
 
+				result.blobs[counter].calc_rectangularity();
 
 				counter++;
 			}
@@ -135,6 +136,7 @@ blob_result process_image(IplImage* image, int threshold,
 
 
         cout << "number of blobs = " << counter << endl;
+
 	// Display Sample image with bounding rectangles added
 	show_img("processed_image", sample_image);
 	cvSaveImage("sample_image.jpg", sample_image);
