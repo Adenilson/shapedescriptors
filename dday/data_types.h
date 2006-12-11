@@ -2,21 +2,7 @@
 #define __BLOB_DATA_TYPES__
 
 #include <complex>
-
-
-/** Square of number
- *
- * @param i A number to be squared.
- *
- * @return Squared number.
- *
- */
-template <typename T>
-inline T square(T i)
-{
-	return i * i;
-}
-
+#include "correlation.h"
 
 /** Blobs descriptors features
  *
