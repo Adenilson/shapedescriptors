@@ -22,6 +22,8 @@ contour_extractor_LDADD = $(OCV_LIBS)
 contour_extractor_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)
 
 
-utester_SOURCES = $(csourcedir)/fourier.h $(utestdir)/fft_test.cpp
+utester_SOURCES = $(csourcedir)/fourier.h $(utestdir)/fft_test.cpp \
+	$(csourcedir)/mcomplex.h
+
 utester_LDADD = $(FFTW_LIBS) -lcheck -lpthread
 utester_CPPFLAGS = $(AM_CPPFLAGS) $(FFTW_CFLAGS)
