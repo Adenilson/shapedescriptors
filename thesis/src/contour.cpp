@@ -90,7 +90,7 @@ void mark_centroid(CvSeq *contour, IplImage *img)
 		meanx /= contour->total;
 		meany /= contour->total;
 
-		cvRectangle(img, cvPoint(meanx-1, meany-1),
+		cvRectangle(img, cvPoint((int) meanx-1, (int) meany-1),
 			    cvPoint(meanx+1, meany+1),
 			    CV_RGB(0, 0, 255), 1);
 

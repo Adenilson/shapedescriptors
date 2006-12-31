@@ -22,7 +22,6 @@ using namespace std;
 void ratio_dist(CvSeq *contour, m_point* centroid, int size, d3point *distances)
 {
 
-	bool result;
 	float max, min, idist;
 	int n_point, n_contours;
 	m_point jcoord;
@@ -171,7 +170,6 @@ m_point* calc_centroid(CvSeq *contour, int *size)
 //Calculate area and prints in std:io
 void calc_area(CvSeq *contour)
 {
-	CvSeqReader reader;
 	double area;
 	int counter = 0;
 
@@ -192,7 +190,6 @@ void calc_area(CvSeq *contour)
 float *calc_area(CvSeq *contour, int *size)
 {
 	CvSeq *temp = NULL;
-	CvSeqReader reader;
 	float area, *result = NULL;
 	int counter = 0;
 
@@ -278,7 +275,10 @@ m_point *points(CvSeq *obj, int *size)
 
 	for (int i = 0; i < *size; ++i) {
 		CV_READ_SEQ_ELEM(p1, reader);
-		result[i] = p1;
+		/* If using a class with overloaded operators */
+		//result[i] = p1;
+		result[i].x = p1.x;
+		result[i].y = p1.y;
 	}
 
 	return result;

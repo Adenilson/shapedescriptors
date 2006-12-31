@@ -28,7 +28,7 @@ typedef enum { DEBUG, VERBOSE, QUIET } OPMODE;
 
 //My point type (if we are using OpenCV, defaults to CvPoint)
 #define M2DPOINT
-//#undef M2DPOINT
+#undef M2DPOINT
 
 //typedef float NUM;
 typedef double NUM;
@@ -44,6 +44,7 @@ struct d3point {
 };
 
 
+#ifdef M2DPOINT
 //Aux struct to support a coordinate point (yes, I know that I could use
 //CvPoint2D32f or ANSI C 99 "complex" but I need some more general struct).
 //Besides, I put the data in a vector to keep compatibility with ANSI C and
@@ -63,6 +64,7 @@ struct d3point {
    t2 = t2 * t1;
    cout << t2.x << "\t" << t2.y << endl;
    cout << t2[0] << "\t" << t2[1] << endl;
+FIXME: remove all warnings on this struct!
 */
 struct t_point {
 
@@ -140,7 +142,7 @@ struct t_point {
 		{}
 
 };
-#ifdef M2DPOINT
+
 typedef t_point m_point;
 #else
 typedef CvPoint2D32f m_point;
