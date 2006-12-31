@@ -1,0 +1,12 @@
+aclocal.m4
+autom4te.cache
+aux
+build
+configure
+config.h.in
+install-sh
+Makefile.in
+missing
+tagger.sh
+TAGS
+
