@@ -9,7 +9,7 @@
 # debug build target
 # support linking with efence
 
-AM_CPPFLAGS = -Wall -O2
+AM_CPPFLAGS = -Wall -O2 -Weffc++
 bin_PROGRAMS = contour_extractor utester
 
 contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
