@@ -287,11 +287,11 @@ std::complex<double> *create_filter(double diff_level, int length)
  * TODO:
  *       add gaussian filter to derivative
  *       add sigmoid filter to derivative
- *       use thread safe version of Fourier transform
  *       should I use auto pointers?
  */
 template <class TYPE1>
-std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
+std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level,
+				    pthread_mutex_t *mutex = NULL)
 {
 
 	std::complex<double> *transformed, *diff_filter, *tmp, *tmp2, *res;
@@ -300,7 +300,11 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level)
 	if (!transformed)
 		goto error;
 
-	transform(signal, length, transformed);
+	if (mutex)
+		transform(signal, length, transformed, mutex);
+	else
+		transform(signal, length, transformed);
+
 	tmp = shift(transformed, length);
 	if (!tmp)
 		goto error;
@@ -341,7 +345,6 @@ dealloc:
 	if (diff_filter)
 		delete [] diff_filter;
 
-exit:
 	return res;
 }
 
