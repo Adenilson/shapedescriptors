@@ -9,7 +9,7 @@
  * @version
  */
 #include "src/fourier.h"
-#include "src/ccomplex.h"
+#include "src/mcomplex.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
