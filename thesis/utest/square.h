@@ -68,10 +68,10 @@ mcomplex<double> *create_square(int *length)
 		signal[i+t][1] = signal[p4][1] - i;
 	}
 
-
+#ifdef _SQUARE_DEBUG
 	for (int i = 0; i < *length; ++i)
 		std::cout << "i = " << i << "\t" << signal[i] << std::endl;
-
+#endif
 	return signal;
 
 }
