@@ -309,7 +309,6 @@ cleanup:
 
 	if (!g_curv)
 		goto error;
-exit:
 	return;
 
 error:

@@ -359,7 +359,7 @@ dealloc:
  *
  * @return Curvature of given shape.
  *
- * TODO: implement the code.
+ * TODO: Gaussian filter (actually in derivative code).
  */
 template <typename TYPE>
 double *curvature(TYPE x, TYPE xx, TYPE y, TYPE yy, int length)
@@ -387,3 +387,4 @@ exit:
 
 
 #endif
+
