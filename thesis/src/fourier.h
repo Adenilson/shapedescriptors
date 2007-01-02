@@ -347,4 +347,29 @@ dealloc:
 	return res;
 }
 
+/** Curvature calculus
+ * Given first and second derivatives of a given contour (that needs
+ * to have x:y coordinates), calculate curvature of shape.
+ *
+ * @param x First derivative of x coordinate of contour.
+ * @param xx Second derivative of x coordinate of contour.
+ * @param y First derivative of y coordinate of contour.
+ * @param yy Second derivative of y coordinate of contour.
+ * @param length Vector elements.
+ *
+ * @return Curvature of given shape.
+ *
+ * TODO: implement the code.
+ */
+template <typename TYPE>
+double *curvature(TYPE x, TYPE xx, TYPE y, TYPE yy, int length)
+{
+
+
+	return NULL;
+
+
+}
+
+
 #endif

@@ -260,7 +260,8 @@ START_TEST (t_curvature)
 {
 
 	mcomplex<double> *g_signal;
-	mcomplex<double> *g_curv;
+	mcomplex<double> *x, *y;
+	double *g_curv = NULL;
 
 	int length = 0;
 	double diff_level;
@@ -271,9 +272,40 @@ START_TEST (t_curvature)
 	g_signal = create_square(&length);
 	if (!g_signal)
 		goto error;
+	x = new mcomplex<double> [length];
+	y = new mcomplex<double> [length];
+	if (!x || !y)
+		goto error;
+	for (int i = 0; i < length; ++i) {
+		x[i][0] = g_signal[i][0];
+		y[i][0] = g_signal[i][1];
+	}
 
-exit:
+	x_diff = differentiate(x, length, diff_level = 1);
+	xx_diff = differentiate(x, length, diff_level = 2);
+	y_diff = differentiate(y, length, diff_level = 1);
+	yy_diff = differentiate(y, length, diff_level = 2);
+	if ((!x_diff && !xx_diff) || (!y_diff && !yy_diff))
+		goto error;
+
+
+	g_curv = curvature(x_diff, xx_diff, y_diff, yy_diff, length);
+	if (!g_curv)
+		goto cleanup;
+
+
+cleanup:
 	delete [] g_signal;
+	delete [] x;
+	delete [] y;
+	delete [] x_diff;
+	delete [] xx_diff;
+	delete [] y_diff;
+	delete [] yy_diff;
+
+	if (!g_curv)
+		goto error;
+exit:
 	return;
 
 error:
