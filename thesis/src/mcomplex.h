@@ -9,8 +9,8 @@
  * @version
  */
 
-#ifndef _CCOMPLEX_
-#define _CCOMPLEX_
+#ifndef _MCOMPLEX_
+#define _MCOMPLEX_
 
 #include <complex>
 
@@ -36,12 +36,11 @@ public:
 	 *
 	 */
 	template <class TYPE1, class TYPE2>
-	mcomplex<NUMBER> &operator()(TYPE1 _real, TYPE2 _img)
-		{
-			std::complex<NUMBER>::real() = _real;
-			std::complex<NUMBER>::imag() = _img;
-			return *this;
-		}
+	mcomplex<NUMBER> &operator()(TYPE1 _real, TYPE2 _img) {
+		std::complex<NUMBER>::real() = _real;
+		std::complex<NUMBER>::imag() = _img;
+		return *this;
+	}
 
 	/** Defines a simple structure based complex type compatibility layer.
 	 *
