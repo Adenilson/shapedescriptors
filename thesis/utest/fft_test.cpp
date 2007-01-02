@@ -262,10 +262,11 @@ START_TEST (t_curvature)
 	mcomplex<double> *g_signal;
 	mcomplex<double> *x, *y;
 	double *g_curv = NULL;
+	ofstream fout("curvature_square.txt");
 
 	int length = 0;
 	double diff_level;
-	complex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
+	mcomplex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
 	x_diff = xx_diff = y_diff = yy_diff = NULL;
 
 
@@ -281,10 +282,10 @@ START_TEST (t_curvature)
 		y[i][0] = g_signal[i][1];
 	}
 
-	x_diff = differentiate(x, length, diff_level = 1);
-	xx_diff = differentiate(x, length, diff_level = 2);
-	y_diff = differentiate(y, length, diff_level = 1);
-	yy_diff = differentiate(y, length, diff_level = 2);
+	x_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 1);
+	xx_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 2);
+	y_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 1);
+	yy_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 2);
 	if ((!x_diff && !xx_diff) || (!y_diff && !yy_diff))
 		goto error;
 
@@ -293,6 +294,9 @@ START_TEST (t_curvature)
 	if (!g_curv)
 		goto cleanup;
 
+	fout << "index\tcurvature\n";
+	for (int i = 0; i < length; ++i)
+		fout << i << "\t" << g_curv[i] << endl;
 
 cleanup:
 	delete [] g_signal;

@@ -365,9 +365,23 @@ template <typename TYPE>
 double *curvature(TYPE x, TYPE xx, TYPE y, TYPE yy, int length)
 {
 
+	double *k = NULL;
+	k = new double[length];
+	double tmp;
+	double raiser = 1.0/3.0;
+	if (!k)
+		goto exit;
 
-	return NULL;
+	for (int i = 0; i < length; ++i) {
+		k[i] = (x[i][0] * yy[i][0]) + (y[i][0] * xx[i][0]);
+		tmp = (x[i][0] * x[i][0]) + (y[i][0] * y[i][0]);
+		k[i] /= pow(tmp, raiser);
+	}
 
+
+
+exit:
+	return k;
 
 }
 
