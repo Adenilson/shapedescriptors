@@ -10,6 +10,7 @@
  */
 #include "src/fourier.h"
 #include "src/mcomplex.h"
+#include "square.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -250,6 +251,38 @@ cleanup:
 }
 END_TEST
 
+
+
+/* Curvature test: we search for number of curvature inversions, since
+ * we are dealing with a square, it must have 4 inversions.
+ */
+START_TEST (t_curvature)
+{
+
+	mcomplex<double> *g_signal;
+	mcomplex<double> *g_curv;
+
+	int length = 0;
+	double diff_level;
+	complex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
+	x_diff = xx_diff = y_diff = yy_diff = NULL;
+
+
+	g_signal = create_square(&length);
+	if (!g_signal)
+		goto error;
+
+exit:
+	delete [] g_signal;
+	return;
+
+error:
+	fail_unless(false, "test case failed!");
+
+}
+END_TEST
+
+
 //Tests for thread safe transform.
 START_TEST (thread_transf)
 {
@@ -389,6 +422,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, thread_transf);
 	tcase_add_test(test_case, thread_inver);
 	tcase_add_test(test_case, diff);
+	tcase_add_test(test_case, t_curvature);
 	tcase_add_test(test_case, tshift);
 	tcase_add_test(test_case, tunshift);
 	tcase_add_test(test_case, diff_filter);
