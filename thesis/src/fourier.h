@@ -251,6 +251,8 @@ TYPE *unshift(TYPE *signal, int length)
  * @param j Level of derivative
  *
  * @return A vector with filter, NULL otherwise.
+ *
+ * TODO: use type mcomplex.
  */
 std::complex<double> *create_filter(double diff_level, int length)
 {
@@ -284,9 +286,11 @@ std::complex<double> *create_filter(double diff_level, int length)
  *       normalization issues in differentiated signal
  *
  * TODO:
- *       add gaussian filter to derivative
- *       add sigmoid filter to derivative
- *       should I use auto pointers?
+ *       add gaussian filter to derivative;
+ *       add sigmoid filter to derivative;
+ *       should I use auto pointers?;
+ *       must use mcomplex type (due to operator [] we achieve
+ *        binary compatibility with fftw_complex);
  */
 template <class TYPE1>
 std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level,

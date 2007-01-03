@@ -7,6 +7,8 @@
  * @author Adenilson Cavalcanti <savagobr@yahoo.com>
  *
  * @version
+ *
+ * TODO: Add unit tests (fftw_complex compatibility).
  */
 
 #ifndef _MCOMPLEX_
