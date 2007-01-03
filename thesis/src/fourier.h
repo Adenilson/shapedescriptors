@@ -272,6 +272,45 @@ std::complex<double> *create_filter(double diff_level, int length)
 }
 
 
+/** Calculates constant for Gaussian fourier transform.
+ *
+ *
+ * @param tau Analysing scale (equal 1/a in original Gaussian), where
+ *            a = standard deviation.
+ *
+ * @return The constant (-(2*pi)^2)/(2 * (tau ^ 2))
+ */
+inline double calc_cnst(double tau)
+{
+	double cnst = 0.0;
+
+	cnst = pow(-(2.0 * PI), 2);
+	cnst /= 2 * pow(tau, 2);
+
+	return cnst;
+}
+
+
+/** Calculates constant for Gaussian fourier transform (simplified version).
+ *
+ *
+ * @param tau Analysing scale (equal 1/a in original Gaussian), where
+ *            a = standard deviation.
+ *
+ * @return The simplified constant (2 * pi^2)/(tau ^ 2)
+ */
+inline double calc_scnst(double tau)
+{
+	double cnst = 0.0;
+
+	cnst = PI * PI;
+	cnst *= 2.0;
+	cnst /= tau * tau;
+
+	return cnst;
+}
+
+
 /** Calculate derivate using Fourier derivative property.
  *
  * @param signal A given real or complex signal vector.

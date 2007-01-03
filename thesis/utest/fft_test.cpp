@@ -195,6 +195,29 @@ void save_data(complex<double> *calc, complex<double> *symbolic, int length)
 
 }
 
+//Fourier transformed Gaussian filter test
+//TODO: add function to create gaussian filter.
+START_TEST (t_gaussian)
+{
+	double cnst;
+	double tau = 4.0;
+	/* Scilab formula: cnst = ((-(2 * %pi))^2)/(2 * tau^2) */
+	double known_value = 1.2337006;
+	double tolerance = 0.0000001;
+
+
+	cnst = calc_cnst(tau);
+	fail_unless( ((cnst - known_value) <= tolerance),
+		     "Gaussian Fourier constant out of acceptable limits!");
+
+	cnst = calc_scnst(tau);
+	fail_unless( ((cnst - known_value) <= tolerance),
+		     "Gaussian Fourier constant out of acceptable limits!");
+
+}
+END_TEST
+
+
 //Tests diferentiate calculus with fourier
 START_TEST (diff)
 {
@@ -456,6 +479,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, invert);
 	tcase_add_test(test_case, thread_transf);
 	tcase_add_test(test_case, thread_inver);
+	tcase_add_test(test_case, t_gaussian);
 	tcase_add_test(test_case, diff);
 	tcase_add_test(test_case, t_curvature);
 	tcase_add_test(test_case, tshift);
