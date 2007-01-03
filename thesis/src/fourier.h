@@ -310,6 +310,45 @@ inline double calc_scnst(double tau)
 	return cnst;
 }
 
+/** Calculates gaussian fourier transformed function
+ * G(f) = exp(cnst* f^2), where cnst is calculated by 'calc_scnst'
+ * and cnst = (-(2*pi)^2)/(2 * (tau ^ 2)).
+ *
+ *
+ * @param length Vector length.
+ *
+ * @return Fourier Transformed Gaussian or NULL in error.
+ * TODO: we need to test it to determine if behaviour is correct since
+ *       this function tends to infinite (inf). I test it against Scilab
+ *       with: tau = 10; f= 7; exp((2*%pi^2/(tau^2))*f^2)
+ */
+double *gaussian_fourier(int length, double tau = 2.0)
+{
+	double cnst = 0;
+	double *G = NULL;
+	G = new double[length];
+	if (!G)
+		goto exit;
+
+	cnst = calc_scnst(tau);
+	for (int i = 0; i < length; ++i) {
+		G[i] = i * i;
+		G[i] *= cnst;
+		G[i] = exp(G[i]);
+		/* FIXME: doesn't work!
+		*G = i * i;
+		*G *= cnst;
+		*G = exp(*G);
+		G++;
+		*/
+	}
+
+exit:
+
+	return G;
+}
+
+
 
 /** Calculate derivate using Fourier derivative property.
  *
