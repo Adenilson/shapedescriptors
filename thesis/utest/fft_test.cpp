@@ -91,7 +91,6 @@ END_TEST
 
 
 //Tests for unshift operation
-//Tests for shift operation
 START_TEST (tunshift)
 {
 	//Shift/unshift data
@@ -278,6 +277,7 @@ END_TEST
 
 /* Curvature test: we search for number of curvature inversions, since
  * we are dealing with a square, it must have 4 inversions.
+ * TODO: write test && code to search for number of inversions/spikes.
  */
 START_TEST (t_curvature)
 {
