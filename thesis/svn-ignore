@@ -9,4 +9,6 @@ Makefile.in
 missing
 tagger.sh
 TAGS
-
+depcomp
+*.log
+*.cache
