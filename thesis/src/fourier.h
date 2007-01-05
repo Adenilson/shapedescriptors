@@ -310,6 +310,7 @@ inline double calc_scnst(double tau)
 	return cnst;
 }
 
+
 /** Calculates gaussian fourier transformed function
  * G(f) = exp(cnst* f^2), where cnst is calculated by 'calc_scnst'
  * and cnst = (-(2*pi)^2)/(2 * (tau ^ 2)).
@@ -317,30 +318,35 @@ inline double calc_scnst(double tau)
  *
  * @param length Vector length.
  *
+ * @param tau Analysing scale.
+ *
+ * @param upper Gauss distribution coverage (6 covers whole distro).
+ *
  * @return Fourier Transformed Gaussian or NULL in error.
  * TODO: we need to test it to determine if behaviour is correct since
  *       this function tends to infinite (inf). I test it against Scilab
  *       with: tau = 10; f= 7; exp((2*%pi^2/(tau^2))*f^2)
  */
-double *gaussian_fourier(int length, double tau = 2.0)
+double *gaussian_fourier(int length, double tau = 2.0, double upper = 6.0)
 {
-	double cnst = 0;
+	double cnst, sampling, lower;
 	double *G = NULL;
+	sampling = cnst = 0;
+
 	G = new double[length];
 	if (!G)
 		goto exit;
 
+	lower = -upper;
+	sampling = upper/(length/2.0);
+
+
 	cnst = calc_scnst(tau);
 	for (int i = 0; i < length; ++i) {
-		G[i] = i * i;
+		G[i] = lower * lower;
 		G[i] *= cnst;
 		G[i] = exp(G[i]);
-		/* FIXME: doesn't work!
-		*G = i * i;
-		*G *= cnst;
-		*G = exp(*G);
-		G++;
-		*/
+		lower += sampling;
 	}
 
 exit:
