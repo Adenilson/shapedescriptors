@@ -365,22 +365,28 @@ exit:
  * @param diff_level Which derivate we want i.e. use 'diff_level = 1' for
  *                   first derivate of signal function.
  *
+ * @param tau Gaussian inverse variance (1/a) to smooth signal.
+ *
+ * @param mutex A mutex object to lock when doing fourier transform.
+ *
  * @return  Complex object vector that holds filtered signal or NULL
  * FIXME:
  *       normalization issues in differentiated signal
  *
  * TODO:
- *       add gaussian filter to derivative;
  *       add sigmoid filter to derivative;
  *       should I use auto pointers?;
  *       must use mcomplex type (due to operator [] we achieve
  *        binary compatibility with fftw_complex);
  */
 template <class TYPE1>
-std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level,
+std::complex<double> *differentiate(TYPE1 signal, int length,
+				    double diff_level = 1.0,
+				    double tau = 2.0,
 				    pthread_mutex_t *mutex = NULL)
 {
 
+	double *f_gaussian = NULL;
 	std::complex<double> *transformed, *diff_filter, *tmp, *tmp2, *res;
 	transformed = diff_filter = tmp = tmp2 = res = NULL;
 	transformed = new std::complex<double> [length];
@@ -397,11 +403,17 @@ std::complex<double> *differentiate(TYPE1 signal, int length, double diff_level,
 		goto error;
 
 	diff_filter = create_filter(diff_level, length);
-	if (!diff_filter)
+	f_gaussian = gaussian_fourier(length, tau);
+	if (!diff_filter || !f_gaussian)
 		goto error;
-	/* Apply diff filter to shifted signal */
-	for (int i = 0; i < length; ++i)
+	/* Apply diff filter and gaussian  to shifted signal */
+	for (int i = 0; i < length; ++i) {
 		tmp[i] *= diff_filter[i];
+		/* FIXME: Should I multiply real part too?
+		tmp[i].real() *= f_gaussian[i];
+		*/
+		tmp[i].imag() *= f_gaussian[i];
+	}
 
 	tmp2 = unshift(tmp, length);
 	if (!tmp2)
@@ -431,6 +443,8 @@ dealloc:
 		delete [] tmp2;
 	if (diff_filter)
 		delete [] diff_filter;
+	if (f_gaussian)
+		delete [] f_gaussian;
 
 	return res;
 }
