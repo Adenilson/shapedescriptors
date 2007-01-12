@@ -403,17 +403,28 @@ std::complex<double> *differentiate(TYPE1 signal, int length,
 		goto error;
 
 	diff_filter = create_filter(diff_level, length);
-	f_gaussian = gaussian_fourier(length, tau);
-	if (!diff_filter || !f_gaussian)
+	if (!diff_filter)
 		goto error;
-	/* Apply diff filter and gaussian  to shifted signal */
-	for (int i = 0; i < length; ++i) {
-		tmp[i] *= diff_filter[i];
-		/* FIXME: Should I multiply real part too?
-		tmp[i].real() *= f_gaussian[i];
-		*/
-		tmp[i].imag() *= f_gaussian[i];
+
+	if (tau) {
+		f_gaussian = gaussian_fourier(length, tau);
+		if (!f_gaussian)
+			goto error;
 	}
+
+	/* Apply diff filter and gaussian  to shifted signal */
+	if (tau)
+		for (int i = 0; i < length; ++i) {
+			tmp[i] *= diff_filter[i];
+			/* FIXME: Should I multiply real part too?
+			   tmp[i].real() *= f_gaussian[i];
+			*/
+			tmp[i].imag() *= f_gaussian[i];
+		}
+	else /* dont do gaussian filter */
+		for (int i = 0; i < length; ++i)
+			tmp[i] *= diff_filter[i];
+
 
 	tmp2 = unshift(tmp, length);
 	if (!tmp2)

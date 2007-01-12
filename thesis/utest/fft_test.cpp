@@ -294,7 +294,7 @@ START_TEST (t_curvature)
 	ofstream fout("curvature_square.txt");
 
 	int length = 0;
-	double diff_level, tau = 10.0;
+	double diff_level, tau = 12;
 	mcomplex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
 	x_diff = xx_diff = y_diff = yy_diff = NULL;
 
