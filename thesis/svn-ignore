@@ -12,3 +12,5 @@ TAGS
 depcomp
 *.log
 *.cache
+html
+latex
