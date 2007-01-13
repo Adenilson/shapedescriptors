@@ -1,6 +1,6 @@
 /** @file
  *
- * Countor code module.
+ * Contour code module.
  *
  *
  * Copyright 2005

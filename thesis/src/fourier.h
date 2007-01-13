@@ -248,7 +248,9 @@ TYPE *unshift(TYPE *signal, int length)
 
 /** Create filter function
  *
- * @param j Level of derivative
+ * @param diff_level Level of derivative (first = 1, second = 2, etc).
+ * @param length Length of filter function, must be equal to filtered
+ *               signal.
  *
  * @return A vector with filter, NULL otherwise.
  *

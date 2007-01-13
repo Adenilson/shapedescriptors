@@ -23,21 +23,24 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-//Level of message information
-typedef enum { DEBUG, VERBOSE, QUIET } OPMODE;
-
 //My point type (if we are using OpenCV, defaults to CvPoint)
 #define M2DPOINT
 #undef M2DPOINT
 
-//typedef float NUM;
+/** The type used as basic number. */
 typedef double NUM;
 
 
-//Simple struct to support a record with 3 fields
+/** Simple struct to support a record with 3 fields. */
 struct d3point {
-	NUM x, y, z;
+	/// Point coordinate x.
+	NUM x,
+	  /// Point coordinate y.
+	  y,
+	  /// Point coordinate z.
+	  z;
 
+	/// Default constructor, zero's struct fields;
 	d3point(void): x(0), y(0), z(0)
 		{}
 
@@ -143,23 +146,39 @@ struct t_point {
 
 };
 
+/** Basic point type to hold contour coordinates. */
 typedef t_point m_point;
 #else
+/** Basic point type to hold contour coordinates. */
 typedef CvPoint2D32f m_point;
 #endif
 
-//Norm or magnitude of a vector
+/** Calculates norm or magnitude of a vector.
+ *
+ *
+ * @param x A coordinate of point.
+ * @param y Other coordinate of point.
+ *
+ * @return The norm.
+ */
 template <class T1, class T2>
 inline float norm(T1 x, T2 y) {
 	return float(sqrt( (x * x) + (y * y) ));
 }
 
-//Distance of points
+
+/** Distance between 2 points.
+ *
+ *
+ * @param a First point coordinates (x and y).
+ * @param b Second point coordinates (x and y).
+ *
+ * @return The distance between this 2 points.
+ */
 template <class T1, class T2>
 inline float distance(T1 &a, T2 &b) {
 	return norm(float(a.x - b.x), float(a.y - b.y));
 }
 
 
-//------------------------------------------------------------------------------
 #endif

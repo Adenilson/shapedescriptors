@@ -21,7 +21,7 @@
  * and get with 'number[0] || number[1]'.
  * At present, we use complex<T>::real() to access number parts (at least
  * it is inline...).
- * Dependes on STL header <complex>, and its binary compatible with its
+ * Dependes on STL header complex, and its binary compatible with its
  * ancestor as also with FFTW (Fast Fourier Transformation in the West)
  * type 'fftw_complex'.
  */
@@ -32,8 +32,8 @@ public:
 	/** Extra operator, make it easier to set values
 	 * into a complex number.
 	 *
-	 * @param real A real/integer number
-	 * @param img  A real/integer number for imaginary part
+	 * @param _real A real/integer number
+	 * @param _img  A real/integer number for imaginary part
 	 *             of complex number
 	 *
 	 */

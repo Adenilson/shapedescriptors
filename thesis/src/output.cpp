@@ -19,8 +19,14 @@
 #include <sstream>
 using namespace std;
 
-//Create a scilab program to handle exported text files with coordinates of
-//contours
+/** Create a scilab program to handle exported text files with coordinates of
+ * contours.
+ *
+ *
+ * @param n_contour Number of contours found in original image.
+ * @param img_file_name Name of image file, is used to append name in contour
+ *                     files (e.g.: 24esc.bmp_contour_10.txt)
+ */
 void sci_prog(int n_contour, string img_file_name)
 {
 
@@ -28,6 +34,9 @@ void sci_prog(int n_contour, string img_file_name)
 	typedef enum { IMG_NAME, STR_CLOS, LST_NXT,
 		       LST_END, CONTOUR_LIST, PRG_BULK } prog_step;
 
+	/* XXX: drop this file/functions or at least put this string in an
+	 * external file.
+	 */
 	const char* prog[] = {"img_name ='", "'", ",", ");", "contour_name= list(",
 			      "stacksize(13000000); \n \
                          function D = showcontour() \n \
