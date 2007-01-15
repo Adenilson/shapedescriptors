@@ -76,6 +76,7 @@ using namespace std;
 
 //Param threshold and external filename of contours centroid
 int edge_thresh = 250;
+int diameter_thresh = 500;
 char file_centroid[] = "centroid.txt";
 char file_area[] = "area.txt";
 char file_ratio[] = "ratio_centroid.txt";
@@ -97,6 +98,7 @@ CvMemStorage* storage = cvCreateMemStorage(0);
 IplImage *image = 0, *gray = 0, *thres = 0, *cnt_img = 0;
 //Interface widgets names
 char tbarname[] = "threshold";
+char tbardiameter[] = "diameter";
 int num_cell = 0;
 const int n_windows = 3;
 char *win_names[] = { "original", "threshold", "contour+centroid" };
@@ -124,6 +126,7 @@ void show_contour(void);
 
 // define a trackbar callback
 void on_trackbar(int h);
+void on_track_diameter(int h);
 
 //Main function (duh!)
 int main(int argc, char* argv[])
@@ -141,7 +144,12 @@ int main(int argc, char* argv[])
 	}
 
 	bool interactive = true;
+	/* FIXME: 2 different groups of variables (diam_thres + thres_min_diameter)
+	 * to handle 2 parameters is not good. Find a way to use only 2 vars.
+	 * I think that casting can solve the issue.
+	 */
 	int thres_value = 160;
+	int thres_min_diameter = 30;
 	string temp;
 	int pos = 0;
 	float *diameters = NULL;
@@ -183,9 +191,13 @@ int main(int argc, char* argv[])
 
 		//Create a window and toolbar
 		cvNamedWindow(win_names[THRESH], 1);
-		cvCreateTrackbar(tbarname, win_names[THRESH], &thres_value, edge_thresh, on_trackbar);
+		cvCreateTrackbar(tbarname, win_names[THRESH], &thres_value,
+				 edge_thresh, on_trackbar);
+		cvCreateTrackbar(tbardiameter, win_names[CONTOUR], &thres_min_diameter,
+				 diameter_thresh, on_track_diameter);
 		//Activates callback (which shows the image)
 		on_trackbar(thres_value);
+		on_track_diameter(thres_min_diameter);
 
 		// Wait for a key stroke; the same function arranges events processing
 		cvWaitKey(0);
@@ -255,6 +267,13 @@ void on_trackbar(int h)
 	cvShowImage(win_names[THRESH], thres);
 	//Try to found the contour in thresholded image and display it
 	contours = contour_follow(thres, storage, &num_cell);
+	show_contour();
+}
+
+
+void on_track_diameter(int h)
+{
+	diam_thres = (float) h;
 	show_contour();
 }
 
