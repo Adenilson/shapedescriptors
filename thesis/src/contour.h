@@ -52,8 +52,13 @@ void plot_contour(IplImage *target, CvSeq *contours,
  *                create this using 'contour_follow'.
  * @param img A OpenCV image (3 channels, 8bit) structure in which we draw
  *               the contours.
+ * @param contour_diameters A vector with contours diameters, it can be used to set
+ *                          a 'minimal diameter' threshold to draw the centroids.
+ * @param diam_thres Minimal diameter threshold, shapes with diameter bigger than
+ *                   diam_thres will be draw.
  */
-void mark_centroid(CvSeq *contour, IplImage *img);
+void mark_centroid(CvSeq *contour, IplImage *img, float *contour_diameters = NULL,
+		   float diam_thres = 30.0);
 
 
 #endif

@@ -182,9 +182,6 @@ int main(int argc, char* argv[])
 		//Activates callback (which shows the image)
 		on_trackbar(thres_value);
 
-		//Now show the contour
-		show_contour();
-
 		// Wait for a key stroke; the same function arranges events processing
 		cvWaitKey(0);
 
@@ -229,12 +226,17 @@ void show_contour(void)
 {
 	CvSeq *_contours = contours;
 	cvZero(cnt_img);
+	int size;
+	float *diameters;
+	diameters = calc_diam(contours, &size);
 
-	//Plot a contour in a image and marks its centroid
+	//Plot a contour in an image and marks its centroid
 	plot_contour(cnt_img, _contours);
-	mark_centroid(_contours, cnt_img);
+	mark_centroid(_contours, cnt_img, diameters, diam_thres);
 	cvShowImage(win_names[CONTOUR], cnt_img);
 
+	delete [] diameters;
+	diameters = NULL;
 }
 
 

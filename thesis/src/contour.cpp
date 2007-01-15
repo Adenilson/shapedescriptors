@@ -70,17 +70,30 @@ CvSeq *contour_follow(IplImage *thres, CvMemStorage* storage, int *ncontour)
 }
 
 //This one marks the centroid of each found contour
-void mark_centroid(CvSeq *contour, IplImage *img)
+void mark_centroid(CvSeq *contour, IplImage *img, float *contour_diameters,
+		   float diam_thres)
 {
 	CvPoint p;
 	CvSeqReader reader;
 	float meanx, meany;
+	int counter = 0;
 
 	for (; contour != NULL; contour = contour->h_next) {
 		cvStartReadSeq(contour, &reader);
 
 		meanx = meany = 0;
 
+		if (contour_diameters) {
+			counter++;
+			if (contour_diameters[counter] > diam_thres)
+				goto draw;
+			else
+				continue;
+		} else if (!contour_diameters)
+			goto draw;
+
+
+	draw:
 		for (int i = 0; i < contour->total; i++) {
 			CV_READ_SEQ_ELEM(p, reader);
 			meanx += p.x;
@@ -93,6 +106,8 @@ void mark_centroid(CvSeq *contour, IplImage *img)
 		cvRectangle(img, cvPoint((int) meanx-1, (int) meany-1),
 			    cvPoint((int) meanx+1, (int) meany+1),
 			    CV_RGB(0, 0, 255), 1);
+
+
 
 	}
 
