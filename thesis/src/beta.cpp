@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 		if (temp == "batch")
 			interactive = false;
 		else if (i == 3)
-			thres_value = atoi(argv[2]);
+			thres_value = atoi(argv[i]);
 	}
 
 	//Allocate image structure resource
