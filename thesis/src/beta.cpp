@@ -136,10 +136,13 @@ int main(int argc, char* argv[])
 	if ((image = cvLoadImage( filename, 1)) == 0) {
 		cout << "Can't find image \"escamas.bmp\". Please supply an image." <<
 			"\n\n" << "$program image_file_name <mode> <threshold_value>" <<
+			" <minimal_diameter>" <<
 			"\nwhere:" <<
 			"\tmode = batch (non visual execution)\n" <<
 			"\tthreshold_value = value which pixels above will be regarded" <<
-			"\n\tas background\n" << endl;
+			"\n\t\tas background\n" <<
+			"\tminimal_diameter = shape diameter of valid objects" <<
+			endl;
 		return -1;
 	}
 
@@ -161,6 +164,8 @@ int main(int argc, char* argv[])
 			interactive = false;
 		else if (i == 3)
 			thres_value = atoi(argv[i]);
+		else if (i == 4)
+			thres_min_diameter = atoi(argv[i]);
 	}
 
 	//Allocate image structure resource
@@ -182,6 +187,8 @@ int main(int argc, char* argv[])
 		contours = contour_follow(thres, storage, &num_cell);
 		//Plots contours in a IplImage
 		plot_contour(cnt_img, contours);
+		//FIXME: 2 variables, 1 parameters... its evil.
+		diam_thres = thres_min_diameter;
 	} else {
 		//Alocates window resources and reloads original image
 		win_alloc(n_windows, win_names);
