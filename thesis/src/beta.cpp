@@ -84,6 +84,12 @@ char file_diam[] = "diameter.txt";
 //Minimum diameter
 float diam_thres = 7;
 
+
+/* Define this if you need contours coordinates written
+ * in external files (1 file for each contour).
+ */
+#undef NEED_CONTOUR_COORDINATES
+
 //Stores the found contour
 CvSeq* contours = 0;
 CvMemStorage* storage = cvCreateMemStorage(0);
@@ -125,7 +131,12 @@ int main(int argc, char* argv[])
 
 	char *filename = (argc >= 2 ? argv[1] : (char*)"escamas.bmp");
 	if ((image = cvLoadImage( filename, 1)) == 0) {
-		cout << "Can't find image \"escamas.bmp\". Please supply the image." << endl;
+		cout << "Can't find image \"escamas.bmp\". Please supply an image." <<
+			"\n\n" << "$program image_file_name <mode> <threshold_value>" <<
+			"\nwhere:" <<
+			"\tmode = batch (non visual execution)\n" <<
+			"\tthreshold_value = value which pixels above will be regarded" <<
+			"\n\tas background\n" << endl;
 		return -1;
 	}
 
@@ -140,10 +151,8 @@ int main(int argc, char* argv[])
 		temp = argv[i];
 		if (temp == "batch")
 			interactive = false;
-		else if (i == 2) {
+		else if (i == 3)
 			thres_value = atoi(argv[2]);
-			//do_thres = true;
-		}
 	}
 
 	//Allocate image structure resource
@@ -154,10 +163,6 @@ int main(int argc, char* argv[])
 	//Convert to grayscale,
 	cvCvtColor(image, gray, CV_BGR2GRAY);
 
-	/*
-	  cvNamedWindow("gray", 1);
-	  cvShowImage("gray", gray);
-	*/
 	//Non interactive mode
 	if (!interactive) {
 		//Do the threshold
@@ -204,10 +209,12 @@ int main(int argc, char* argv[])
 	cvReleaseImage(&thres);
 	cvReleaseImage(&cnt_img);
 
-	//Prints files with contour coordinates, we want diameter threshold
-	//(only contours with diameter greater than 7 pixels)
+#ifdef NEED_CONTOUR_COORDINATES
+	/* Prints files with contour coordinates, we want diameter threshold
+	 * (only contours with diameter greater than 7 pixels).
+	 */
 	print_contour(filename, contours, true, diam_thres);
-
+#endif
 
 	//Calculates all diameters. Its the threshold descriptor for others!
 	diameters = calc_diam(contours, &d_size);
