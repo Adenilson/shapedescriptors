@@ -128,6 +128,10 @@ void show_contour(void);
 void on_trackbar(int h);
 void on_track_diameter(int h);
 
+//Aux function to draw just one contour
+void draw_one_contour(m_point *contour, int size);
+
+
 //Main function (duh!)
 int main(int argc, char* argv[])
 {
@@ -208,9 +212,6 @@ int main(int argc, char* argv[])
 
 		// Wait for a key stroke; the same function arranges events processing
 		cvWaitKey(0);
-
-		//Frees allocated resources
-		win_free(n_windows, win_names);
 	}
 
 	//Save the image with contours
@@ -222,12 +223,6 @@ int main(int argc, char* argv[])
 	temp += ".png";
 	cvSaveImage(temp.c_str(), cnt_img);
 
-	//Free allocated resources
-	cvReleaseImage(&image);
-	cvReleaseImage(&gray);
-	cvReleaseImage(&thres);
-	cvReleaseImage(&cnt_img);
-
 #ifdef NEED_CONTOUR_COORDINATES
 	/* Prints files with contour coordinates, we want diameter threshold
 	 * (only contours with diameter greater than 7 pixels).
@@ -237,6 +232,39 @@ int main(int argc, char* argv[])
 
 	//Calculates all diameters. Its the threshold descriptor for others!
 	diameters = calc_diam(contours, &d_size);
+
+	/* XXX: This is not natural, breaks flow of program. I think
+	 * that the correct approach is 2 logical blocks (interactive
+	 * && batch mode). I think that we need to refactor main app
+	 * code.
+	 */
+	if (interactive) {
+		CvSeq *tmp = contours;
+		for (int i = 0; i < d_size; ++i) {
+
+			if (diameters[i] > diam_thres) {
+				m_point *one_contour;
+				int length;
+				one_contour = points(contours, &length);
+				draw_one_contour(one_contour, length);
+				cvWaitKey(0);
+				delete [] one_contour;
+
+			}
+
+			contours = contours->h_next;
+
+		}
+		contours = tmp;
+		//Frees allocated resources
+		win_free(n_windows, win_names);
+	}
+
+	//Free allocated resources
+	cvReleaseImage(&image);
+	cvReleaseImage(&gray);
+	cvReleaseImage(&thres);
+	cvReleaseImage(&cnt_img);
 
 	//Write external file with each contour centroid
 	write_centroid(contours, file_centroid, diam_thres, diameters);
@@ -391,4 +419,29 @@ bool write_dist(CvSeq* contours, char *filename, float diam,
 	delete [] distances;
 	return result;
 
+}
+
+void draw_one_contour(m_point *contour, int size)
+{
+	cvZero(cnt_img);
+	CvPoint p1;
+	CvPoint p2;
+
+	/* FIXME: I think that there is a better way to draw
+	 * just 1 contour, but have no success with this function. 
+	cvPolyLine(cnt_img, (CvPoint**) &contour, &size,
+		   number_contours, closed, CV_RGB(0, 255, 0),
+		   3, CV_AA, 0);
+	*/
+
+	for (int i = 0; i < size; ++i) {
+		p1.x = (int) contour[i].x;
+		p1.y = (int) contour[i].y;
+		p2.x = (int) contour[i+1].x;
+		p2.y = (int) contour[i+1].y;
+		cvLine(cnt_img, p1, p2,
+		       CV_RGB(255, 0, 0), 8);
+	}
+
+	cvShowImage(win_names[CONTOUR], cnt_img);
 }
