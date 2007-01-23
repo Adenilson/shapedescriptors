@@ -81,6 +81,7 @@ char file_centroid[] = "centroid.txt";
 char file_area[] = "area.txt";
 char file_ratio[] = "ratio_centroid.txt";
 char file_diam[] = "diameter.txt";
+char file_perimeter[] = "perimeter.txt";
 
 //Minimum diameter
 float diam_thres = 7;
@@ -120,6 +121,12 @@ bool write_area(CvSeq* contours, char *filename, float diam,
 //bool write_diam(CvSeq* contours, char *filename, float diam);
 bool write_diam(CvSeq* contours, char *filename, float diam,
 		float *diameters, int thasize);
+
+
+//Write perimeter of each contour in external file
+//ps: idem
+bool write_perimeter(CvSeq* contours, char *filename, float diam,
+		float *diameters);
 
 //Show the contour stored in a sequence
 void show_contour(void);
@@ -272,6 +279,8 @@ int main(int argc, char* argv[])
 	write_area(contours, file_area, diam_thres, diameters);
 	//Write external file with each contour diameter
 	write_diam(contours, file_diam, diam_thres, diameters, d_size);
+	//Write external file with each perimeter
+	write_perimeter(contours, file_perimeter, diam_thres, diameters);
 
 	return 0;
 }
@@ -366,6 +375,36 @@ bool write_area(CvSeq* contours, char *filename, float diam,
 	delete [] dumbo;
 	return result;
 }
+
+//Write perimeter of each contour in external file
+//ps: idem
+bool write_perimeter(CvSeq* contours, char *filename, float diam,
+		float *diameters)
+{
+	bool result = true;
+	int counter = 0;
+
+	try {
+		ofstream fout(filename);
+
+		while (contours) {
+			if (diameters[counter] > diam)
+				fout << contours->total << endl;
+
+			counter++;
+			contours = contours->h_next;
+
+		}
+
+	}
+	catch(...) {
+
+		result = false;
+	}
+
+	return result;
+}
+
 
 bool write_diam(CvSeq* contours, char *filename, float diam,
 		float *diameters, int thasize)
