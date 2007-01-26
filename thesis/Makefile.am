@@ -23,7 +23,7 @@ contour_extractor_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)
 
 
 utester_SOURCES = $(csourcedir)/fourier.h $(utestdir)/fft_test.cpp \
-	$(csourcedir)/mcomplex.h $(utestdir)/square.h
+	$(csourcedir)/mcomplex.h $(utestdir)/square.h $(utestdir)/circle.h
 
 utester_LDADD = $(FFTW_LIBS) -lcheck -lpthread
 utester_CPPFLAGS = $(AM_CPPFLAGS) $(FFTW_CFLAGS)
