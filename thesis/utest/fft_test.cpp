@@ -1,12 +1,12 @@
-/** @file
- *
- * Fourier unit test module
- *
- *
- * Copyright 2006
+/**
+ * @file   fft_test.cpp
  * @author Adenilson Cavalcanti <savagobr@yahoo.com>
+ * @date   A long time ago, in 2006...
  *
- * @version
+ * @brief  Fourier unit test module, since I developed
+ *        fourier/differentiate/curvature code using
+ *        'Test Driven Development' (TDD), all unit tests
+ *        goes here.
  */
 #include "src/fourier.h"
 #include "src/mcomplex.h"

@@ -1,12 +1,11 @@
-/** @file
+/**
+ * @file   contour.h
+ * @author  Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
+ * @date   Sometime in 2005.
  *
- * Contour following code module.
+ * @brief  Contour following code module.
  *
  *
- * Copyright 2005
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
  */
 
 #ifndef _CONTOUR_H_

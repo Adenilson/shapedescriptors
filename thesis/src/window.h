@@ -1,14 +1,12 @@
-/** @file
+/**
+ * @file   window.h
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
+ * @date   Sometime in 2005.
  *
- * OpenCV auxiliary image display code.
+ * @brief  OpenCV auxiliary image display code, there help
+ *        in widget resource management.
  *
- *
- * Copyright 2005
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
  */
-
 
 #ifndef _MWINDOW_H_
 #define _MWINDOW_H_

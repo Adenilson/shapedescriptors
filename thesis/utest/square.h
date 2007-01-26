@@ -1,3 +1,12 @@
+/**
+ * @file   square.h
+ * @author Adenilson Cavalcanti
+ *
+ *
+ * @brief  Helper test module, it includes a function to
+ *        create contour coordinates of a rectangle.
+ *
+ */
 #ifndef __T_SQUARE__
 #define __T_SQUARE__
 

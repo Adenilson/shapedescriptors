@@ -1,14 +1,12 @@
-/** @file
+/**
+ * @file   output.h
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
+ * @date Sometime in 2005
  *
- * Scilab code generation module.
- *
- *
- * Copyright 2005
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
+ * @brief Scilab code generation module, since we are
+ *       targeting to do all calculus in C++, probably
+ *       this module is going to be removed from project.
  */
-
 
 #ifndef _OUTPUT_H_
 #define _OUTPUT_H_

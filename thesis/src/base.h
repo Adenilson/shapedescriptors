@@ -1,16 +1,16 @@
-/** @file
+/**
+ * @file   base.h
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
+ * @date   Sometime in 2005.
  *
- * Base math auxiliary code.
+ * @brief  Base math auxiliary code.
  *
  * vs 0.01 09-08-2005 Wrote basic stuff:
  *                    2d point struct, 'norm' and 'distance' functions
  *
- * vs 0.02 18-10-2005 Added 3d point struct (mainly to support 'ratio_dist')
+ * vs 0.02 18-10-2005 Added 3d point struct (mainly to support
+ *                    'ratio_dist')
  *
- * Copyright 2005
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
  */
 
 #ifndef _BASE_H_

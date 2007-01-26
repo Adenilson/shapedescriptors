@@ -1,15 +1,12 @@
-/** @file
+/**
+ * @file   fourier.h
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2006
+ * @date   Middle year, 2006
  *
- * Fourier transform module
- *
- * Fourier related code goes here.
- *
- *
- * Copyright 2006
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
+ * @brief  Fourier transform module, derivative and curvature
+ *         code goes here.
  */
+
 #ifndef _FOURIER_H
 #define _FOURIER_H
 

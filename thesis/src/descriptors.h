@@ -1,12 +1,11 @@
-/** @file
+/**
+ * @file   descriptors.h
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
+ * @date  Sometime in 2005
  *
- * Shape descriptors code module, here we calculate contour based
+ * @brief  Shape descriptors code module, here we calculate contour based
  * shape descriptors like: centroid distance, area, etc.
  *
- * Copyright 2005
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
  */
 
 #ifndef _DESCRIPTOR_H_

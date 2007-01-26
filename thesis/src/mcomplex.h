@@ -1,12 +1,11 @@
-/** @file
+/**
+ * @file   mcomplex.h
+ * @author  Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2006
+ * @date   Middle year, 2006
  *
- * Complex number module
- *
- *
- * Copyright 2006
- * @author Adenilson Cavalcanti <savagobr@yahoo.com>
- *
- * @version
+ * @brief  Complex number module, this file has a derived class
+ *        from std::complex with some helper overloaded operators.
+ *        It was tested to be binary compatible with fftw_complex
  *
  * TODO: Add unit tests (fftw_complex compatibility).
  */
