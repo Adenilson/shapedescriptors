@@ -4,7 +4,13 @@
  * @date   Middle year, 2006
  *
  * @brief  Fourier transform module, derivative and curvature
- *         code goes here.
+ * code goes here.
+ *
+ * Implemented multiscale curvature calculus (as described in Costa &
+ * Cesar 'Shape Analysis and Classification', 2000). We use as fourier
+ * transform fftw (Fast Fourier Transform in the West).
+ *
+ * \todo Fix normalization issue in curvature.
  */
 
 #ifndef _FOURIER_H

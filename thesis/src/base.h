@@ -31,7 +31,7 @@
 typedef double NUM;
 
 
-/** Simple struct to support a record with 3 fields. */
+/** \brief Simple struct to support a record with 3 fields. */
 struct d3point {
 	/// Point coordinate x.
 	NUM x,
@@ -46,29 +46,34 @@ struct d3point {
 
 };
 
-
 #ifdef M2DPOINT
-//Aux struct to support a coordinate point (yes, I know that I could use
-//CvPoint2D32f or ANSI C 99 "complex" but I need some more general struct).
-//Besides, I put the data in a vector to keep compatibility with ANSI C and
-//also supply data fields (x, y) to keep compatibility with CvPoint2D32f.
-/* Example of use
-   int x = 1, y = 2;
-   float x1 = 10.1, y1 = 22.24;
-
-   t_point t1(x, y);
-   t_point t2(x1, y1);
-   t_point t3 = t1 + t2;
-
-   cout << t3.x << "\t" << t3.y << endl;
-   t2 = t3;
-   t3 = (t3 - t1);
-   cout << t3.x << "\t" << t3.y << endl;
-   t2 = t2 * t1;
-   cout << t2.x << "\t" << t2.y << endl;
-   cout << t2[0] << "\t" << t2[1] << endl;
-FIXME: remove all warnings on this struct!
-*/
+/** \brief Aux struct to support a coordinate point.
+ *
+ * I know that I could use CvPoint2D32f or ANSI C 99 "complex" but
+ * I need some more general struct. Besides, at least gcc complex type
+ * is broken (tested in august 2006).
+ *
+ * I put the data in a vector to keep compatibility with ANSI C and
+ * also supply data fields (x, y) to keep compatibility with CvPoint2D32f.
+ *
+ * Example of use
+ * int x = 1, y = 2;
+ * float x1 = 10.1, y1 = 22.24;
+ *
+ * t_point t1(x, y);
+ * t_point t2(x1, y1);
+ * t_point t3 = t1 + t2;
+ *
+ * cout << t3.x << "\t" << t3.y << endl;
+ * t2 = t3;
+ * t3 = (t3 - t1);
+ * cout << t3.x << "\t" << t3.y << endl;
+ * t2 = t2 * t1;
+ * cout << t2.x << "\t" << t2.y << endl;
+ * cout << t2[0] << "\t" << t2[1] << endl;
+ *
+ * FIXME: remove all warnings on this struct!
+ */
 struct t_point {
 
 	NUM data[2];

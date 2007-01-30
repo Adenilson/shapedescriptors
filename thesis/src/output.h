@@ -3,9 +3,11 @@
  * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
  * @date Sometime in 2005
  *
- * @brief Scilab code generation module, since we are
- *       targeting to do all calculus in C++, probably
- *       this module is going to be removed from project.
+ * @brief Scilab code generation module (deprecated).
+ *
+ * Since we are targeting to do all calculus in C++, probably
+ * this module is going to be removed from project.
+ *
  */
 
 #ifndef _OUTPUT_H_

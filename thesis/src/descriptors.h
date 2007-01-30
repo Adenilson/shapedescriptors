@@ -3,8 +3,10 @@
  * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
  * @date  Sometime in 2005
  *
- * @brief  Shape descriptors code module, here we calculate contour based
- * shape descriptors like: centroid distance, area, etc.
+ * @brief  Shape descriptors code module.
+ *
+ * Here we calculate contour based shape descriptors like: centroid
+ * distance, area, etc.
  *
  */
 

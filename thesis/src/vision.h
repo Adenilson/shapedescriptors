@@ -3,10 +3,11 @@
  * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
  * @date   Sometime in 2005
  *
- * @brief  Morphology code, use this functions to close/open
- *        contours. At moment, there are only wrappers to OpenCV,
- *        but there are some morphological operations which I
- *        should implement here in future.
+ * @brief  Morphology code, functions to close/open contours.
+ *
+ * At moment, these are only wrappers to OpenCV, but there are some
+ * morphological operations which I should implement here in future.
+ *
  */
 
 #ifndef _VISION_H_

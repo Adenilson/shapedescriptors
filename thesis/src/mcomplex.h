@@ -3,11 +3,16 @@
  * @author  Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2006
  * @date   Middle year, 2006
  *
- * @brief  Complex number module, this file has a derived class
- *        from std::complex with some helper overloaded operators.
- *        It was tested to be binary compatible with fftw_complex
+ * @brief  Complex number class.
+
+ * This file has a derived class from std::complex with some helper
+ * overloaded operators. It was tested to be binary compatible with
+ * fftw_complex
  *
- * TODO: Add unit tests (fftw_complex compatibility).
+ * \todo
+ * - Add unit tests (fftw_complex compatibility).
+ * - It seems that doxygen has some issues with template based class.
+ *
  */
 
 #ifndef _MCOMPLEX_
@@ -15,11 +20,15 @@
 
 #include <complex>
 
-/** Complex type, we derive it from C++ STL type complex, added
- * 2 more operators to access number parts: set with 'number(real, imag)'
+/** \brief Complex type, we derive it from C++ STL type complex.
+ *
+ * Added 2 more operators to access number parts: set with
+ * 'number(real, imag)'
  * and get with 'number[0] || number[1]'.
+ *
  * At present, we use complex<T>::real() to access number parts (at least
  * it is inline...).
+ *
  * Dependes on STL header complex, and its binary compatible with its
  * ancestor as also with FFTW (Fast Fourier Transformation in the West)
  * type 'fftw_complex'.
