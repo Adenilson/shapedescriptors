@@ -23,6 +23,20 @@
 /** PI value */
 #define PI 3.14159265359
 
+/** Extra filtering when calculating derivatives
+ * \todo
+ * - Get each function formula
+ *
+ */
+typedef enum { /** Beta function */
+	       FBETA,
+	       /** Sigmoid function */
+	       FSIGMOID,
+	       /** Box function */
+	       FBOX } FILTER_TYPE;
+
+/** Bending energy error */
+const double energy_error = -100.1111111111;
 /** It does fourier transform in a given vector. Pay attention that its not
  *  thread safe since fftw_plan_dft functions does share some global data.
  *
@@ -501,6 +515,45 @@ double *curvature(TYPE x, TYPE xx, TYPE y, TYPE yy, int length)
 exit:
 	return k;
 
+}
+
+
+/** Calculates multiscale bending energy.
+ *
+ * This function implements bending energy, e(t) = sum(k(t)^2)/n
+ * like in Cesar, R. M.; Costa, L. F. "Shape Characterization in Natural
+ * scales by using multiscale bending energy" (1996). See also function
+ * \ref curvature.
+ *
+ * @param signal The signal to be filtered, we expect a complex number
+ * c(x, y) vector which can be represented as both integer/float/double.
+ *
+ * @param length The signal vector length.
+ *
+ * @param sigma Gaussian filtering parameter, inverse of tau = 1/sigma.
+ *
+ * @param normalize Decide if we will normalize the energy to solve
+ * energy shrinkage with perimeter normalization.
+ *
+ * @param extra_filter Use an extra filter (e.g. beta function) to control
+ * high curvature spikes.
+ *
+ * @return A scalar, representing bending energy or constant \ref energy_error.
+ *
+ * \todo
+ * - Implement function (I think it will have some dependecies, like
+ * an adaptor to types CvSeq and mcomplex...
+ * - Implement extra filtering functions (maybe Gnu Scientific Library could
+ * do the trick)?
+ *
+ */
+template <typename COMPLEX_NUMBER>
+double bending_energy(COMPLEX_NUMBER signal, int length, double sigma = 0.25,
+		      bool normalize = false, FILTER_TYPE extra_filter = FBETA)
+{
+
+
+	return energy_error;
 }
 
 

@@ -354,6 +354,38 @@ error:
 END_TEST
 
 
+
+/* Curvature test: we search for number of curvature inversions, since
+ * we are dealing with a square, it must have 4 inversions.
+ * TODO: write test && code to search for number of inversions/spikes.
+ */
+START_TEST (t_energy)
+{
+	mcomplex<double> *g_square, *g_circle;
+	int length;
+	double square_e = 0, circle_e = 2;
+	double sigma = 0.25;
+
+	// A square and circle with same perimeter
+	g_square = create_square(&length);
+	g_circle = create_circle(length);
+
+	// Calculates shapes bending energy
+	square_e = bending_energy(g_square, length, sigma);
+	circle_e = bending_energy(g_circle, length, sigma);
+
+	fail_unless((square_e != energy_error) && (circle_e != energy_error),
+		    "Bending energy calculus error!");
+
+	// Circle bending energy must be lower than a square
+	fail_unless(circle_e < square_e, "E_circ < E_square, its wrong!");
+
+	delete [] g_square;
+	delete [] g_circle;
+
+}
+END_TEST
+
 //Tests for thread safe transform.
 START_TEST (thread_transf)
 {
@@ -498,6 +530,7 @@ Suite *test_suite(void)
 	tcase_add_test(test_case, tshift);
 	tcase_add_test(test_case, tunshift);
 	tcase_add_test(test_case, diff_filter);
+	tcase_add_test(test_case, t_energy);
 	return s;
 }
 
