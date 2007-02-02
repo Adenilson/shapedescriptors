@@ -10,7 +10,7 @@
 # support linking with efence
 
 AM_CPPFLAGS = -Wall -O2 -Weffc++
-bin_PROGRAMS = contour_extractor utester
+bin_PROGRAMS = contour_extractor utester basetester
 
 contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
 	$(csourcedir)/contour.cpp $(csourcedir)/contour.h \
@@ -24,6 +24,11 @@ contour_extractor_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)
 
 utester_SOURCES = $(csourcedir)/fourier.h $(utestdir)/fft_test.cpp \
 	$(csourcedir)/mcomplex.h $(utestdir)/square.h $(utestdir)/circle.h
-
 utester_LDADD = $(FFTW_LIBS) -lcheck -lpthread
 utester_CPPFLAGS = $(AM_CPPFLAGS) $(FFTW_CFLAGS)
+
+
+basetester_SOURCES = $(csourcedir)/mcomplex.h $(utestdir)/base.h \
+	$(utestdir)/aux_test.cpp
+basetester_LDADD = $(OCV_LIBS) -lcheck
+basetester_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)

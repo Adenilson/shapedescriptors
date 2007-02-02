@@ -23,6 +23,9 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+//Complex type
+#include "mcomplex.h"
+
 //My point type (if we are using OpenCV, defaults to CvPoint)
 #define M2DPOINT
 #undef M2DPOINT
@@ -185,5 +188,139 @@ inline float distance(T1 &a, T2 &b) {
 	return norm(float(a.x - b.x), float(a.y - b.y));
 }
 
+
+/** Resource ownership type */
+typedef enum {
+	/** The one who hold a reference must destroy/free resource */
+	DESTROY,
+	/** The one who holds a reference/pointer must *not* free resource*/
+	IGNORE } OWNERSHIP;
+
+/**
+ * \brief An adaptor, makes CvSeq accessible like a vector of complex type.
+ *
+ * This adaptor insures a common access method to coordinate points
+ * between OpenCV CvSeq and a vector of mcomplex<double> (and by
+ * extension fftw_complex).
+ * My ideia is have common algorithms (derivate/energy/etc) for any
+ * kind of complex number vector.
+ *
+ * \todo Move this class to a separated file (any time I change
+ * this guy, the whole app needs to be rebuilt).
+ */
+template <typename NUMBER>
+class ocv_adaptor {
+protected:
+	/** An OpenCV contour sequence */
+	CvSeq *sequence;
+	/** Number of points in current contour */
+	int current_contour_points;
+	/** Contour sequence resource management behaviour, see
+	 * \ref OWNERSHIP.
+	 */
+	OWNERSHIP purge_seq;
+
+public:
+
+	/** Object constructor.
+	 *
+	 * When constructing the object, its possible to ask him to
+	 * clean up the pointed contour sequence memory in its destructor.
+	 * To do this, just set behaviour properly.
+	 *
+	 * @param aseq An OpenCV contour sequence.
+	 *
+	 * @param behaviour If current object instance should or not
+	 * to clean up contour sequence memory. See \ref OWNERSHIP.
+	 *
+	 */
+	ocv_adaptor(CvSeq *aseq, OWNERSHIP behaviour = IGNORE):sequence(NULL),
+				 current_contour_points(0),
+				 purge_seq(IGNORE) {
+
+
+	}
+
+	/** Copy constructor.
+	 *
+	 * Since this class has protected pointer members, we must provide
+	 * a copy constructor. Concerning contour sequence ownership, its
+	 * default is to ignore clean up of pointer/reference.
+	 *
+	 * @param obj An ocv_adaptor object reference.
+	 *
+	 * @param behaviour If current object instance should or not
+	 * to clean up contour sequence memory.
+	 *
+	 */
+	ocv_adaptor(ocv_adaptor &obj, OWNERSHIP behaviour = IGNORE) {
+		sequence = NULL;
+	}
+
+
+	/** Overloaded operator.
+	 *
+	 * This one ensures correct copy behaviour for objects. Ownership
+	 * behaviour is as follow:
+	 * \note if copied object has purge_seq field set to DESTROY,
+	 * current object will *not* receive contour sequence ownership.
+	 *
+	 * @param obj A ocv_adaptor object reference.
+	 *
+	 * @return A reference to current object.
+	 */
+	ocv_adaptor &operator=(ocv_adaptor &obj) { return *this; }
+
+	/** Overloaded operator, access coordinate point.
+	 *
+	 * Enables access to OpenCV sequence similar to a vector
+	 * of complex numbers.
+	 * How to handler invalid return objects implicitly?
+	 * Should I throw an exception?
+	 *
+	 * @param point Contour point position, ranging from 0 to
+	 * (length - 1).
+	 *
+	 * @return A object of \ref mcomplex type.
+	 */
+	mcomplex<NUMBER> operator[] (int point) {
+		mcomplex<NUMBER> obj;
+		obj[0] = 10;
+		obj[1] = 22;
+		return obj;
+	}
+
+	/** Change object contour sequence reference.
+	 *
+	 * It enables an user to change contour sequence pointed by adaptor.
+	 *
+	 * @param aseq A pointer to an OpenCV contour sequence.
+	 *
+	 * @param behaviour Destructor behaviour, will free up OpenCV
+	 * contour sequence if set to \ref DESTROY.
+	 *
+	 */
+	void reset(CvSeq *aseq, OWNERSHIP behaviour = IGNORE) { }
+
+
+	/** Advance to next object coordinate set.
+	 *
+	 * An OpenCV contour sequence has point coordinates of several
+	 * different shape objects. Call this function to advance to next
+	 * object in sequence.
+	 *
+	 * @return 0 to end of contour sequence, 1 in sucess, -1 in error case.
+	 */
+	int next(void) { return 0; }
+
+
+	/** Default destructor.
+	 *
+	 * If OpenCV contour sequence ownership is set to \ref DESTROY,
+	 * it will free up sequence data.
+	 *
+	 */
+	~ocv_adaptor(void) { }
+};
 
 #endif
