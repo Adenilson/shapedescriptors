@@ -25,6 +25,7 @@ START_TEST (t_ocv_adapt)
 	CvSeq *tmp = NULL;
 	ocv_adaptor<double> handler(tmp);
 
+	handler.reset(NULL, DESTROY);
 	/* How to handler invalid return objects implicitly? */
 	//mcomplex<double> obj = NULL;
 

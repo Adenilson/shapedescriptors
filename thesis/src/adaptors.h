@@ -44,13 +44,50 @@ protected:
 	/** An OpenCV contour sequence */
 	CvSeq *sequence;
 	/** Number of points in current contour */
-	int current_contour_points;
+	int current_contour_length;
 	/** Contour sequence resource management behaviour, see
 	 * \ref OWNERSHIP.
 	 */
 	OWNERSHIP purge_seq;
 
+	/** CvSeq seems a bit hard to be cleaned up, requiring
+	 * 2 stage destruction.
+	 * \todo Discover how to effectively clean memory on CvSeq.
+	 */
+	void clean_sequence(void) {
+		if (purge_seq == DESTROY && (sequence != NULL)) {
+			cvClearSeq(sequence);
+			/* OpenCV header files says that we must
+			 * call this to *really* free memory, but
+			 * those are different types.
+			 *
+			cvClearMemStorage(sequence);
+			*/
+		}
+	}
+
 public:
+
+	/** Change object contour sequence reference.
+	 *
+	 * It enables an user to change contour sequence pointed by adaptor.
+	 *
+	 * @param aseq A pointer to an OpenCV contour sequence.
+	 *
+	 * @param behaviour Destructor behaviour, will free up OpenCV
+	 * contour sequence if set to \ref DESTROY.
+	 *
+	 */
+	void reset(CvSeq *aseq, OWNERSHIP behaviour = IGNORE) {
+
+		if (aseq) {
+			current_contour_length = aseq->total;
+			clean_sequence();
+			sequence = aseq;
+			purge_seq = behaviour;
+		}
+
+	}
 
 	/** Object constructor.
 	 *
@@ -65,9 +102,9 @@ public:
 	 *
 	 */
 	ocv_adaptor(CvSeq *aseq, OWNERSHIP behaviour = IGNORE):
-		sequence(NULL), current_contour_points(0), purge_seq(IGNORE) {
+		sequence(NULL), current_contour_length(0), purge_seq(IGNORE) {
 
-
+		reset(aseq, behaviour);
 	}
 
 
@@ -119,19 +156,6 @@ public:
 		obj[1] = 22;
 		return obj;
 	}
-
-	/** Change object contour sequence reference.
-	 *
-	 * It enables an user to change contour sequence pointed by adaptor.
-	 *
-	 * @param aseq A pointer to an OpenCV contour sequence.
-	 *
-	 * @param behaviour Destructor behaviour, will free up OpenCV
-	 * contour sequence if set to \ref DESTROY.
-	 *
-	 */
-	void reset(CvSeq *aseq, OWNERSHIP behaviour = IGNORE) { }
-
 
 	/** Advance to next object coordinate set.
 	 *
