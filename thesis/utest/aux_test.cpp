@@ -10,7 +10,7 @@
  * fourier + computer vision.
  *
  */
-#include "src/base.h"
+#include "src/adaptors.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
