@@ -57,7 +57,7 @@ protected:
 	void clean_sequence(void) {
 		if (purge_seq == DESTROY && (sequence != NULL)) {
 			cvClearSeq(sequence);
-			/* OpenCV header files says that we must
+			/* FIXME: OpenCV header files says that we must
 			 * call this to *really* free memory, but
 			 * those are different types.
 			 *
@@ -121,7 +121,7 @@ public:
 	 *
 	 */
 	ocv_adaptor(ocv_adaptor &obj, OWNERSHIP behaviour = IGNORE) {
-		sequence = NULL;
+		reset(obj.sequence, behaviour);
 	}
 
 
@@ -136,7 +136,10 @@ public:
 	 *
 	 * @return A reference to current object.
 	 */
-	ocv_adaptor &operator=(ocv_adaptor &obj) { return *this; }
+	ocv_adaptor &operator=(ocv_adaptor &obj) {
+		reset(obj.sequence, obj.behaviour);
+		return *this;
+	}
 
 	/** Overloaded operator, access coordinate point.
 	 *
@@ -149,11 +152,11 @@ public:
 	 * (length - 1).
 	 *
 	 * @return A object of \ref mcomplex type.
+	 * \todo Create an exception class to throw a meaningful exception.
 	 */
 	mcomplex<NUMBER> operator[] (int point) {
 		mcomplex<NUMBER> obj;
-		obj[0] = 10;
-		obj[1] = 22;
+
 		return obj;
 	}
 
@@ -165,7 +168,21 @@ public:
 	 *
 	 * @return 0 to end of contour sequence, 1 in sucess, -1 in error case.
 	 */
-	int next(void) { return 0; }
+	int next(void) {
+		int result = -1;
+		if (sequence) {
+			CvSeq *tmp = sequence;
+			sequence = sequence->h_next;
+			if (sequence)
+				result = 1;
+			else {
+				result = 0;
+				sequence = tmp;
+			}
+		}
+
+		return result;
+	}
 
 
 	/** Default destructor.
@@ -174,7 +191,9 @@ public:
 	 * it will free up sequence data.
 	 *
 	 */
-	~ocv_adaptor(void) { }
+	~ocv_adaptor(void) {
+		clean_sequence();
+	}
 };
 
 #endif
