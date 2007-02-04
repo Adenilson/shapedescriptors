@@ -228,9 +228,10 @@ public:
 		if (sequence) {
 			CvSeq *tmp = sequence;
 			sequence = sequence->h_next;
-			if (sequence)
+			if (sequence) {
 				result = 1;
-			else {
+				reset(purge_seq);
+			} else {
 				result = 0;
 				sequence = tmp;
 			}
