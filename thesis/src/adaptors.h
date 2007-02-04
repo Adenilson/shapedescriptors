@@ -189,9 +189,6 @@ public:
 	 * @return A object of \ref mcomplex type.
 	 * \todo
 	 * - Create an exception class to throw a meaningful exception.
-	 * - XXX: we only advance to next contour point, position
-	 * is ignored!
-	 *
 	 */
 	mcomplex<NUMBER> operator[] (int point) {
 		mcomplex<NUMBER> obj;
