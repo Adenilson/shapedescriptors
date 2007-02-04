@@ -49,6 +49,9 @@ protected:
 	 * \ref OWNERSHIP.
 	 */
 	OWNERSHIP purge_seq;
+	/** OpenCV contour sequence point reader */
+	CvSeqReader cv_reader;
+
 
 	/** CvSeq seems a bit hard to be cleaned up, requiring
 	 * 2 stage destruction.
@@ -68,6 +71,22 @@ protected:
 
 public:
 
+	/** Reset contour sequence reader.
+	 *
+	 * If you are going to read a given contour sequence
+	 * *after* transversing it, call this function to
+	 * restart sequence reader.
+	 *
+	 * @param behaviour Destructor behaviour, will free up OpenCV
+	 * contour sequence if set to \ref DESTROY.
+	 *
+	 */
+	void reset(OWNERSHIP behaviour = IGNORE) {
+		if (sequence)
+			cvStartReadSeq(sequence, &cv_reader);
+		purge_seq = behaviour;
+	}
+
 	/** Change object contour sequence reference.
 	 *
 	 * It enables an user to change contour sequence pointed by adaptor.
@@ -81,12 +100,16 @@ public:
 	void reset(CvSeq *aseq, OWNERSHIP behaviour = IGNORE) {
 
 		if (aseq) {
-			current_contour_length = aseq->total;
-			clean_sequence();
-			sequence = aseq;
+
+			if (aseq != sequence) {
+				current_contour_length = aseq->total;
+				clean_sequence();
+				sequence = aseq;
+			}
+
+			cvStartReadSeq(sequence, &cv_reader);
 			purge_seq = behaviour;
 		}
-
 	}
 
 	/** Object constructor.
@@ -102,7 +125,8 @@ public:
 	 *
 	 */
 	ocv_adaptor(CvSeq *aseq, OWNERSHIP behaviour = IGNORE):
-		sequence(NULL), current_contour_length(0), purge_seq(IGNORE) {
+		sequence(NULL), current_contour_length(0),
+		purge_seq(IGNORE) {
 
 		reset(aseq, behaviour);
 	}
@@ -156,6 +180,16 @@ public:
 	 */
 	mcomplex<NUMBER> operator[] (int point) {
 		mcomplex<NUMBER> obj;
+		CvPoint cv_point;
+
+		if (!sequence)
+			//XXX: We need an Exception class.
+			throw int(10);
+		else {
+			CV_READ_SEQ_ELEM(cv_point, cv_reader);
+			obj[0] = (NUMBER) cv_point.x;
+			obj[1] = (NUMBER) cv_point.y;
+		}
 
 		return obj;
 	}
