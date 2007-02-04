@@ -11,28 +11,59 @@
  *
  */
 #include "src/adaptors.h"
+#include "src/contour.h"
+#include "src/vision.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
 
 #include <check.h>
 
+const char shapes_path[] = "../data/shapes.jpg";
+const int thres_value = 160;
+
+CvSeq *find_contour_image(CvMemStorage *store, int *num_contours)
+{
+	CvSeq *result = NULL;
+	IplImage *image, *gray, *thres;
+
+	image = cvLoadImage(shapes_path, 1);
+	fail_unless(image != NULL, "Failed to load image");
+	gray = cvCreateImage(cvSize(image->width,image->height),
+			     IPL_DEPTH_8U, 1);
+	thres = cvCreateImage(cvSize(image->width,image->height),
+			      IPL_DEPTH_8U, 1);
+
+	cvCvtColor(image, gray, CV_BGR2GRAY);
+	threshold(thres_value, gray, thres);
+	result = contour_follow(thres, store, num_contours);
+
+	cvReleaseImage(&image);
+	cvReleaseImage(&gray);
+
+	return result;
+
+}
 
 //Test for transform
 START_TEST (t_ocv_adapt)
 {
 
-	CvSeq *tmp = NULL;
-	ocv_adaptor<double> handler(tmp);
+	CvSeq *sequence = NULL;
+	int num_contours;
+	CvMemStorage* storage = cvCreateMemStorage(0);
+	ocv_adaptor<double> handler;
 
-	handler.reset(NULL, DESTROY);
+	sequence = find_contour_image(storage, &num_contours);
+
+	handler.reset(sequence);
 	/* How to handler invalid return objects implicitly? */
 	//mcomplex<double> obj = NULL;
 
-	cout << "\n\n" <<
+	cout << "\ncontours: " << num_contours << "\tthres: " << thres_value
+	     << "\n\n" <<
 		"handler[0][0] = " << handler[0][0] << "\n" <<
 		"handler[0][1] = " << handler[0][1] << endl;
-
 }
 END_TEST
 
@@ -41,7 +72,7 @@ END_TEST
 Suite *test_suite(void);
 Suite *test_suite(void)
 {
-	Suite *s = suite_create("test_dft");
+	Suite *s = suite_create("test_adaptor");
 	TCase *test_case = tcase_create("transf_test_case");
 
 	suite_add_tcase(s, test_case);

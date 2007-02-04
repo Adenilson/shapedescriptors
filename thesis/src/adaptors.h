@@ -112,6 +112,17 @@ public:
 		}
 	}
 
+
+	/** Object default constructor.
+	 *
+	 * An empty constructor is necessary in some cases.
+	 */
+	ocv_adaptor(void): sequence(NULL), current_contour_length(0),
+		purge_seq(IGNORE) {
+
+	}
+
+
 	/** Object constructor.
 	 *
 	 * When constructing the object, its possible to ask him to
