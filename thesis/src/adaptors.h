@@ -196,6 +196,15 @@ public:
 	mcomplex<NUMBER> operator[] (int point) {
 		mcomplex<NUMBER> obj;
 		CvPoint cv_point;
+		static int position = 0;
+
+		/* If current point *is not* next point relative
+		 * to previous access, move sequence reader to it.
+		 */
+		if (position != ((point != 0) ? (point - 1) : point))
+			cvSetSeqReaderPos(&cv_reader, point);
+
+		position = point;
 
 		if (!sequence)
 			//XXX: We need an Exception class.
