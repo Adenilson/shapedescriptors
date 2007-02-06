@@ -51,7 +51,27 @@ protected:
 	OWNERSHIP purge_seq;
 	/** OpenCV contour sequence point reader */
 	CvSeqReader cv_reader;
+	/** Number of shapes inside sequence */
+	int sequence_length;
 
+
+	/** Count the number of shapes inside sequence.
+	 *
+	 * This function will run over sequence to calculate
+	 * its length or the number of shapes inside it.
+	 *
+	 */
+	void count_sequence(void) {
+
+		if (sequence) {
+			sequence_length = 0;
+			CvSeq *tmp = sequence;
+			while (tmp) {
+				++sequence_length;
+				tmp = tmp->h_next;
+			}
+		}
+	}
 
 	/** CvSeq seems a bit hard to be cleaned up, requiring
 	 * 2 stage destruction.
@@ -70,6 +90,28 @@ protected:
 	}
 
 public:
+
+	/** Returns current shape contour length.
+	 *
+	 * This function will return the number of points present
+	 * in current pointed contour.
+	 *
+	 * @return Contour length or -1 in error.
+	 */
+	int contour_length(void) {
+
+		return current_contour_length;
+	}
+
+	/** Returns sequence length, or number of contours.
+	 *
+	 * @return Sequence length or -1 in error.
+	 */
+	int contour_number(void) {
+
+		return sequence_length;
+	}
+
 
 	/** Reset contour sequence reader.
 	 *
@@ -105,6 +147,7 @@ public:
 				current_contour_length = aseq->total;
 				clean_sequence();
 				sequence = aseq;
+				count_sequence();
 			}
 
 			cvStartReadSeq(sequence, &cv_reader);
@@ -117,8 +160,8 @@ public:
 	 *
 	 * An empty constructor is necessary in some cases.
 	 */
-	ocv_adaptor(void): sequence(NULL), current_contour_length(0),
-		purge_seq(IGNORE) {
+	ocv_adaptor(void): sequence(NULL), current_contour_length(-1),
+		purge_seq(IGNORE), sequence_length(-1) {
 
 	}
 
