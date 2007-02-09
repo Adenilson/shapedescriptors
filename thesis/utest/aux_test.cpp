@@ -9,6 +9,10 @@
  * and other stuff not directly related with
  * fourier + computer vision.
  *
+ * \todo
+ * Create utests to refactor contour/descriptor code
+ * to use ocv_adaptor.
+ *
  */
 #include "src/adaptors.h"
 #include "src/contour.h"

@@ -10,7 +10,10 @@
  * Cesar 'Shape Analysis and Classification', 2000). We use as fourier
  * transform fftw (Fast Fourier Transform in the West).
  *
- * \todo Fix normalization issue in curvature.
+ * \todo
+ * - Fix normalization issue in curvature.
+ * - Consider use integer when inputing data in fourier transform, when
+ * possible.
  */
 
 #ifndef _FOURIER_H
