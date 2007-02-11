@@ -21,7 +21,7 @@
 
 #include <fftw3.h>
 #include <pthread.h>
-#include <complex>
+#include "mcomplex.h"
 
 /** PI value */
 #define PI 3.14159265359
@@ -492,7 +492,7 @@ dealloc:
  * @param yy Second derivative of y coordinate of contour.
  * @param length Vector elements.
  *
- * @return Curvature of given shape.
+ * @return Curvature of given shape, NULL in error case.
  *
  * TODO: Gaussian filter (actually in derivative code).
  */
@@ -513,13 +513,40 @@ double *curvature(TYPE x, TYPE xx, TYPE y, TYPE yy, int length)
 		k[i] /= pow(tmp, raiser);
 	}
 
-
-
 exit:
 	return k;
 
 }
 
+
+/** Calculates energy.
+ *
+ * Given the curvature of a parametric curve, will  calculate the
+ * energy of curve, e = sum(k^2(t))/n (where k = curvature).
+ *
+ * @param contour_curvature Curvature of contour.
+ *
+ * @param length Contour length.
+ *
+ * @return The energy or \ref energy_error otherwise.
+ */
+template <typename TYPE>
+double energy(TYPE contour_curvature, int length)
+{
+	double result = energy_error;
+	int i;
+	if (!contour_curvature)
+		goto exit;
+
+	result = 0;
+	for (i = 0; i < length; ++i)
+		result += contour_curvature[i] * contour_curvature[i];
+
+	result /= length;
+
+exit:
+	return result;
+}
 
 /** Calculates multiscale bending energy.
  *
@@ -533,7 +560,7 @@ exit:
  *
  * @param length The signal vector length.
  *
- * @param sigma Gaussian filtering parameter, inverse of tau = 1/sigma.
+ * @param tau Gaussian inverse variance (1/a) to smooth signal.
  *
  * @param normalize Decide if we will normalize the energy to solve
  * energy shrinkage with perimeter normalization.
@@ -544,19 +571,69 @@ exit:
  * @return A scalar, representing bending energy or constant \ref energy_error.
  *
  * \todo
- * - Implement function (I think it will have some dependecies, like
- * an adaptor to types CvSeq and mcomplex...
+ * - Implement perimeter normalization.
  * - Implement extra filtering functions (maybe Gnu Scientific Library could
  * do the trick)?
  *
  */
 template <typename COMPLEX_NUMBER>
-double bending_energy(COMPLEX_NUMBER signal, int length, double sigma = 0.25,
+double bending_energy(COMPLEX_NUMBER *signal, int length, double tau = 8,
 		      bool normalize = false, FILTER_TYPE extra_filter = FBETA)
 {
+	double result = energy_error;
+	double *contour_curvature = NULL;
+	COMPLEX_NUMBER *x, *y;
+	mcomplex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
+	x_diff = xx_diff = y_diff = yy_diff = NULL;
+	int i, diff_level;
+
+	if (!(x = new COMPLEX_NUMBER[length]))
+		goto exit;
+
+	if (!(y = new COMPLEX_NUMBER[length]))
+		goto cleanup;
+
+	for (i = 0; i < length; ++i) {
+		x[i][0] = signal[i][0];
+		y[i][0] = signal[i][0];
+	}
 
 
-	return energy_error;
+	x_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 1,
+						   tau);
+	xx_diff = (mcomplex<double>*) differentiate(x, length,diff_level = 2,
+						    tau);
+	y_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 1,
+						   tau);
+	yy_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 2,
+						    tau);
+
+	if ((!x_diff) || (!xx_diff) || (!y_diff) || (!yy_diff))
+		goto cleanup;
+
+
+	contour_curvature = curvature(x_diff, xx_diff, y_diff, yy_diff, length);
+	if (!contour_curvature)
+		goto cleanup;
+	result = energy(contour_curvature, length);
+	delete [] contour_curvature;
+
+cleanup:
+	if (x)
+		delete [] x;
+	if (y)
+		delete [] y;
+	if (x_diff)
+		delete [] x_diff;
+	if (xx_diff)
+		delete [] xx_diff;
+	if (y_diff)
+		delete [] y_diff;
+	if (yy_diff)
+		delete [] yy_diff;
+exit:
+
+	return result;
 }
 
 

@@ -364,15 +364,15 @@ START_TEST (t_energy)
 	mcomplex<double> *g_square, *g_circle;
 	int length;
 	double square_e = 0, circle_e = 2;
-	double sigma = 0.25;
+	double tau = 12.0;
 
 	// A square and circle with same perimeter
 	g_square = create_square(&length);
 	g_circle = create_circle(length);
 
 	// Calculates shapes bending energy
-	square_e = bending_energy(g_square, length, sigma);
-	circle_e = bending_energy(g_circle, length, sigma);
+	square_e = bending_energy(g_square, length, tau);
+	circle_e = bending_energy(g_circle, length, tau);
 
 	fail_unless((square_e != energy_error) && (circle_e != energy_error),
 		    "Bending energy calculus error!");
