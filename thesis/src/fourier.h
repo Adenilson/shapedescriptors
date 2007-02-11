@@ -548,6 +548,88 @@ exit:
 	return result;
 }
 
+
+
+/** Calculates multiscale bending energy.
+ *
+ * This function implements bending energy, e(t) = sum(k(t)^2)/n
+ * like in Cesar, R. M.; Costa, L. F. "Shape Characterization in Natural
+ * scales by using multiscale bending energy" (1996). See also function
+ * \ref curvature.
+ *
+ * @param signal The signal to be filtered, we expect a complex number
+ * c(x, y) vector which can be represented as both integer/float/double.
+ *
+ * @param length The signal vector length.
+ *
+ * @param tau Gaussian inverse variance (1/a) to smooth signal.
+ *
+ * @param normalize Decide if we will normalize the energy to solve
+ * energy shrinkage with perimeter normalization.
+ *
+ * @param extra_filter Use an extra filter (e.g. beta function) to control
+ * high curvature spikes.
+ *
+ * @return A vector with contour curvature or NULL on error.
+ */
+template <typename COMPLEX_NUMBER>
+double *contour_curvature(COMPLEX_NUMBER *signal, int length, double tau = 8,
+		      bool normalize = false, FILTER_TYPE extra_filter = FBETA)
+{
+	double *result = NULL;
+	COMPLEX_NUMBER *x, *y;
+	mcomplex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
+	x_diff = xx_diff = y_diff = yy_diff = NULL;
+	int i, diff_level;
+
+	if (!(x = new COMPLEX_NUMBER[length]))
+		goto exit;
+
+	if (!(y = new COMPLEX_NUMBER[length]))
+		goto cleanup;
+
+	for (i = 0; i < length; ++i) {
+		x[i][0] = signal[i][0];
+		y[i][0] = signal[i][0];
+	}
+
+
+	x_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 1,
+						   tau);
+	xx_diff = (mcomplex<double>*) differentiate(x, length,diff_level = 2,
+						    tau);
+	y_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 1,
+						   tau);
+	yy_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 2,
+						    tau);
+
+	if ((!x_diff) || (!xx_diff) || (!y_diff) || (!yy_diff))
+		goto cleanup;
+
+
+	result = curvature(x_diff, xx_diff, y_diff, yy_diff, length);
+	if (!result)
+		goto cleanup;
+
+cleanup:
+	if (x)
+		delete [] x;
+	if (y)
+		delete [] y;
+	if (x_diff)
+		delete [] x_diff;
+	if (xx_diff)
+		delete [] xx_diff;
+	if (y_diff)
+		delete [] y_diff;
+	if (yy_diff)
+		delete [] yy_diff;
+exit:
+
+	return result;
+
+}
+
 /** Calculates multiscale bending energy.
  *
  * This function implements bending energy, e(t) = sum(k(t)^2)/n
@@ -581,58 +663,17 @@ double bending_energy(COMPLEX_NUMBER *signal, int length, double tau = 8,
 		      bool normalize = false, FILTER_TYPE extra_filter = FBETA)
 {
 	double result = energy_error;
-	double *contour_curvature = NULL;
-	COMPLEX_NUMBER *x, *y;
-	mcomplex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
-	x_diff = xx_diff = y_diff = yy_diff = NULL;
-	int i, diff_level;
+	double *shape_curvature = NULL;
 
-	if (!(x = new COMPLEX_NUMBER[length]))
+	shape_curvature = contour_curvature(signal, length, tau, normalize,
+					    extra_filter);
+	if (!shape_curvature)
 		goto exit;
 
-	if (!(y = new COMPLEX_NUMBER[length]))
-		goto cleanup;
+	result = energy(shape_curvature, length);
+	delete [] shape_curvature;
 
-	for (i = 0; i < length; ++i) {
-		x[i][0] = signal[i][0];
-		y[i][0] = signal[i][0];
-	}
-
-
-	x_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 1,
-						   tau);
-	xx_diff = (mcomplex<double>*) differentiate(x, length,diff_level = 2,
-						    tau);
-	y_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 1,
-						   tau);
-	yy_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 2,
-						    tau);
-
-	if ((!x_diff) || (!xx_diff) || (!y_diff) || (!yy_diff))
-		goto cleanup;
-
-
-	contour_curvature = curvature(x_diff, xx_diff, y_diff, yy_diff, length);
-	if (!contour_curvature)
-		goto cleanup;
-	result = energy(contour_curvature, length);
-	delete [] contour_curvature;
-
-cleanup:
-	if (x)
-		delete [] x;
-	if (y)
-		delete [] y;
-	if (x_diff)
-		delete [] x_diff;
-	if (xx_diff)
-		delete [] xx_diff;
-	if (y_diff)
-		delete [] y_diff;
-	if (yy_diff)
-		delete [] yy_diff;
 exit:
-
 	return result;
 }
 
