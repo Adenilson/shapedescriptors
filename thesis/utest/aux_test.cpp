@@ -59,15 +59,21 @@ START_TEST (t_ocv_adapt)
 	ocv_adaptor<double> handler;
 
 	sequence = find_contour_image(storage, &num_contours);
-
 	handler.reset(sequence);
 	/* How to handler invalid return objects implicitly? */
 	//mcomplex<double> obj = NULL;
 
-	cout << "\ncontours: " << num_contours << "\tthres: " << thres_value
-	     << "\n\n" <<
-		"handler[0][0] = " << handler[0][0] << "\n" <<
-		"handler[0][1] = " << handler[0][1] << endl;
+	fail_unless(num_contours == handler.contour_number(),
+		    "Adaptor failed to count number of shapes!");
+
+	if (handler.contour_length() > 10)
+		fail_unless((handler[0][0] == handler[0][0]) &&
+			    (handler[10][0] == handler[10][0]) &&
+			    (handler[10][0] != handler[10][1]) &&
+			    (handler[1][0] == handler[1][0]) &&
+			    (handler[1][1] == handler[1][1]),
+			    "Adaptor sequence access is faulty!");
+
 }
 END_TEST
 
