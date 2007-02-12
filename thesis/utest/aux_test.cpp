@@ -17,6 +17,7 @@
 #include "src/adaptors.h"
 #include "src/contour.h"
 #include "src/vision.h"
+#include "src/fourier.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -78,6 +79,30 @@ START_TEST (t_ocv_adapt)
 END_TEST
 
 
+START_TEST (t_adapt_curvature)
+{
+
+	CvSeq *sequence = NULL;
+	int num_contours;
+	CvMemStorage* storage = cvCreateMemStorage(0);
+	ocv_adaptor<double> handler;
+	double *curvature = NULL;
+	double tau = 10.0;
+
+	sequence = find_contour_image(storage, &num_contours);
+	handler.reset(sequence);
+
+	fail_unless(handler.next() == 1, "Failed to advance to next shape \
+contour");
+	cout << "Going to calculate curvature\n";
+	curvature = contour_curvature<ocv_adaptor<double>, mcomplex<double> >(handler, handler.contour_length(), tau);
+	fail_unless(curvature != NULL, "Failed to calculate curvature!");
+
+
+	delete [] curvature;
+}
+END_TEST
+
 
 Suite *test_suite(void);
 Suite *test_suite(void)
@@ -87,6 +112,7 @@ Suite *test_suite(void)
 
 	suite_add_tcase(s, test_case);
 	tcase_add_test(test_case, t_ocv_adapt);
+	tcase_add_test(test_case, t_adapt_curvature);
 	return s;
 }
 

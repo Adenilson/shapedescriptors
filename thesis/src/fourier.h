@@ -572,27 +572,26 @@ exit:
  *
  * @return A vector with contour curvature or NULL on error.
  */
-template <typename COMPLEX_NUMBER>
-double *contour_curvature(COMPLEX_NUMBER *signal, int length, double tau = 8,
+template <typename TYPE1, typename TYPE2>
+double *contour_curvature(TYPE1 signal, int length, double tau = 8,
 		      bool normalize = false, FILTER_TYPE extra_filter = FBETA)
 {
 	double *result = NULL;
-	COMPLEX_NUMBER *x, *y;
+	TYPE2 *x, *y;
 	mcomplex<double>  *x_diff, *xx_diff, *y_diff, *yy_diff;
 	x_diff = xx_diff = y_diff = yy_diff = NULL;
 	int i, diff_level;
 
-	if (!(x = new COMPLEX_NUMBER[length]))
+	if (!(x = new TYPE2[length]))
 		goto exit;
 
-	if (!(y = new COMPLEX_NUMBER[length]))
+	if (!(y = new TYPE2[length]))
 		goto cleanup;
 
 	for (i = 0; i < length; ++i) {
 		x[i][0] = signal[i][0];
 		y[i][0] = signal[i][0];
 	}
-
 
 	x_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 1,
 						   tau);
@@ -602,7 +601,6 @@ double *contour_curvature(COMPLEX_NUMBER *signal, int length, double tau = 8,
 						   tau);
 	yy_diff = (mcomplex<double>*) differentiate(y, length, diff_level = 2,
 						    tau);
-
 	if ((!x_diff) || (!xx_diff) || (!y_diff) || (!yy_diff))
 		goto cleanup;
 
@@ -630,6 +628,26 @@ exit:
 
 }
 
+/** A template wrapper to contour_curvature.
+ *
+ * Use this one with \ref mcomplex and with normal vectors.
+ *
+ * @param signal see \ref contour_curvature
+ * @param length see \ref contour_curvature
+ * @param tau see \ref contour_curvature
+ * @param normalize see \ref contour_curvature
+ * @param extra_filter see \ref contour_curvature
+ *
+ * @return see \ref contour_curvature
+ */
+template <typename TYPE>
+double *contour_curvature(TYPE *signal, int length, double tau = 8,
+		      bool normalize = false, FILTER_TYPE extra_filter = FBETA)
+{
+	return contour_curvature<TYPE *, TYPE>(signal, length, tau, normalize,
+					     extra_filter);
+
+}
 /** Calculates multiscale bending energy.
  *
  * This function implements bending energy, e(t) = sum(k(t)^2)/n

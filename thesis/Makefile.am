@@ -31,6 +31,6 @@ utester_CPPFLAGS = $(AM_CPPFLAGS) $(FFTW_CFLAGS)
 ex_tester_SOURCES = $(csourcedir)/mcomplex.h \
 	$(csourcedir)/adaptors.h $(utestdir)/aux_test.cpp \
 	$(csourcedir)/contour.h $(csourcedir)/contour.cpp \
-	$(csourcedir)/vision.h
-ex_tester_LDADD = $(OCV_LIBS) -lcheck
-ex_tester_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)
+	$(csourcedir)/vision.h $(csourcedir)/fourier.h
+ex_tester_LDADD = $(FFTW_LIBS) $(OCV_LIBS) -lcheck
+ex_tester_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS) $(FFTW_CFLAGS)
