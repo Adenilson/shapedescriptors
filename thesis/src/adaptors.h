@@ -78,15 +78,17 @@ protected:
 	 * \todo Discover how to effectively clean memory on CvSeq.
 	 */
 	void clean_sequence(void) {
-		if (purge_seq == DESTROY && (sequence != NULL)) {
+
+		if ((purge_seq == DESTROY) && (sequence != NULL)) {
 			cvClearSeq(sequence);
 			/* FIXME: OpenCV header files says that we must
 			 * call this to *really* free memory, but
 			 * those are different types.
 			 *
-			cvClearMemStorage(sequence);
+			 cvClearMemStorage(sequence);
 			*/
 		}
+
 	}
 
 public:
@@ -198,7 +200,9 @@ public:
 	 * to clean up contour sequence memory.
 	 *
 	 */
-	ocv_adaptor(ocv_adaptor &obj, OWNERSHIP behaviour = IGNORE) {
+	ocv_adaptor(ocv_adaptor &obj, OWNERSHIP behaviour = IGNORE):
+		sequence(NULL), current_contour_length(0),
+		purge_seq(IGNORE) {
 		reset(obj.sequence, behaviour);
 	}
 
