@@ -18,6 +18,7 @@
 #include "src/contour.h"
 #include "src/vision.h"
 #include "src/fourier.h"
+#include "src/descriptors.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -66,12 +67,9 @@ START_TEST (t_ocv_adapt)
 
 	fail_unless(num_contours == handler.contour_number(),
 		    "Adaptor failed to count number of shapes!");
-
 	fail_unless(handler.next() == 1, "Failed to advance to next shape \
 		contour");
 
-	cout << "0,0 = " << handler[0][0] << "\t0,0 = " << handler[0][0]
-	     << endl;
 
 	if (handler.contour_length() > 10)
 		fail_unless((handler[0][0] == handler[0][0]) &&
@@ -84,6 +82,36 @@ START_TEST (t_ocv_adapt)
 }
 END_TEST
 
+
+START_TEST (t_adapt_access)
+{
+	CvSeq *sequence = NULL;
+	int num_contours, length, i, counter = 0;
+	CvMemStorage* storage = cvCreateMemStorage(0);
+	ocv_adaptor<double> handler;
+	m_point *tmp_contour;
+
+	sequence = find_contour_image(storage, &num_contours);
+	handler.reset(sequence);
+
+
+	do {
+		tmp_contour =  points(sequence, &length);
+		fail_unless(tmp_contour != NULL, "Failed to copy contour!");
+		for (i = 0; i < length; ++i) {
+			fail_unless(tmp_contour[i].x == handler[i][0],
+				    "Error when comparing points: real part!");
+			fail_unless(tmp_contour[i].y == handler[i][1],
+				    "Error when comparing points: imag part!");
+		}
+
+		++counter;
+		delete [] tmp_contour;
+
+	} while (counter < num_contours);
+
+}
+END_TEST
 
 START_TEST (t_adapt_curvature)
 {
@@ -121,6 +149,8 @@ Suite *test_suite(void)
 	suite_add_tcase(s, test_case);
 	tcase_add_test(test_case, t_ocv_adapt);
 	tcase_add_test(test_case, t_adapt_curvature);
+	tcase_add_test(test_case, t_adapt_access);
+
 	return s;
 }
 
