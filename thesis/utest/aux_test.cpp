@@ -67,6 +67,12 @@ START_TEST (t_ocv_adapt)
 	fail_unless(num_contours == handler.contour_number(),
 		    "Adaptor failed to count number of shapes!");
 
+	fail_unless(handler.next() == 1, "Failed to advance to next shape \
+		contour");
+
+	cout << "0,0 = " << handler[0][0] << "\t0,0 = " << handler[0][0]
+	     << endl;
+
 	if (handler.contour_length() > 10)
 		fail_unless((handler[0][0] == handler[0][0]) &&
 			    (handler[10][0] == handler[10][0]) &&
@@ -83,23 +89,26 @@ START_TEST (t_adapt_curvature)
 {
 
 	CvSeq *sequence = NULL;
-	int num_contours;
+	int num_contours, i;
 	CvMemStorage* storage = cvCreateMemStorage(0);
 	ocv_adaptor<double> handler;
 	double *curvature = NULL;
-	double tau = 10.0;
+	double tau = 10.0, c_energy;
 
 	sequence = find_contour_image(storage, &num_contours);
 	handler.reset(sequence);
 
-	fail_unless(handler.next() == 1, "Failed to advance to next shape \
-contour");
-	cout << "Going to calculate curvature\n";
-	curvature = contour_curvature<ocv_adaptor<double>, mcomplex<double> >(handler, handler.contour_length(), tau);
-	fail_unless(curvature != NULL, "Failed to calculate curvature!");
+	do {
+		curvature = contour_curvature<ocv_adaptor<double>, mcomplex<double> >(handler, handler.contour_length(), tau);
+		c_energy = energy(curvature, handler.contour_length());
+		delete [] curvature;
+
+		cout << "i = " << i <<  "\tenergy = " << c_energy <<
+			"\tlength = " << handler.contour_length() << endl;
+		++i;
+	} while (handler.next());
 
 
-	delete [] curvature;
 }
 END_TEST
 
@@ -109,7 +118,6 @@ Suite *test_suite(void)
 {
 	Suite *s = suite_create("test_adaptor");
 	TCase *test_case = tcase_create("transf_test_case");
-
 	suite_add_tcase(s, test_case);
 	tcase_add_test(test_case, t_ocv_adapt);
 	tcase_add_test(test_case, t_adapt_curvature);
