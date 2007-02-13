@@ -34,8 +34,9 @@ float diameter(m_point *points, int *size);
  * @param obj Sequence with coordinates of object.
  * @param size Pointer to variable that will hold the size of returned vector.
  *
- * @return A vector with coordinates of one contour (it does the memory
- *         allocation, so remember to free up this memory later...).
+ * @return A vector with coordinates of one contour or NULL in error case
+ * (it does the memory allocation, so remember to free up this memory
+ * later...).
  *
  * TODO: change this name, its not descriptive.
  */

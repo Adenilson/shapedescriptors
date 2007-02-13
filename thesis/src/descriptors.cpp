@@ -272,6 +272,8 @@ m_point *points(CvSeq *obj, int *size)
 
 	*size = obj->total;
 	result = new m_point[*size];
+	if (!result)
+		goto exit;
 
 	for (int i = 0; i < *size; ++i) {
 		CV_READ_SEQ_ELEM(p1, reader);
@@ -281,6 +283,7 @@ m_point *points(CvSeq *obj, int *size)
 		result[i].y = p1.y;
 	}
 
+exit:
 	return result;
 
 }
