@@ -277,6 +277,7 @@ public:
 			sequence = sequence->h_next;
 			if (sequence) {
 				result = 1;
+				current_contour_length = sequence->total;
 				reset(purge_seq);
 			} else {
 				result = 0;
