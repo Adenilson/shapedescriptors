@@ -117,11 +117,14 @@ START_TEST (t_adapt_curvature)
 {
 
 	CvSeq *sequence = NULL;
-	int num_contours, i;
+	int num_contours, i = 0;
 	CvMemStorage* storage = cvCreateMemStorage(0);
 	ocv_adaptor<int> handler;
 	double *curvature = NULL;
 	double tau = 10.0, c_energy;
+	const char *shape_names[] = { "square.txt", "circle.txt",
+				     "elipse.txt", "star.txt" };
+	ofstream fout;
 
 	sequence = find_contour_image(storage, &num_contours);
 	handler.reset(sequence);
@@ -130,6 +133,14 @@ START_TEST (t_adapt_curvature)
 		curvature = contour_curvature<ocv_adaptor<int>,
 		  mcomplex<double> >(handler, handler.contour_length(), tau);
 		c_energy = energy(curvature, handler.contour_length());
+
+		if (0 < i < 4) {
+			fout.open(shape_names[i]);
+			fout << "index\tcurvature" << endl;
+			for (int z = 0; z < handler.contour_length(); ++z)
+				fout << z << "\t" << curvature[z] << endl;
+			fout.close();
+		}
 		delete [] curvature;
 
 		cout << "i = " << i <<  "\tenergy = " << c_energy <<
