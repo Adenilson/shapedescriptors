@@ -119,7 +119,7 @@ START_TEST (t_adapt_curvature)
 	CvSeq *sequence = NULL;
 	int num_contours, i;
 	CvMemStorage* storage = cvCreateMemStorage(0);
-	ocv_adaptor<double> handler;
+	ocv_adaptor<int> handler;
 	double *curvature = NULL;
 	double tau = 10.0, c_energy;
 
@@ -127,7 +127,8 @@ START_TEST (t_adapt_curvature)
 	handler.reset(sequence);
 
 	do {
-		curvature = contour_curvature<ocv_adaptor<double>, mcomplex<double> >(handler, handler.contour_length(), tau);
+		curvature = contour_curvature<ocv_adaptor<int>,
+		  mcomplex<double> >(handler, handler.contour_length(), tau);
 		c_energy = energy(curvature, handler.contour_length());
 		delete [] curvature;
 
