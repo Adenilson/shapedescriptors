@@ -17,9 +17,10 @@ contour_extractor_SOURCES = $(csourcedir)/base.h $(csourcedir)/beta.cpp \
 	$(csourcedir)/descriptors.cpp $(csourcedir)/descriptors.h \
 	$(csourcedir)/output.cpp $(csourcedir)/output.h \
 	$(csourcedir)/seq.h $(csourcedir)/vision.h \
-	$(csourcedir)/ window.h
-contour_extractor_LDADD = $(OCV_LIBS)
-contour_extractor_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS)
+	$(csourcedir)/ window.h $(csourcedir)/fourier.h \
+	$(csourcedir)/adaptors.h
+contour_extractor_LDADD = $(OCV_LIBS) $(FFTW_LIBS)
+contour_extractor_CPPFLAGS = $(AM_CPPFLAGS) $(OCV_CFLAGS) $(FFTW_CFLAGS)
 
 
 utester_SOURCES = $(csourcedir)/fourier.h $(utestdir)/fft_test.cpp \

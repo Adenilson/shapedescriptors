@@ -70,7 +70,8 @@ To-do: Voronoi tesselation, User manual, integrate with other programs, maybe La
 #include "vision.h"
 #include "output.h"
 #include "descriptors.h"
-
+#include "adaptors.h"
+#include "fourier.h"
 
 using namespace std;
 
@@ -82,6 +83,7 @@ char file_area[] = "area.txt";
 char file_ratio[] = "ratio_centroid.txt";
 char file_diam[] = "diameter.txt";
 char file_perimeter[] = "perimeter.txt";
+char file_energy[] = "energy.txt";
 
 //Minimum diameter
 float diam_thres = 7;
@@ -127,6 +129,10 @@ bool write_diam(CvSeq* contours, char *filename, float diam,
 //ps: idem
 bool write_perimeter(CvSeq* contours, char *filename, float diam,
 		float *diameters);
+
+//Calculate and write bending energy
+bool write_energy(CvSeq *contours, char *filename, float diam_thres,
+		  float *diameters);
 
 //Show the contour stored in a sequence
 void show_contour(void);
@@ -281,6 +287,8 @@ int main(int argc, char* argv[])
 	write_diam(contours, file_diam, diam_thres, diameters, d_size);
 	//Write external file with each perimeter
 	write_perimeter(contours, file_perimeter, diam_thres, diameters);
+	//Write external file with bending energy
+	write_energy(contours, file_energy, diam_thres, diameters);
 
 	return 0;
 }
@@ -376,6 +384,49 @@ bool write_area(CvSeq* contours, char *filename, float diam,
 	return result;
 }
 
+
+bool write_energy(CvSeq *contours, char *filename, float diam_thres,
+		  float *diameters)
+{
+	double tau = 10.0, c_energy;
+	ocv_adaptor<int> handler(contours);
+	double *curvature = NULL;
+	int counter = -1;
+	bool result = true;
+	ofstream fout(filename);
+
+	try {
+		ofstream fout(filename);
+		do {
+
+			++counter;
+			if (diameters[counter] < diam_thres)
+				continue;
+
+			curvature = contour_curvature<ocv_adaptor<int>,
+				mcomplex<double> >
+				(handler, handler.contour_length(), tau);
+			///FIXME: Need an exception class!
+			if (!curvature)
+				throw int(10);
+
+			c_energy = energy(curvature, handler.contour_length());
+			fout << c_energy << endl;
+
+			delete [] curvature;
+
+		} while (handler.next());
+
+	} catch (...) {
+
+		result = false;
+
+	}
+
+	return result;
+}
+
+
 //Write perimeter of each contour in external file
 //ps: idem
 bool write_perimeter(CvSeq* contours, char *filename, float diam,
@@ -404,7 +455,6 @@ bool write_perimeter(CvSeq* contours, char *filename, float diam,
 
 	return result;
 }
-
 
 bool write_diam(CvSeq* contours, char *filename, float diam,
 		float *diameters, int thasize)
