@@ -158,6 +158,7 @@ Suite *test_suite(void)
 {
 	Suite *s = suite_create("test_adaptor");
 	TCase *test_case = tcase_create("transf_test_case");
+	tcase_set_timeout (test_case, 10);
 	suite_add_tcase(s, test_case);
 	tcase_add_test(test_case, t_ocv_adapt);
 	tcase_add_test(test_case, t_adapt_curvature);
