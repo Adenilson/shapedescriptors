@@ -103,6 +103,11 @@ START_TEST (t_adapt_access)
 				    "Error when comparing points: real part!");
 			fail_unless(tmp_contour[i].y == handler[i][1],
 				    "Error when comparing points: imag part!");
+#ifdef F_DEBUG
+			cout << "contour = " << counter <<
+			  "\ti = " << i << "\treal = " << handler[i][0] <<
+			  "\timag = " << handler[i][1] << endl;
+#endif
 		}
 
 		++counter;
@@ -134,6 +139,7 @@ START_TEST (t_adapt_curvature)
 	do {
 		curvature = contour_curvature<ocv_adaptor<int>,
 		  mcomplex<double> >(handler, handler.contour_length(), tau);
+		fail_unless(curvature != NULL, "Failed to calculate curvature!");
 		c_energy = energy(curvature, handler.contour_length());
 
 		if (0 < i < 4) {
@@ -145,8 +151,10 @@ START_TEST (t_adapt_curvature)
 		}
 		delete [] curvature;
 
-		cout << "i = " << i <<  "\tenergy = " << c_energy <<
+#ifdef F_DEBUG
+		cout << "\ni = " << i <<  "\tenergy = " << c_energy <<
 			"\tlength = " << handler.contour_length() << endl;
+#endif
 		++i;
 
 	} while (handler.next() == 1);
