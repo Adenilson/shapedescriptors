@@ -108,6 +108,8 @@ START_TEST (t_adapt_access)
 		++counter;
 		delete [] tmp_contour;
 
+		sequence = sequence->h_next;
+		handler.next();
 	} while (counter < num_contours);
 
 }
