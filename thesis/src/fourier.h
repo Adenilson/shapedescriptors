@@ -590,7 +590,7 @@ double *contour_curvature(TYPE1 signal, int length, double tau = 8,
 
 	for (i = 0; i < length; ++i) {
 		x[i][0] = signal[i][0];
-		y[i][0] = signal[i][0];
+		y[i][0] = signal[i][1];
 	}
 
 	x_diff = (mcomplex<double>*) differentiate(x, length, diff_level = 1,
