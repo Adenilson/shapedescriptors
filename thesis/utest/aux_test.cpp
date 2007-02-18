@@ -148,8 +148,8 @@ START_TEST (t_adapt_curvature)
 		cout << "i = " << i <<  "\tenergy = " << c_energy <<
 			"\tlength = " << handler.contour_length() << endl;
 		++i;
-	} while (handler.next());
 
+	} while (handler.next() == 1);
 
 }
 END_TEST
