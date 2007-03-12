@@ -5,12 +5,12 @@
  *
  * @brief  Functions to calculate statistics (sample mean, variance,
  * standard error, correlation coefficient).
- * Results are compared against an OpenOffice.org 2.0 to garantee that
+ * Results are compared against an OpenOffice.org 2.0 to guarantee that
  * everything is fine.
  * Functions were tested using simple vector pointers (float *) as also
  * STL container class std::vector<float>::iterator.
  * vs 0.01 14-12-2005
- * - Wrote mean, square, variance, stderror, correlaton;
+ * - Wrote mean, square, variance, stderror, correlation;
  * - Added comments LaTeX with formulas of functions;
  *
  * \todo
@@ -201,13 +201,13 @@ struct moments
 
 };
 
-/** Statisticial correlation with some speed up, see \ref correlation and
+/** Statistical correlation with some speed up, see \ref correlation and
  * \ref moments.
  *
  * @param The first data set vector, pointer/iterator should allow access in form
  * X[i].
  *
- * @param mdata Statitical moments of first data set (the one that doesn't change
+ * @param mdata Statistical moments of first data set (the one that doesn't change
  * in time).
  *
  * @param Y Second data set vector.
