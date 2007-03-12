@@ -1,30 +1,25 @@
+/**
+ * @file   correlation.h
+ * @author Adenilson Cavalcanti <savagobr@yahoo.com> Copyright 2005
+ * @date   ending year, 2005
+ *
+ * @brief  Functions to calculate statistics (sample mean, variance,
+ * standard error, correlation coefficient).
+ * Results are compared against an OpenOffice.org 2.0 to garantee that
+ * everything is fine.
+ * Functions were tested using simple vector pointers (float *) as also
+ * STL container class std::vector<float>::iterator.
+ * vs 0.01 14-12-2005
+ * - Wrote mean, square, variance, stderror, correlaton;
+ * - Added comments LaTeX with formulas of functions;
+ *
+ * \todo
+ * - Is there a way so Doxygen translate LaTeX embedded formulas?
+ */
 
 #ifndef __MCORRELATION__
 #define __MCORRELATION__
 
-/*******************************************************************************
-Descricao: funcoes (e teste) de calculo das estatisticas (media, variancia,
-desvio padrao e coeficiente de correlacao) e auxiliares (quadrado)
-
-Ultima alteracao: Adenilson Cavalcanti
-
-Observacoes: os resultados foram comparados com as funcoes de uma planilha do
-OpenOffice.org 2.0 para certificar do correto funcionamento das funcoes de
-calculo.
-As funcoes foram testadas com sucesso utilizando vetores simples (float *) e
-classe container std::vector<TYPE>::interator da STL.
-
-	vs 0.01 14-12-2005
-		-- Escritas funcoes 'mean', 'square', 'variance', 'stderror',
-'correlation'
-
-	vs 0.02 15-12-2005
-		-- Adicionados alguns comentarios com o codigo LaTeX para as
-formulas utilizadas
-
-TODO: translate all portuguese text to english.
-
-*******************************************************************************/
 
 /** Square of number
  *
@@ -46,15 +41,16 @@ inline T square(T num)
 }
 
 
-//Calcula a media simples de um conjunto de dados.
-/* 	Parametros
-	data = ponteiro para os dados, deve permitir acesso ao conteudo na forma
-	data[i]
-
-	size = tamanho do vetor
-	vs 0.01 14-12-2005
-	-- Escrita versao inicial
-
+/** Calculates sample mean of a given data vector.
+ *
+ * @param data Pointer/iterator to data vector, should allow access to elements
+ * using data[i].
+ *
+ * @param size Vector size.
+ *
+ * @return The mean.
+ */
+/*
 	Formula LaTeX
 	\begin{equation}
 	\mu = \overline{x} = \frac{\sum_{i = 0}^{n - 1} (x _i)}{n}
@@ -74,16 +70,19 @@ inline float mean(T *data, int size)
 }
 
 
-//Calcula a variancia de um vetor de dados
-/* 	Parametros
-	data = vetor de dados
-	size = tamanho do vetor
-	mean_d = a media simples dos dados
-	vs 0.01 14-12-2005
-	-- Escrita versao inicial
-
-
-	Formula LaTeX
+/** Calculates variance of a data vector.
+ *
+ * @param data Pointer/iterator to data vector, should allow access to elements
+ * using data[i].
+ *
+ * @param size Vector size.
+ *
+ * @param mean_d The sample mean, should be calculated before using \ref mean.
+ *
+ * @return The variance.
+ */
+/*
+  Formula LaTeX
 	\begin{equation}
 	\sigma ^2 = \frac{\sum _{0}^{n-1} (x_i - \overline{x})^2}{n - 1}
 	\end{equation}
@@ -101,14 +100,19 @@ inline float variance(T *data, int size, float mean_d)
 	return result;
 }
 
-//Calcula o desvio padrao, depende de 'variance'
-/* Parametros
-   data = vetor de dados
-   size = tamanho do vetor
-   mean_d = a media simples dos dados
-   vs 0.01 14-12-2005
-   -- Escrita versao inicial
+/** Standard error, root square of variance.
+ *
+ * @param data Pointer/iterator to data vector, should allow access to elements
+ * using data[i].
+ *
+ * @param size Vector size.
+ *
+ * @param mean_d Sample mean.
+ *
+ * @return The standard error.
+ */
 
+/*
    Formula LaTeX
    \begin{equation}
    \sigma = \sqrt{\sigma ^ 2} = \sqrt{\frac{\sum _{0}^{n-1} (x_i - \overline{x})^2}{n - 1}}
@@ -127,22 +131,25 @@ inline float stderror(T *data, int size, float mean_d)
 
 }
 
-//Correlacao (medida da forca de correlacao linear entre 2 variaveis)
-/* Parametros
-   X = primeiro conjunto de dados
-   Y = segundo conjunto de dados
-   size = tamanho do vetor
-   mean_d = a media simples dos dados
+/** Statistical correlation.
+ *
+ * The strength of linear relationship between 2 variables.
+ *
+ * @param X The first data set vector, pointer/iterator should allow access in form
+ * X[i].
+ *
+ * @param Y Second data set vector.
+ *
+ * @param size Vectors length (both needs to have same length).
+ *
+ * @return The correlation.
+ */
 
-   vs 0.01 14-12-2005
-   -- Escrita versao inicial
-
-   Formula LaTeX
+/*
+  Formula LaTeX
    \begin{equation}
    r _{xy} = \frac{\sum (x_i - \overline{x}) (y_i - \overline{y})}{(n -1) \sigma _x \sigma _y}
    \end{equation}
-
-
 */
 template <class T1, class T2>
 inline float correlation(T1 *X, T2* Y, int size)
@@ -168,8 +175,10 @@ inline float correlation(T1 *X, T2* Y, int size)
 	return corr;
 }
 
-//Mesma coisa, mas exige que jah tenha sido calculadas as medidas
-//de posicao (media e desvio) de 1 das variaveis
+/** Helper structure to hold position statistics, is used to speed up
+ * iterative calculus (think about video) when 1 of data sets *doesn't*
+ * change in time.
+ */
 struct moments
 {
 	float s_mean;
@@ -192,6 +201,21 @@ struct moments
 
 };
 
+/** Statisticial correlation with some speed up, see \ref correlation and
+ * \ref moments.
+ *
+ * @param The first data set vector, pointer/iterator should allow access in form
+ * X[i].
+ *
+ * @param mdata Statitical moments of first data set (the one that doesn't change
+ * in time).
+ *
+ * @param Y Second data set vector.
+ *
+ * @param size Data set vector's length.
+ *
+ * @return The correlation.
+ */
 template <class T1, class T2>
 float quick_corr(T1* X, moments &mdata, T2* Y, int size)
 {
@@ -211,7 +235,5 @@ float quick_corr(T1* X, moments &mdata, T2* Y, int size)
 
 	return corr;
 }
-
-
 
 #endif
