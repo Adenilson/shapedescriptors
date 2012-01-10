@@ -27,6 +27,7 @@ TODO: add copyright and license in source code files.
 
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <opencv/highgui.h>
 #include <set>
 #include <iostream>
