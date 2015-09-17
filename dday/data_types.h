@@ -21,8 +21,8 @@ struct blob_features {
 
 	/** Function to calculate centroid */
 	void calc_centroid() {
-		centroid.real() = (min_x + max_x) / 2;
-		centroid.imag() = (min_y + max_y) / 2;
+		centroid.real((min_x + max_x) / 2);
+		centroid.imag((min_y + max_y) / 2);
 	}
 
 	/** Diagonal of given blob bouding box
