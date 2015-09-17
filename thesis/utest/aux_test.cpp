@@ -142,7 +142,7 @@ START_TEST (t_adapt_curvature)
 		fail_unless(curvature != NULL, "Failed to calculate curvature!");
 		c_energy = energy(curvature, handler.contour_length());
 
-		if (0 < i < 4) {
+		if ((0 < i) && (i < 4)) {
 			fout.open(shape_names[i]);
 			fout << "index\tcurvature" << endl;
 			for (int z = 0; z < handler.contour_length(); ++z)
