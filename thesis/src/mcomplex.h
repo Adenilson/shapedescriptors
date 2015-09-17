@@ -64,8 +64,8 @@ public:
 	 */
 	template <class TYPE1, class TYPE2>
 	mcomplex<NUMBER> &operator()(TYPE1 _real, TYPE2 _img) {
-		std::complex<NUMBER>::real() = _real;
-		std::complex<NUMBER>::imag() = _img;
+		std::complex<NUMBER>::real(_real);
+		std::complex<NUMBER>::imag(_img);
 		return *this;
 	}
 
@@ -76,12 +76,23 @@ public:
 	 * @return number or real part on invalid index.
 	 */
 	NUMBER &operator[](int i) {
+		/* XXX: Changes on C++ complex type made it no longer return
+		   a reference to when accessing the imaginary and complex
+		   part.
+		   Something like return std::complex<NUMBER>::imag(); will
+		   not work. A solution is to access the raw pointer to
+		   self and read the first element for real part (and second
+		   for imaginary part).
+		   Link to discussion:
+		   http://arstechnica.com/civis/viewtopic.php?f=20&t=1258753
+		*/
 		if (i == 0)
-			return std::complex<NUMBER>::real();
+			return reinterpret_cast<NUMBER*>(this)[0];
 		else if (i == 1)
-			return std::complex<NUMBER>::imag();
+			//return std::complex<NUMBER>::imag();
+			return reinterpret_cast<NUMBER*>(this)[1];
 
-		return std::complex<NUMBER>::real();
+		return reinterpret_cast<NUMBER*>(this)[0];
 	}
 
 
