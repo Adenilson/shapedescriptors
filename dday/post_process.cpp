@@ -25,12 +25,14 @@ void test(IplImage *img, blob_features &coord, char *name, int border)
 	//Cropping the image
 	cvSetImageROI(img, comp_rect);
 	uchar *data = NULL;
-	cvGetImageRawData(img, &data, NULL, NULL);
+	//cvGetImageRawData(img, &data, NULL, NULL);
+	cvGetRawData(img, &data, NULL, NULL);
 	//XXX: CvSize != cvSize
 	CvSize size = cvSize((int) (coord.max_x - coord.min_x + 2*border),
 			     (int) (coord.max_y - coord.min_y + 2*border));
 	IplImage *minor = cvCreateImage(size, IPL_DEPTH_8U, 3);//IPL_DEPTH_32F
-	cvSetImageData(minor, data, img->widthStep);
+	//cvSetImageData(minor, data, img->widthStep);
+	cvSetData(minor, data, img->widthStep);
 	show_img("ROI", minor);
 
 	//Upscaling

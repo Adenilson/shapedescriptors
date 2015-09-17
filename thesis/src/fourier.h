@@ -300,8 +300,13 @@ std::complex<double> *create_filter(double diff_level, int length)
 
 	if (res)
 		for (int i = 0; i < length; ++i) {
+			/* XXX: This has changed since 2006 + gcc + linux */
+			/*
 			res[i].imag() = 1;
 			res[i].imag() *= i - length/2;
+			*/
+			res[i].imag(1);
+			res[i].imag(res[i].imag() * i - length/2);
 			res[i] = pow(res[i] * (2 * PI), diff_level);
 		}
 	else
@@ -458,7 +463,9 @@ std::complex<double> *differentiate(TYPE1 signal, int length,
 			/* FIXME: Should I multiply real part too?
 			   tmp[i].real() *= f_gaussian[i];
 			*/
-			tmp[i].imag() *= f_gaussian[i];
+			/* XXX: This has changed since 2006 + gcc + linux */
+			//tmp[i].imag() *= f_gaussian[i];
+			tmp[i].imag(tmp[i].imag() * f_gaussian[i]);
 		}
 	else /* dont do gaussian filter */
 		for (int i = 0; i < length; ++i)
@@ -476,8 +483,13 @@ std::complex<double> *differentiate(TYPE1 signal, int length,
 	 * normalized!
 	 */
 	for (int i = 0; i < length; ++i) {
+		/* XXX: This has changed since 2006 + gcc + linux */
+		/*
 		res[i].imag() /= length;
 		res[i].real() /= length;
+		*/
+		res[i].imag(res[i].imag() / length);
+		res[i].real(res[i].real() / length);
 	}
 
 	goto dealloc;
